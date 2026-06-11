@@ -16,12 +16,15 @@
     "db:postgres:smoke": "tsx server/db/postgresSmokeTest.ts",
     "db:postgres:migrate-data": "tsx server/db/postgresMigrateData.ts",
     "db:postgres:integration": "tsx server/db/postgresApiIntegration.ts",
+    "db:postgres:rotate-passwords": "tsx server/db/postgresRotateDemoPasswords.ts",
+    "deployment:smoke": "tsx server/deploymentSmokeTest.ts",
     "test": "vitest run --no-file-parallelism"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.5.2",
     "lucide-react": "^0.468.0",
     "pg": "^8.21.0",
     "react": "^18.3.1",

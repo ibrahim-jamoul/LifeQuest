@@ -1034,7 +1034,7 @@ Restant avant bascule :
 6. Executer les tests d'integration contre Supabase.
 7. Configurer et deployer Vercel.
 
-## 23. Semaine 12 - migration Supabase en cours
+## 23. Semaine 12 - migration Supabase terminee
 
 La structure PostgreSQL a ete appliquee manuellement dans Supabase. La connexion, le schema,
 RLS, la lecture/ecriture et l'import des donnees ont ete verifies avec succes le 11 juin 2026.
@@ -1070,12 +1070,40 @@ Volumes Supabase verifies apres import :
 - 3 domaines et 3 challenges de decouverte ;
 - 8 zones de village, 2 notifications et 1 jeu de preferences.
 
-Blocage restant avant de fermer la semaine 12 :
+Le runtime Express a ensuite ete converti vers une couche de donnees asynchrone :
 
-1. remplacer l'adaptateur SQLite synchrone utilise par l'API Express ;
-2. convertir les requetes SQL specifiques a SQLite vers PostgreSQL ;
-3. executer les tests d'integration de l'API contre Supabase.
+- PostgreSQL/Supabase est selectionne automatiquement lorsque `DATABASE_URL` existe ;
+- SQLite reste disponible pour le developpement et les tests locaux ;
+- toutes les routes, middlewares et services utilisent la couche asynchrone ;
+- les differences de placeholders, dates et booleens sont gerees ;
+- l'API complete a passe le test d'integration reel contre Supabase.
 
-La semaine 13 ne doit pas etre declaree commencee tant que ces validations Supabase ne sont
-pas passees et que l'API utilise encore SQLite au runtime. Les validations Supabase sont
-maintenant passees ; le remplacement du runtime reste le dernier verrou.
+Verdict semaine 12 : terminee et validee de bout en bout.
+
+## 24. Semaine 13 - preparation deploiement
+
+Elements prepares :
+
+- entree Vercel serverless `api/index.ts` exportant Express ;
+- configuration Vercel pour le build Vite, l'API et le fallback SPA ;
+- CORS configurable par `ALLOWED_ORIGINS` ;
+- headers de securite minimaux et taille JSON limitee ;
+- limitation des tentatives de connexion ;
+- smoke test post-deploiement ;
+- outil de rotation des mots de passe de demonstration et revocation des sessions ;
+- guide debutant dans `DEPLOYMENT.md`.
+
+Validation locale :
+
+- build TypeScript/Vite ;
+- 17/17 tests ;
+- audit npm sans vulnerabilite critique.
+
+Restant pour terminer la semaine 13 :
+
+1. le proprietaire doit faire tourner les mots de passe Supabase ;
+2. connecter/importer le repo dans Vercel ;
+3. ajouter les variables Vercel sans les partager ;
+4. deployer une preview et executer le smoke test ;
+5. tester les interfaces enfant et parent ;
+6. fusionner vers `main` seulement apres validation de la preview.

@@ -22,8 +22,24 @@ import { notificationsRouter } from "./routes/notifications";
 
 export function createApp() {
   const app = express();
-  app.use(cors());
-  app.use(express.json());
+  app.set("trust proxy", 1);
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  app.disable("x-powered-by");
+  app.use(cors({
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }));
+  app.use(express.json({ limit: "256kb" }));
+  app.use((_request, response, next) => {
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    response.setHeader("Referrer-Policy", "no-referrer");
+    response.setHeader("X-Frame-Options", "DENY");
+    next();
+  });
   app.get("/api/health", (_request, response) => response.json({ status: "ok", service: "lifequest-api" }));
   app.use("/api/auth", authRouter);
   app.use("/api/achievements", achievementsRouter);

@@ -7,7 +7,7 @@ LifeQuest Dashboard is a local-first cozy progression village for children and t
 - React + TypeScript + Vite
 - Tailwind CSS
 - Node.js + Express
-- SQLite with Node.js native `node:sqlite`
+- SQLite locally and PostgreSQL/Supabase in production
 - Vitest
 
 The API and database are separated from the UI so SQLite can later be replaced by PostgreSQL without restructuring the frontend.
@@ -145,3 +145,5 @@ provides contextual access to those internal pages.
 
 For the exhaustive current-state audit, production limitations, and handoff notes, see
 `PROJECT_STATE_HANDOFF.md`.
+
+For the preview and production deployment procedure, see `DEPLOYMENT.md`.

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
 import { store } from "../db/store";
 import { authenticatedUser, requireAuth } from "../middleware/auth";
@@ -11,8 +12,15 @@ const profileSchema = z.object({
   grade: z.string().trim().max(40).nullable().optional(),
 });
 export const authRouter = Router();
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 20,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { error: "Too many login attempts. Try again later." },
+});
 
-authRouter.post("/login", async (request, response) => {
+authRouter.post("/login", loginLimiter, async (request, response) => {
   const parsed = loginSchema.safeParse(request.body);
   if (!parsed.success) return response.status(400).json({ error: parsed.error.flatten() });
   const user = await store.get<{ id: number; password_hash: string }>("SELECT id, password_hash FROM users WHERE email = ?", [parsed.data.email.toLowerCase()]);
