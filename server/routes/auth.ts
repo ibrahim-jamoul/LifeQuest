@@ -10,6 +10,8 @@ const profileSchema = z.object({
   displayName: z.string().trim().min(1).max(80),
   age: z.number().int().min(7).max(16).nullable().optional(),
   grade: z.string().trim().max(40).nullable().optional(),
+  avatarIcon: z.enum(["spark", "leaf", "star", "compass"]).optional(),
+  avatarColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
 });
 export const authRouter = Router();
 const loginLimiter = rateLimit({
@@ -31,7 +33,7 @@ authRouter.post("/login", loginLimiter, async (request, response) => {
 authRouter.get("/me", requireAuth, async (_request, response) => {
   const user = authenticatedUser(response.locals);
   const profile = user.role === "child"
-    ? await store.get("SELECT age, grade, age_group, village_level, parent_id FROM child_profiles WHERE user_id = ?", [user.id])
+    ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id])
     : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   response.json({ user, profile });
 });
@@ -48,12 +50,15 @@ authRouter.put("/profile", requireAuth, async (request, response) => {
   await store.transaction(async (transaction) => {
     await transaction.run("UPDATE users SET display_name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [parsed.data.displayName, user.id]);
     if (user.role === "child") {
-      await transaction.run("UPDATE child_profiles SET age = ?, grade = ? WHERE user_id = ?", [parsed.data.age ?? null, parsed.data.grade ?? null, user.id]);
+      await transaction.run(
+        "UPDATE child_profiles SET age = ?, grade = ?, avatar_icon = COALESCE(?, avatar_icon), avatar_color = COALESCE(?, avatar_color) WHERE user_id = ?",
+        [parsed.data.age ?? null, parsed.data.grade ?? null, parsed.data.avatarIcon ?? null, parsed.data.avatarColor ?? null, user.id],
+      );
     }
   });
   const updatedUser = { ...user, displayName: parsed.data.displayName };
   const profile = user.role === "child"
-    ? await store.get("SELECT age, grade, age_group, village_level, parent_id FROM child_profiles WHERE user_id = ?", [user.id])
+    ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id])
     : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   return response.json({ user: updatedUser, profile });
 });

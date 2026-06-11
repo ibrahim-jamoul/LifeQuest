@@ -67,6 +67,7 @@ const booleanColumns = [
   "onboarding_completed",
   "habit_reminders",
   "review_reminders",
+  "push_reminders",
 ];
 
 function postgresSql(sql: string): string {

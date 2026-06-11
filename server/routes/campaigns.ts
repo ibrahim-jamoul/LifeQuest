@@ -13,6 +13,21 @@ campaignsRouter.get("/", async (_request, response) => {
     } | undefined;
     response.json({ campaign: campaign ?? null, chapters: campaign ? await store.all("SELECT * FROM campaign_chapters WHERE campaign_id = ? ORDER BY month_number", [campaign.id]) : [] });
 });
+campaignsRouter.get("/annual-summary", async (_request, response) => {
+    const user = authenticatedUser(response.locals);
+    const campaign = await store.get<{ id: number }>("SELECT * FROM school_campaigns WHERE user_id = ? ORDER BY id DESC LIMIT 1", [user.id]);
+    if (!campaign) return response.status(404).json({ error: "Create a school campaign before generating its annual summary." });
+    const summary = await store.get(`SELECT
+      COALESCE((SELECT SUM(amount) FROM xp_events WHERE user_id = ?), 0) AS total_xp,
+      COALESCE((SELECT COUNT(*) FROM tasks WHERE user_id = ? AND is_completed = 1), 0) AS completed_quests,
+      COALESCE((SELECT COUNT(*) FROM habit_logs hl JOIN habits h ON h.id = hl.habit_id WHERE h.user_id = ? AND hl.is_completed = 1), 0) AS habit_checkins,
+      COALESCE((SELECT COUNT(*) FROM discovery_completions WHERE child_id = ?), 0) AS discoveries,
+      COALESCE((SELECT COUNT(*) FROM parent_child_missions WHERE child_id = ? AND status = 'completed'), 0) AS parent_missions,
+      COALESCE((SELECT MAX(longest_streak) FROM habits WHERE user_id = ?), 0) AS best_streak`,
+    [user.id, user.id, user.id, user.id, user.id, user.id]);
+    const chapters = await store.all("SELECT * FROM campaign_chapters WHERE campaign_id = ? ORDER BY month_number", [campaign.id]);
+    return response.json({ campaign, summary, chapters });
+});
 campaignsRouter.post("/", async (request, response) => {
     const user = authenticatedUser(response.locals);
     const parsed = schema.safeParse(request.body);

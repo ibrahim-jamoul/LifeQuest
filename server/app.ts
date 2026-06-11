@@ -19,6 +19,8 @@ import { campaignsRouter } from "./routes/campaigns";
 import { insightsRouter } from "./routes/insights";
 import { preferencesRouter } from "./routes/preferences";
 import { notificationsRouter } from "./routes/notifications";
+import { observeRequests } from "./middleware/observability";
+import { store } from "./db/store";
 
 export function createApp() {
   const app = express();
@@ -34,13 +36,17 @@ export function createApp() {
     allowedHeaders: ["Content-Type", "Authorization"],
   }));
   app.use(express.json({ limit: "256kb" }));
+  app.use(observeRequests);
   app.use((_request, response, next) => {
     response.setHeader("X-Content-Type-Options", "nosniff");
     response.setHeader("Referrer-Policy", "no-referrer");
     response.setHeader("X-Frame-Options", "DENY");
     next();
   });
-  app.get("/api/health", (_request, response) => response.json({ status: "ok", service: "lifequest-api" }));
+  app.get("/api/health", async (_request, response) => {
+    await store.get("SELECT 1 AS ready");
+    response.json({ status: "ok", service: "lifequest-api", database: process.env.DATABASE_URL ? "postgresql" : "sqlite" });
+  });
   app.use("/api/auth", authRouter);
   app.use("/api/achievements", achievementsRouter);
   app.use("/api/goals", goalsRouter);

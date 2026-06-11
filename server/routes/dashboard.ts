@@ -2,6 +2,7 @@ import { Router } from "express";
 import { store } from "../db/store";
 import { authenticatedUser, requireAuth } from "../middleware/auth";
 import { levelFromXp, titleForLevel } from "../services/gamification";
+import { isHabitDueToday } from "../services/habitSchedule";
 export const dashboardRouter = Router();
 dashboardRouter.use(requireAuth);
 dashboardRouter.get("/today", async (_request, response) => {
@@ -13,17 +14,21 @@ dashboardRouter.get("/today", async (_request, response) => {
     WHERE user_id = ? AND due_date = date('now','localtime')
     ORDER BY is_completed, priority DESC, id
   `, [user.id]);
-    const habits = await store.all(`
+    const habits = (await store.all<{
+        frequency: string;
+        custom_schedule: string | null;
+        [key: string]: unknown;
+    }>(`
     SELECT h.*, EXISTS(
       SELECT 1 FROM habit_logs hl WHERE hl.habit_id = h.id AND hl.completed_on = date('now','localtime') AND hl.is_completed = 1
     ) AS completed_today
     FROM habits h WHERE h.user_id = ? AND h.is_active = 1 ORDER BY h.id
-  `, [user.id]);
+  `, [user.id])).filter((habit) => isHabitDueToday(habit.frequency, habit.custom_schedule));
     const userProgress = await store.get("SELECT total_xp, current_streak FROM users WHERE id = ?", [user.id]) as {
         total_xp: number;
         current_streak: number;
     };
-    const profile = await store.get("SELECT village_level, age_group, grade FROM child_profiles WHERE user_id = ?", [user.id]);
+    const profile = await store.get("SELECT village_level, age_group, grade, age, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]);
     const activeParentMissions = await store.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND status = 'pending'", [user.id]) as {
         count: number;
     };

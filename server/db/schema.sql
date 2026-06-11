@@ -197,6 +197,8 @@ CREATE TABLE IF NOT EXISTS child_profiles (
   age_group TEXT NOT NULL CHECK(age_group IN ('7-9','10-12','13-16')),
   parent_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
   village_level INTEGER NOT NULL DEFAULT 1,
+  avatar_icon TEXT NOT NULL DEFAULT 'spark',
+  avatar_color TEXT NOT NULL DEFAULT '#75a876',
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -303,6 +305,7 @@ CREATE TABLE IF NOT EXISTS user_preferences (
   onboarding_completed INTEGER NOT NULL DEFAULT 0,
   habit_reminders INTEGER NOT NULL DEFAULT 1,
   review_reminders INTEGER NOT NULL DEFAULT 1,
+  push_reminders INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

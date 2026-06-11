@@ -1,3 +1,4 @@
+import type { ChildProfile } from "../../../lib/api/client";
 import type { IslandZoneData } from "../types";
 import { AmbientEffects } from "./AmbientEffects";
 import { BridgeLayer } from "./BridgeLayer";
@@ -8,7 +9,7 @@ import { PathLayer } from "./PathLayer";
 import { RiverLayer } from "./RiverLayer";
 import { VegetationLayer } from "./VegetationLayer";
 
-export function CodedIslandScene({ zones, activeZoneId, onZoneClick }: { zones: IslandZoneData[]; activeZoneId?: string; onZoneClick: (zone: IslandZoneData) => void }) {
+export function CodedIslandScene({ zones, season, avatar, activeZoneId, onZoneClick }: { zones: IslandZoneData[]; season: string; avatar?: ChildProfile; activeZoneId?: string; onZoneClick: (zone: IslandZoneData) => void }) {
   return (
     <div className="absolute inset-0 overflow-auto bg-[#54b9cb]">
       <svg className="island-svg-scene relative left-1/2 top-1/2 h-full min-h-[700px] min-w-[1050px] -translate-x-1/2 -translate-y-1/2" viewBox="0 0 1200 800" role="img" aria-label="Interactive coded LifeQuest village island">
@@ -26,7 +27,7 @@ export function CodedIslandScene({ zones, activeZoneId, onZoneClick }: { zones: 
         <BridgeLayer />
         <VegetationLayer />
         <BuildingLayer zones={zones} activeZoneId={activeZoneId} onZoneClick={onZoneClick} />
-        <AmbientEffects />
+        <AmbientEffects season={season} avatar={avatar} />
       </svg>
     </div>
   );

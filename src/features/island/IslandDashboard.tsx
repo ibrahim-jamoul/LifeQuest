@@ -12,6 +12,7 @@ import { VillageMenu } from "./VillageMenu";
 import { WeeklyGoalCard } from "./WeeklyGoalCard";
 import { useAppStore } from "../../store";
 import { api, type VillageState } from "../../lib/api/client";
+import { ChildAvatar } from "../../components/ChildAvatar";
 
 function seasonForDate(date: Date): string {
   const month = date.getMonth();
@@ -75,7 +76,7 @@ export function IslandDashboard() {
 
   return (
     <div className={`relative h-[100svh] min-h-[680px] overflow-hidden bg-[#4aaec4] text-[#405448] ${isNight ? "island-night" : ""}`}>
-      <CodedIslandScene zones={summary.zones} activeZoneId={panel?.kind === "zone" ? panel.zone.id : undefined} onZoneClick={openZone} />
+      <CodedIslandScene zones={summary.zones} season={summary.season} avatar={todaySnapshot?.profile} activeZoneId={panel?.kind === "zone" ? panel.zone.id : undefined} onZoneClick={openZone} />
       <div className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-b from-[#143d3c]/25 via-transparent to-[#143d3c]/25" />
       {flashMessage ? (
         <div className="pointer-events-none absolute right-4 top-24 z-50 rounded-2xl border border-white/70 bg-[#fff9e9]/95 px-4 py-3 text-sm font-semibold text-[#405448] shadow-[0_10px_30px_rgba(31,68,60,.22)]">
@@ -93,7 +94,7 @@ export function IslandDashboard() {
               <h1 className="m-0 text-base font-black sm:text-lg">{todaySnapshot?.currentChapter ? `${todaySnapshot.currentChapter.title} · ${todaySnapshot.currentChapter.theme}` : "Chapter One · New beginnings"}</h1>
             </div>
           </div>
-          <div className="mt-2 flex items-center gap-2 text-[10px] font-black text-[#718176]"><span className="grid size-6 place-items-center rounded-full bg-[#f0c98d] text-[#5a4632]">{todaySnapshot?.user.displayName.slice(0, 1).toUpperCase() ?? "A"}</span><span>{todaySnapshot?.user.displayName ?? "Explorer"}</span></div>
+          <div className="mt-2 flex items-center gap-2 text-[10px] font-black text-[#718176]"><ChildAvatar size="sm" icon={todaySnapshot?.profile.avatar_icon} color={todaySnapshot?.profile.avatar_color} /><span>{todaySnapshot?.user.displayName ?? "Explorer"}</span></div>
           <div className="mt-2 flex items-center gap-3 text-[10px] font-bold text-[#718176]">
             <span>{summary.currentDay}</span><span>·</span><span>{summary.season}</span>
           </div>
@@ -123,7 +124,7 @@ export function IslandDashboard() {
 
       <IslandActionPanel panel={panel} summary={summary} onClose={() => setPanel(null)} />
       <VillageMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-      {showOnboarding ? <div className="absolute inset-0 z-[70] grid place-items-center bg-[#244f49]/65 p-5"><section aria-modal="true" role="dialog" aria-labelledby="onboarding-title" className="panel max-w-lg p-6 text-center"><Sparkles className="mx-auto size-8 text-[#6faf5c]" /><p className="eyebrow mt-4">Welcome to your village</p><h2 id="onboarding-title" className="mt-2 text-2xl font-black text-[#5a4632]">Your real actions grow this island</h2><p className="mt-3 text-sm leading-6 text-[#7a6652]">Complete quests, build habits, explore challenges, choose a weekly focus, and review your progress. New land unlocks as your village level grows.</p><button className="button-primary mt-5" onClick={async () => { await api.preferences.update({ onboardingCompleted: true, habitReminders: true, reviewReminders: true }); setShowOnboarding(false); }}>Start exploring</button></section></div> : null}
+      {showOnboarding ? <div className="absolute inset-0 z-[70] grid place-items-center bg-[#244f49]/65 p-5"><section aria-modal="true" role="dialog" aria-labelledby="onboarding-title" className="panel max-w-lg p-6 text-center"><Sparkles className="mx-auto size-8 text-[#6faf5c]" /><p className="eyebrow mt-4">Welcome to your village</p><h2 id="onboarding-title" className="mt-2 text-2xl font-black text-[#5a4632]">Your real actions grow this island</h2><p className="mt-3 text-sm leading-6 text-[#7a6652]">Complete quests, build habits, explore challenges, choose a weekly focus, and review your progress. New land unlocks as your village level grows.</p><button className="button-primary mt-5" onClick={async () => { await api.preferences.update({ onboardingCompleted: true, habitReminders: true, reviewReminders: true, pushReminders: false }); setShowOnboarding(false); }}>Start exploring</button></section></div> : null}
     </div>
   );
 }

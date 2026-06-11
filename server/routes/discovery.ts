@@ -17,8 +17,9 @@ function periodKey(frequency: string) {
 }
 discoveryRouter.get("/", async (_request, response) => {
     const user = authenticatedUser(response.locals);
-    const profile = await store.get("SELECT age_group FROM child_profiles WHERE user_id = ?", [user.id]) as {
+    const profile = await store.get("SELECT age_group, village_level FROM child_profiles WHERE user_id = ?", [user.id]) as {
         age_group: string;
+        village_level: number;
     };
     const domains = await store.all(`
     SELECT d.*, COUNT(c.id) AS challenge_count,
@@ -26,16 +27,16 @@ discoveryRouter.get("/", async (_request, response) => {
     FROM discovery_domains d
     LEFT JOIN discovery_challenges c ON c.domain_id = d.id AND c.age_group IN ('all', ?)
     LEFT JOIN discovery_completions dc ON dc.challenge_id = c.id AND dc.child_id = ? AND dc.completed_period = ?
-    WHERE d.age_group IN ('all', ?)
+    WHERE d.age_group IN ('all', ?) AND d.unlocked_at_village_level <= ?
     GROUP BY d.id ORDER BY d.id
-  `, [profile.age_group, user.id, periodKey("weekly"), profile.age_group]);
+  `, [profile.age_group, user.id, periodKey("weekly"), profile.age_group, profile.village_level]);
     const challenges = await store.all(`
     SELECT c.*, d.name AS domain_name, CASE WHEN dc.id IS NULL THEN 0 ELSE 1 END AS completed
     FROM discovery_challenges c JOIN discovery_domains d ON d.id = c.domain_id
     LEFT JOIN discovery_completions dc ON dc.challenge_id = c.id AND dc.child_id = ? AND dc.completed_period = CASE c.frequency WHEN 'daily' THEN date('now','localtime') WHEN 'monthly' THEN strftime('%Y-%m','now','localtime') ELSE date('now','localtime','-' || ((CAST(strftime('%w','now','localtime') AS INTEGER) + 6) % 7) || ' days') END
-    WHERE c.age_group IN ('all', ?) AND d.age_group IN ('all', ?)
+    WHERE c.age_group IN ('all', ?) AND d.age_group IN ('all', ?) AND d.unlocked_at_village_level <= ?
     ORDER BY completed, c.id
-  `, [user.id, profile.age_group, profile.age_group]);
+  `, [user.id, profile.age_group, profile.age_group, profile.village_level]);
     response.json({ domains, challenges });
 });
 discoveryRouter.patch("/challenges/:id/complete", async (request, response) => {

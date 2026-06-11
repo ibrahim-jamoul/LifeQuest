@@ -4,8 +4,9 @@ import express from "express";
 
 // server/middleware/errorHandler.ts
 var errorHandler = (error, _request, response, _next) => {
-  console.error(error);
-  response.status(500).json({ error: "An unexpected error occurred." });
+  const requestId = response.locals.requestId;
+  console.error(JSON.stringify({ type: "api_error", requestId, message: error instanceof Error ? error.message : String(error) }));
+  response.status(500).json({ error: "An unexpected error occurred.", requestId });
 };
 
 // server/routes/auth.ts
@@ -85,7 +86,8 @@ var booleanColumns = [
   "is_read",
   "onboarding_completed",
   "habit_reminders",
-  "review_reminders"
+  "review_reminders",
+  "push_reminders"
 ];
 function postgresSql(sql) {
   let translated = sql.replaceAll("date('now','localtime','-' || ((CAST(strftime('%w','now','localtime') AS INTEGER) + 6) % 7) || ' days')", "date_trunc('week', current_date)::date").replaceAll("strftime('%Y-%m','now','localtime')", "to_char(current_date, 'YYYY-MM')").replaceAll("date('now','localtime')", "current_date").replaceAll("date('now')", "current_date").replaceAll("datetime('now','-29 days')", "(current_timestamp - interval '29 days')").replaceAll("datetime('now','-7 days')", "(current_timestamp - interval '7 days')").replaceAll("date('now','localtime','-29 days')", "(current_date - interval '29 days')::date").replaceAll("date('now','-29 days')", "(current_date - interval '29 days')::date").replaceAll("date('now','localtime','-7 days')", "(current_date - interval '7 days')::date").replaceAll("date('now','localtime','start of month')", "date_trunc('month', current_date)::date").replaceAll("date('now','localtime','weekday 1','-7 days')", "date_trunc('week', current_date)::date").replace(/date\(([\w.]+),\s*'localtime'\)/g, "$1::date").replace(/date\(([\w.]+)\)/g, "$1::date").replaceAll("INSERT OR IGNORE", "INSERT").replaceAll("MAX(village_state.progress, excluded.progress)", "GREATEST(village_state.progress, excluded.progress)").replaceAll("MAX(village_state.level, excluded.level)", "GREATEST(village_state.level, excluded.level)").replaceAll("MAX(longest_streak, ?)", "GREATEST(longest_streak, ?)").replaceAll("MAX(village_level, ?)", "GREATEST(village_level, ?)").replaceAll("MAX(progress, ?)", "GREATEST(progress, ?)");
@@ -247,7 +249,9 @@ var loginSchema = z.object({ email: z.string().email(), password: z.string().min
 var profileSchema = z.object({
   displayName: z.string().trim().min(1).max(80),
   age: z.number().int().min(7).max(16).nullable().optional(),
-  grade: z.string().trim().max(40).nullable().optional()
+  grade: z.string().trim().max(40).nullable().optional(),
+  avatarIcon: z.enum(["spark", "leaf", "star", "compass"]).optional(),
+  avatarColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 });
 var authRouter = Router();
 var loginLimiter = rateLimit({
@@ -266,7 +270,7 @@ authRouter.post("/login", loginLimiter, async (request, response) => {
 });
 authRouter.get("/me", requireAuth, async (_request, response) => {
   const user = authenticatedUser(response.locals);
-  const profile = user.role === "child" ? await store.get("SELECT age, grade, age_group, village_level, parent_id FROM child_profiles WHERE user_id = ?", [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
+  const profile = user.role === "child" ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   response.json({ user, profile });
 });
 authRouter.post("/logout", requireAuth, async (_request, response) => {
@@ -280,11 +284,14 @@ authRouter.put("/profile", requireAuth, async (request, response) => {
   await store.transaction(async (transaction) => {
     await transaction.run("UPDATE users SET display_name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [parsed.data.displayName, user.id]);
     if (user.role === "child") {
-      await transaction.run("UPDATE child_profiles SET age = ?, grade = ? WHERE user_id = ?", [parsed.data.age ?? null, parsed.data.grade ?? null, user.id]);
+      await transaction.run(
+        "UPDATE child_profiles SET age = ?, grade = ?, avatar_icon = COALESCE(?, avatar_icon), avatar_color = COALESCE(?, avatar_color) WHERE user_id = ?",
+        [parsed.data.age ?? null, parsed.data.grade ?? null, parsed.data.avatarIcon ?? null, parsed.data.avatarColor ?? null, user.id]
+      );
     }
   });
   const updatedUser = { ...user, displayName: parsed.data.displayName };
-  const profile = user.role === "child" ? await store.get("SELECT age, grade, age_group, village_level, parent_id FROM child_profiles WHERE user_id = ?", [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
+  const profile = user.role === "child" ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   return response.json({ user: updatedUser, profile });
 });
 
@@ -435,6 +442,19 @@ achievementsRouter.get("/", async (_request, response) => {
 
 // server/routes/dashboard.ts
 import { Router as Router3 } from "express";
+
+// server/services/habitSchedule.ts
+var dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+function customScheduleDays(schedule) {
+  if (!schedule) return [];
+  return schedule.toLowerCase().split(",").map((day) => day.trim().slice(0, 3)).filter((day) => dayNames.includes(day));
+}
+function isHabitDueToday(frequency, customSchedule, date = /* @__PURE__ */ new Date()) {
+  if (frequency !== "custom") return true;
+  return customScheduleDays(customSchedule).includes(dayNames[date.getDay()]);
+}
+
+// server/routes/dashboard.ts
 var dashboardRouter = Router3();
 dashboardRouter.use(requireAuth);
 dashboardRouter.get("/today", async (_request, response) => {
@@ -446,14 +466,14 @@ dashboardRouter.get("/today", async (_request, response) => {
     WHERE user_id = ? AND due_date = date('now','localtime')
     ORDER BY is_completed, priority DESC, id
   `, [user.id]);
-  const habits = await store.all(`
+  const habits = (await store.all(`
     SELECT h.*, EXISTS(
       SELECT 1 FROM habit_logs hl WHERE hl.habit_id = h.id AND hl.completed_on = date('now','localtime') AND hl.is_completed = 1
     ) AS completed_today
     FROM habits h WHERE h.user_id = ? AND h.is_active = 1 ORDER BY h.id
-  `, [user.id]);
+  `, [user.id])).filter((habit) => isHabitDueToday(habit.frequency, habit.custom_schedule));
   const userProgress = await store.get("SELECT total_xp, current_streak FROM users WHERE id = ?", [user.id]);
-  const profile = await store.get("SELECT village_level, age_group, grade FROM child_profiles WHERE user_id = ?", [user.id]);
+  const profile = await store.get("SELECT village_level, age_group, grade, age, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]);
   const activeParentMissions = await store.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND status = 'pending'", [user.id]);
   const activeGoals = await store.get("SELECT COUNT(*) AS count FROM goals WHERE user_id = ? AND status = 'in_progress'", [user.id]);
   const activeProjects = await store.get("SELECT COUNT(*) AS count FROM projects WHERE user_id = ? AND status IN ('idea','planned','active')", [user.id]);
@@ -548,12 +568,13 @@ habitsRouter.use(requireAuth);
 habitsRouter.use(requireChild);
 habitsRouter.get("/", async (_request, response) => {
   const user = authenticatedUser(response.locals);
-  response.json(await store.all(`
+  const habits = await store.all(`
     SELECT h.*, EXISTS(
       SELECT 1 FROM habit_logs hl WHERE hl.habit_id = h.id AND hl.completed_on = date('now','localtime')
     ) AS completed_today
     FROM habits h WHERE h.user_id = ? ORDER BY h.is_active DESC, h.id DESC
-  `, [user.id]));
+  `, [user.id]);
+  response.json(habits.map((habit) => ({ ...habit, due_today: isHabitDueToday(habit.frequency, habit.custom_schedule) })));
 });
 habitsRouter.post("/", async (request, response) => {
   const parsed = habitSchema.safeParse(request.body);
@@ -592,9 +613,11 @@ habitsRouter.delete("/:id", async (request, response) => {
 });
 habitsRouter.post("/:id/log", async (request, response) => {
   const user = authenticatedUser(response.locals);
-  const habit = await store.get("SELECT id FROM habits WHERE id = ? AND user_id = ? AND is_active = 1", [request.params.id, user.id]);
+  const habit = await store.get("SELECT id, frequency, custom_schedule FROM habits WHERE id = ? AND user_id = ? AND is_active = 1", [request.params.id, user.id]);
   if (!habit)
     return response.status(404).json({ error: "Habit not found." });
+  if (!isHabitDueToday(habit.frequency, habit.custom_schedule))
+    return response.status(409).json({ error: "This custom habit is not scheduled for today." });
   const existing = await store.get("SELECT id FROM habit_logs WHERE habit_id = ? AND completed_on = date('now','localtime')", [request.params.id]);
   await store.run(`
     INSERT INTO habit_logs (habit_id, completed_on, is_completed, note)
@@ -1331,23 +1354,23 @@ function periodKey(frequency) {
 }
 discoveryRouter.get("/", async (_request, response) => {
   const user = authenticatedUser(response.locals);
-  const profile = await store.get("SELECT age_group FROM child_profiles WHERE user_id = ?", [user.id]);
+  const profile = await store.get("SELECT age_group, village_level FROM child_profiles WHERE user_id = ?", [user.id]);
   const domains = await store.all(`
     SELECT d.*, COUNT(c.id) AS challenge_count,
       SUM(CASE WHEN dc.id IS NOT NULL THEN 1 ELSE 0 END) AS completed_count
     FROM discovery_domains d
     LEFT JOIN discovery_challenges c ON c.domain_id = d.id AND c.age_group IN ('all', ?)
     LEFT JOIN discovery_completions dc ON dc.challenge_id = c.id AND dc.child_id = ? AND dc.completed_period = ?
-    WHERE d.age_group IN ('all', ?)
+    WHERE d.age_group IN ('all', ?) AND d.unlocked_at_village_level <= ?
     GROUP BY d.id ORDER BY d.id
-  `, [profile.age_group, user.id, periodKey("weekly"), profile.age_group]);
+  `, [profile.age_group, user.id, periodKey("weekly"), profile.age_group, profile.village_level]);
   const challenges = await store.all(`
     SELECT c.*, d.name AS domain_name, CASE WHEN dc.id IS NULL THEN 0 ELSE 1 END AS completed
     FROM discovery_challenges c JOIN discovery_domains d ON d.id = c.domain_id
     LEFT JOIN discovery_completions dc ON dc.challenge_id = c.id AND dc.child_id = ? AND dc.completed_period = CASE c.frequency WHEN 'daily' THEN date('now','localtime') WHEN 'monthly' THEN strftime('%Y-%m','now','localtime') ELSE date('now','localtime','-' || ((CAST(strftime('%w','now','localtime') AS INTEGER) + 6) % 7) || ' days') END
-    WHERE c.age_group IN ('all', ?) AND d.age_group IN ('all', ?)
+    WHERE c.age_group IN ('all', ?) AND d.age_group IN ('all', ?) AND d.unlocked_at_village_level <= ?
     ORDER BY completed, c.id
-  `, [user.id, profile.age_group, profile.age_group]);
+  `, [user.id, profile.age_group, profile.age_group, profile.village_level]);
   response.json({ domains, challenges });
 });
 discoveryRouter.patch("/challenges/:id/complete", async (request, response) => {
@@ -1470,6 +1493,23 @@ campaignsRouter.get("/", async (_request, response) => {
   const campaign = await store.get("SELECT * FROM school_campaigns WHERE user_id = ? ORDER BY id DESC LIMIT 1", [user.id]);
   response.json({ campaign: campaign ?? null, chapters: campaign ? await store.all("SELECT * FROM campaign_chapters WHERE campaign_id = ? ORDER BY month_number", [campaign.id]) : [] });
 });
+campaignsRouter.get("/annual-summary", async (_request, response) => {
+  const user = authenticatedUser(response.locals);
+  const campaign = await store.get("SELECT * FROM school_campaigns WHERE user_id = ? ORDER BY id DESC LIMIT 1", [user.id]);
+  if (!campaign) return response.status(404).json({ error: "Create a school campaign before generating its annual summary." });
+  const summary = await store.get(
+    `SELECT
+      COALESCE((SELECT SUM(amount) FROM xp_events WHERE user_id = ?), 0) AS total_xp,
+      COALESCE((SELECT COUNT(*) FROM tasks WHERE user_id = ? AND is_completed = 1), 0) AS completed_quests,
+      COALESCE((SELECT COUNT(*) FROM habit_logs hl JOIN habits h ON h.id = hl.habit_id WHERE h.user_id = ? AND hl.is_completed = 1), 0) AS habit_checkins,
+      COALESCE((SELECT COUNT(*) FROM discovery_completions WHERE child_id = ?), 0) AS discoveries,
+      COALESCE((SELECT COUNT(*) FROM parent_child_missions WHERE child_id = ? AND status = 'completed'), 0) AS parent_missions,
+      COALESCE((SELECT MAX(longest_streak) FROM habits WHERE user_id = ?), 0) AS best_streak`,
+    [user.id, user.id, user.id, user.id, user.id, user.id]
+  );
+  const chapters = await store.all("SELECT * FROM campaign_chapters WHERE campaign_id = ? ORDER BY month_number", [campaign.id]);
+  return response.json({ campaign, summary, chapters });
+});
 campaignsRouter.post("/", async (request, response) => {
   const user = authenticatedUser(response.locals);
   const parsed = schema2.safeParse(request.body);
@@ -1509,8 +1549,16 @@ insightsRouter.get("/", async (_request, response) => {
   }
   const xpTimeline = await store.all("SELECT date(created_at,'localtime') AS day, SUM(amount) AS xp FROM xp_events WHERE user_id = ? AND created_at >= datetime('now','-29 days') GROUP BY day ORDER BY day", [user.id]);
   const habitHeatmap = await store.all("SELECT completed_on AS day, COUNT(*) AS completed FROM habit_logs hl JOIN habits h ON h.id = hl.habit_id WHERE h.user_id = ? AND hl.is_completed = 1 AND completed_on >= date('now','-29 days') GROUP BY completed_on ORDER BY completed_on", [user.id]);
+  const totals = await store.get(
+    `SELECT
+      COALESCE((SELECT SUM(amount) FROM xp_events WHERE user_id = ? AND created_at >= datetime('now','-29 days')), 0) AS xp_30_days,
+      COALESCE((SELECT COUNT(*) FROM tasks WHERE user_id = ? AND is_completed = 1 AND updated_at >= datetime('now','-29 days')), 0) AS quests_30_days,
+      COALESCE((SELECT COUNT(*) FROM habit_logs hl JOIN habits h ON h.id = hl.habit_id WHERE h.user_id = ? AND hl.is_completed = 1 AND hl.completed_on >= date('now','-29 days')), 0) AS habits_30_days,
+      COALESCE((SELECT MAX(longest_streak) FROM habits WHERE user_id = ?), 0) AS best_streak`,
+    [user.id, user.id, user.id, user.id]
+  );
   const notifications = await store.all("SELECT * FROM notifications WHERE user_id = ? ORDER BY is_read, created_at DESC LIMIT 20", [user.id]);
-  response.json({ xpTimeline, habitHeatmap, notifications });
+  response.json({ xpTimeline, habitHeatmap, totals, notifications });
 });
 
 // server/routes/preferences.ts
@@ -1519,7 +1567,8 @@ import { z as z11 } from "zod";
 var schema3 = z11.object({
   onboardingCompleted: z11.boolean(),
   habitReminders: z11.boolean(),
-  reviewReminders: z11.boolean()
+  reviewReminders: z11.boolean(),
+  pushReminders: z11.boolean()
 });
 var preferencesRouter = Router17();
 preferencesRouter.use(requireAuth, requireChild);
@@ -1533,9 +1582,13 @@ preferencesRouter.put("/", async (request, response) => {
   const parsed = schema3.safeParse(request.body);
   if (!parsed.success)
     return response.status(400).json({ error: parsed.error.flatten() });
-  await store.run(`INSERT INTO user_preferences (user_id, onboarding_completed, habit_reminders, review_reminders)
-    VALUES (?, ?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET onboarding_completed = excluded.onboarding_completed,
-    habit_reminders = excluded.habit_reminders, review_reminders = excluded.review_reminders, updated_at = CURRENT_TIMESTAMP`, [user.id, parsed.data.onboardingCompleted, parsed.data.habitReminders, parsed.data.reviewReminders]);
+  await store.run(
+    `INSERT INTO user_preferences (user_id, onboarding_completed, habit_reminders, review_reminders, push_reminders)
+    VALUES (?, ?, ?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET onboarding_completed = excluded.onboarding_completed,
+    habit_reminders = excluded.habit_reminders, review_reminders = excluded.review_reminders,
+    push_reminders = excluded.push_reminders, updated_at = CURRENT_TIMESTAMP`,
+    [user.id, parsed.data.onboardingCompleted, parsed.data.habitReminders, parsed.data.reviewReminders, parsed.data.pushReminders]
+  );
   response.json(await store.get("SELECT * FROM user_preferences WHERE user_id = ?", [user.id]));
 });
 
@@ -1573,6 +1626,26 @@ notificationsRouter.patch("/:id/read", async (request, response) => {
   return result.changes ? response.json(await store.get("SELECT * FROM notifications WHERE id = ?", [request.params.id])) : response.status(404).json({ error: "Notification not found." });
 });
 
+// server/middleware/observability.ts
+import { randomUUID } from "node:crypto";
+var observeRequests = (request, response, next) => {
+  const requestId = request.header("x-request-id") ?? randomUUID();
+  const startedAt = performance.now();
+  response.locals.requestId = requestId;
+  response.setHeader("X-Request-Id", requestId);
+  response.on("finish", () => {
+    console.log(JSON.stringify({
+      type: "http_request",
+      requestId,
+      method: request.method,
+      path: request.path,
+      status: response.statusCode,
+      durationMs: Math.round(performance.now() - startedAt)
+    }));
+  });
+  next();
+};
+
 // server/app.ts
 function createApp() {
   const app2 = express();
@@ -1585,13 +1658,17 @@ function createApp() {
     allowedHeaders: ["Content-Type", "Authorization"]
   }));
   app2.use(express.json({ limit: "256kb" }));
+  app2.use(observeRequests);
   app2.use((_request, response, next) => {
     response.setHeader("X-Content-Type-Options", "nosniff");
     response.setHeader("Referrer-Policy", "no-referrer");
     response.setHeader("X-Frame-Options", "DENY");
     next();
   });
-  app2.get("/api/health", (_request, response) => response.json({ status: "ok", service: "lifequest-api" }));
+  app2.get("/api/health", async (_request, response) => {
+    await store.get("SELECT 1 AS ready");
+    response.json({ status: "ok", service: "lifequest-api", database: process.env.DATABASE_URL ? "postgresql" : "sqlite" });
+  });
   app2.use("/api/auth", authRouter);
   app2.use("/api/achievements", achievementsRouter);
   app2.use("/api/goals", goalsRouter);

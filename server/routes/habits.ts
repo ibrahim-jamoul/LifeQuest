@@ -4,6 +4,7 @@ import { store } from "../db/store";
 import { authenticatedUser, requireAuth, requireChild } from "../middleware/auth";
 import { evaluateAchievements } from "../services/achievements";
 import { recordXpEvent } from "../services/gamification";
+import { isHabitDueToday } from "../services/habitSchedule";
 async function recalculateHabitStreak(habitId: number): Promise<number> {
     const rows = await store.all(`
     SELECT DISTINCT date(completed_on) AS day
@@ -52,12 +53,17 @@ habitsRouter.use(requireAuth);
 habitsRouter.use(requireChild);
 habitsRouter.get("/", async (_request, response) => {
     const user = authenticatedUser(response.locals);
-    response.json(await store.all(`
+    const habits = await store.all<{
+        frequency: string;
+        custom_schedule: string | null;
+        [key: string]: unknown;
+    }>(`
     SELECT h.*, EXISTS(
       SELECT 1 FROM habit_logs hl WHERE hl.habit_id = h.id AND hl.completed_on = date('now','localtime')
     ) AS completed_today
     FROM habits h WHERE h.user_id = ? ORDER BY h.is_active DESC, h.id DESC
-  `, [user.id]));
+  `, [user.id]);
+    response.json(habits.map((habit) => ({ ...habit, due_today: isHabitDueToday(habit.frequency, habit.custom_schedule) })));
 });
 habitsRouter.post("/", async (request, response) => {
     const parsed = habitSchema.safeParse(request.body);
@@ -96,9 +102,11 @@ habitsRouter.delete("/:id", async (request, response) => {
 });
 habitsRouter.post("/:id/log", async (request, response) => {
     const user = authenticatedUser(response.locals);
-    const habit = await store.get("SELECT id FROM habits WHERE id = ? AND user_id = ? AND is_active = 1", [request.params.id, user.id]);
+    const habit = await store.get<{ id: number; frequency: string; custom_schedule: string | null }>("SELECT id, frequency, custom_schedule FROM habits WHERE id = ? AND user_id = ? AND is_active = 1", [request.params.id, user.id]);
     if (!habit)
         return response.status(404).json({ error: "Habit not found." });
+    if (!isHabitDueToday(habit.frequency, habit.custom_schedule))
+        return response.status(409).json({ error: "This custom habit is not scheduled for today." });
     const existing = await store.get("SELECT id FROM habit_logs WHERE habit_id = ? AND completed_on = date('now','localtime')", [request.params.id]) as {
         id: number;
     } | undefined;

@@ -19,6 +19,12 @@ insightsRouter.get("/", async (_request, response) => {
     }
     const xpTimeline = await store.all("SELECT date(created_at,'localtime') AS day, SUM(amount) AS xp FROM xp_events WHERE user_id = ? AND created_at >= datetime('now','-29 days') GROUP BY day ORDER BY day", [user.id]);
     const habitHeatmap = await store.all("SELECT completed_on AS day, COUNT(*) AS completed FROM habit_logs hl JOIN habits h ON h.id = hl.habit_id WHERE h.user_id = ? AND hl.is_completed = 1 AND completed_on >= date('now','-29 days') GROUP BY completed_on ORDER BY completed_on", [user.id]);
+    const totals = await store.get(`SELECT
+      COALESCE((SELECT SUM(amount) FROM xp_events WHERE user_id = ? AND created_at >= datetime('now','-29 days')), 0) AS xp_30_days,
+      COALESCE((SELECT COUNT(*) FROM tasks WHERE user_id = ? AND is_completed = 1 AND updated_at >= datetime('now','-29 days')), 0) AS quests_30_days,
+      COALESCE((SELECT COUNT(*) FROM habit_logs hl JOIN habits h ON h.id = hl.habit_id WHERE h.user_id = ? AND hl.is_completed = 1 AND hl.completed_on >= date('now','-29 days')), 0) AS habits_30_days,
+      COALESCE((SELECT MAX(longest_streak) FROM habits WHERE user_id = ?), 0) AS best_streak`,
+    [user.id, user.id, user.id, user.id]);
     const notifications = await store.all("SELECT * FROM notifications WHERE user_id = ? ORDER BY is_read, created_at DESC LIMIT 20", [user.id]);
-    response.json({ xpTimeline, habitHeatmap, notifications });
+    response.json({ xpTimeline, habitHeatmap, totals, notifications });
 });

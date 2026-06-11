@@ -6,6 +6,7 @@ const schema = z.object({
     onboardingCompleted: z.boolean(),
     habitReminders: z.boolean(),
     reviewReminders: z.boolean(),
+    pushReminders: z.boolean().default(false),
 });
 export const preferencesRouter = Router();
 preferencesRouter.use(requireAuth, requireChild);
@@ -19,8 +20,10 @@ preferencesRouter.put("/", async (request, response) => {
     const parsed = schema.safeParse(request.body);
     if (!parsed.success)
         return response.status(400).json({ error: parsed.error.flatten() });
-    await store.run(`INSERT INTO user_preferences (user_id, onboarding_completed, habit_reminders, review_reminders)
-    VALUES (?, ?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET onboarding_completed = excluded.onboarding_completed,
-    habit_reminders = excluded.habit_reminders, review_reminders = excluded.review_reminders, updated_at = CURRENT_TIMESTAMP`, [user.id, parsed.data.onboardingCompleted, parsed.data.habitReminders, parsed.data.reviewReminders]);
+    await store.run(`INSERT INTO user_preferences (user_id, onboarding_completed, habit_reminders, review_reminders, push_reminders)
+    VALUES (?, ?, ?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET onboarding_completed = excluded.onboarding_completed,
+    habit_reminders = excluded.habit_reminders, review_reminders = excluded.review_reminders,
+    push_reminders = excluded.push_reminders, updated_at = CURRENT_TIMESTAMP`,
+    [user.id, parsed.data.onboardingCompleted, parsed.data.habitReminders, parsed.data.reviewReminders, parsed.data.pushReminders]);
     response.json(await store.get("SELECT * FROM user_preferences WHERE user_id = ?", [user.id]));
 });

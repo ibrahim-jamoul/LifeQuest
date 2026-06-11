@@ -40,6 +40,8 @@
 .island-building .building-body { transform-box: fill-box; transform-origin: center bottom; transition: transform .22s ease, filter .22s ease; }
 .island-building.level-2 .building-body { transform: scale(1.04); }
 .island-building.level-3 .building-body { transform: translateY(-3px) scale(1.08); filter: drop-shadow(0 8px 8px rgba(255,241,168,.35)); }
+.island-building.level-4 .building-body { transform: translateY(-5px) scale(1.12); filter: drop-shadow(0 10px 9px rgba(244,169,195,.42)); }
+.island-building.level-5 .building-body { transform: translateY(-7px) scale(1.17); filter: drop-shadow(0 12px 11px rgba(255,241,168,.58)); }
 .island-building:hover .building-body, .island-building:focus .building-body, .island-building.is-active .building-body { transform: translateY(-7px) scale(1.06); filter: url(#buildingGlow); }
 .island-building.level-3:hover .building-body, .island-building.level-3:focus .building-body, .island-building.level-3.is-active .building-body { transform: translateY(-9px) scale(1.12); }
 .island-building.is-active .zone-ring { animation: zone-pulse 1.8s ease-in-out infinite; }
@@ -49,6 +51,8 @@
 .island-night .island-svg-scene { filter: brightness(.72) saturate(.88) hue-rotate(8deg); }
 .island-night::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 75% 10%, rgba(255,246,185,.25), transparent 18%), rgba(20,39,73,.18); z-index: 20; }
 .village-npcs { animation: cloud-drift 12s ease-in-out infinite; }
+.child-avatar-scene { animation: avatar-idle 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+@keyframes avatar-idle { 50% { transform: translateY(-5px); } }
 .zone-sign { transition: transform .2s ease; }
 .zone-sign:hover, .zone-sign:focus { transform: translateY(-5px); }
 .zone-sign.is-locked { opacity: .58; cursor: not-allowed; }
@@ -56,4 +60,10 @@
 @media (prefers-reduced-motion: reduce) {
   .river-flow, .cloud-drift, .ambient-sparkles, .water-sparkles, .island-building.is-active .zone-ring { animation: none; }
   .island-building .building-body, .zone-sign { transition: none; }
+}
+
+@media print {
+  body { background: white; color: #405448; }
+  aside, nav, header, button, .print-hidden { display: none !important; }
+  .panel, .page-hero { break-inside: avoid; box-shadow: none; }
 }

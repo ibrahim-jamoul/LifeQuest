@@ -18,6 +18,8 @@ export interface ChildProfile {
   age_group: "7-9" | "10-12" | "13-16";
   village_level: number;
   parent_id: number | null;
+  avatar_icon: "spark" | "leaf" | "star" | "compass";
+  avatar_color: string;
 }
 
 export interface Quest {
@@ -47,6 +49,7 @@ export interface Habit {
   xp_reward: number;
   is_active: number | boolean;
   completed_today?: number | boolean;
+  due_today?: boolean;
 }
 
 export interface Achievement {
@@ -180,7 +183,7 @@ export const api = {
     login: (email: string, password: string) => request<{ token: string }>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
     me: () => request<{ user: AuthUser; profile: ChildProfile | Record<string, unknown> }>("/auth/me"),
     logout: () => request<void>("/auth/logout", { method: "POST" }),
-    updateProfile: (input: { displayName: string; age?: number | null; grade?: string | null }) => request<{ user: AuthUser; profile: ChildProfile | Record<string, unknown> }>("/auth/profile", { method: "PUT", body: JSON.stringify(input) }),
+    updateProfile: (input: { displayName: string; age?: number | null; grade?: string | null; avatarIcon?: ChildProfile["avatar_icon"]; avatarColor?: string }) => request<{ user: AuthUser; profile: ChildProfile | Record<string, unknown> }>("/auth/profile", { method: "PUT", body: JSON.stringify(input) }),
   },
   dashboard: {
     today: () => request<TodaySnapshot>("/dashboard/today"),
@@ -252,13 +255,14 @@ export const api = {
     get: () => request<{ campaign: { id: number; title: string; school_year: string; annual_goal: string } | null; chapters: CampaignChapter[] }>("/campaigns"),
     create: (input: { title: string; schoolYear: string; annualGoal: string }) => request("/campaigns", { method: "POST", body: JSON.stringify(input) }),
     updateChapter: (id: number, progress: number) => request(`/campaigns/chapters/${id}`, { method: "PATCH", body: JSON.stringify({ progress }) }),
+    annualSummary: () => request<{ campaign: { id: number; title: string; school_year: string; annual_goal: string }; summary: { total_xp: number; completed_quests: number; habit_checkins: number; discoveries: number; parent_missions: number; best_streak: number }; chapters: CampaignChapter[] }>("/campaigns/annual-summary"),
   },
   insights: {
-    get: () => request<{ xpTimeline: Array<{ day: string; xp: number }>; habitHeatmap: Array<{ day: string; completed: number }>; notifications: Array<{ id: number; title: string; message: string; is_read: number }> }>("/insights"),
+    get: () => request<{ xpTimeline: Array<{ day: string; xp: number }>; habitHeatmap: Array<{ day: string; completed: number }>; totals: { xp_30_days: number; quests_30_days: number; habits_30_days: number; best_streak: number }; notifications: Array<{ id: number; title: string; message: string; is_read: number }> }>("/insights"),
   },
   preferences: {
-    get: () => request<{ onboarding_completed: number; habit_reminders: number; review_reminders: number }>("/preferences"),
-    update: (input: { onboardingCompleted: boolean; habitReminders: boolean; reviewReminders: boolean }) => request("/preferences", { method: "PUT", body: JSON.stringify(input) }),
+    get: () => request<{ onboarding_completed: number; habit_reminders: number; review_reminders: number; push_reminders: number }>("/preferences"),
+    update: (input: { onboardingCompleted: boolean; habitReminders: boolean; reviewReminders: boolean; pushReminders: boolean }) => request("/preferences", { method: "PUT", body: JSON.stringify(input) }),
   },
   notifications: {
     list: () => request<{ notifications: NotificationRecord[]; unread: number }>("/notifications"),
