@@ -16,10 +16,10 @@ function scoreToLevel(score: number): number {
 async function persistentZone(userId: number, zoneId: string, calculatedProgress: number) {
     const progress = clamp(calculatedProgress);
     await store.run(`INSERT INTO village_state (user_id, zone_id, level, progress, unlocked)
-    VALUES (?, ?, ?, ?, 1) ON CONFLICT(user_id, zone_id) DO UPDATE SET
+    VALUES (?, ?, ?, ?, ?) ON CONFLICT(user_id, zone_id) DO UPDATE SET
     progress = MAX(village_state.progress, excluded.progress),
     level = MAX(village_state.level, excluded.level),
-    last_updated = CURRENT_TIMESTAMP`, [userId, zoneId, scoreToLevel(progress), progress]);
+    last_updated = CURRENT_TIMESTAMP`, [userId, zoneId, scoreToLevel(progress), progress, true]);
     return await store.get("SELECT level, progress FROM village_state WHERE user_id = ? AND zone_id = ?", [userId, zoneId]) as {
         level: number;
         progress: number;

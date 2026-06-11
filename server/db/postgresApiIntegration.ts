@@ -61,6 +61,13 @@ try {
   await expectStatus("/auth/logout", 204, { method: "POST" });
   console.log("Supabase-backed Express API integration passed.");
 } finally {
+  if (token) {
+    try {
+      await request("/auth/logout", { method: "POST" });
+    } catch {
+      console.warn("Integration cleanup could not remove the temporary session.");
+    }
+  }
   if (server) await new Promise<void>((resolve, reject) => server?.close((error) => error ? reject(error) : resolve()));
   await store.close();
 }

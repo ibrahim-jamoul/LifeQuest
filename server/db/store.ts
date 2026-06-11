@@ -91,7 +91,9 @@ function postgresSql(sql: string): string {
   for (const column of booleanColumns) {
     translated = translated
       .replace(new RegExp(`\\b${column}\\s*=\\s*1\\b`, "g"), `${column} = true`)
-      .replace(new RegExp(`\\b${column}\\s*=\\s*0\\b`, "g"), `${column} = false`);
+      .replace(new RegExp(`\\b${column}\\s*=\\s*0\\b`, "g"), `${column} = false`)
+      .replace(new RegExp(`(\\b${column}\\b[^)]*values\\s*\\([^)]*),\\s*1\\s*\\)`, "i"), "$1, true)")
+      .replace(new RegExp(`(\\b${column}\\b[^)]*values\\s*\\([^)]*),\\s*0\\s*\\)`, "i"), "$1, false)");
   }
   return replaceQuestionMarks(translated);
 }

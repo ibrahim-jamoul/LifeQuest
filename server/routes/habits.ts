@@ -104,9 +104,9 @@ habitsRouter.post("/:id/log", async (request, response) => {
     } | undefined;
     await store.run(`
     INSERT INTO habit_logs (habit_id, completed_on, is_completed, note)
-    VALUES (?, date('now','localtime'), 1, ?)
+    VALUES (?, date('now','localtime'), ?, ?)
     ON CONFLICT(habit_id, completed_on) DO UPDATE SET is_completed = 1, note = excluded.note
-  `, [request.params.id, typeof request.body?.note === "string" ? request.body.note.slice(0, 500) : ""]);
+  `, [request.params.id, true, typeof request.body?.note === "string" ? request.body.note.slice(0, 500) : ""]);
     const log = await store.get<Record<string, unknown>>("SELECT * FROM habit_logs WHERE habit_id = ? AND completed_on = date('now','localtime')", [request.params.id]);
     const streak = await recalculateHabitStreak(Number(request.params.id));
     if (!existing) {
