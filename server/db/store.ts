@@ -1,5 +1,6 @@
 import { createPostgresPool } from "./postgres";
-import { DatabaseSync, type SQLInputValue } from "node:sqlite";
+import type { SQLInputValue } from "node:sqlite";
+import { createRequire } from "node:module";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { QueryResult, QueryResultRow } from "pg";
@@ -18,6 +19,8 @@ export interface Store {
 }
 
 function sqliteStore(): Store {
+  const require = createRequire(import.meta.url);
+  const { DatabaseSync } = require("node:sqlite") as typeof import("node:sqlite");
   const databasePath = resolve(process.env.DATABASE_PATH ?? "./data/lifequest.db");
   mkdirSync(dirname(databasePath), { recursive: true });
   const sqlite = new DatabaseSync(databasePath);

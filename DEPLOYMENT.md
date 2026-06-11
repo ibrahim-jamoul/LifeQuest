@@ -44,6 +44,8 @@ domain. The frontend will use `/api`.
 5. Add the required environment variables above to Preview.
 6. Deploy.
 7. Open `https://YOUR-PREVIEW-URL/api/health`.
+   If the Express function fails, open `https://YOUR-PREVIEW-URL/api/diagnostic` to verify
+   that the Node.js function runs and that `DATABASE_URL` is available without exposing it.
 8. Run the deployment smoke test locally using the newly rotated child password:
 
    ```powershell
