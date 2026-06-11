@@ -1102,9 +1102,14 @@ Validation locale :
 
 Restant pour terminer la semaine 13 :
 
-1. le proprietaire doit faire tourner les mots de passe Supabase ;
-2. connecter/importer le repo dans Vercel ;
-3. ajouter les variables Vercel sans les partager ;
-4. deployer une preview et executer le smoke test ;
-5. tester les interfaces enfant et parent ;
-6. fusionner vers `main` seulement apres validation de la preview.
+1. executer le smoke test authentifie sur la preview ;
+2. tester les interfaces enfant et parent ;
+3. fusionner vers `main` seulement apres validation de la preview.
+
+Validations semaine 13 deja obtenues :
+
+- mots de passe Supabase tournes et anciennes sessions revoquees ;
+- variables Vercel configurees par le proprietaire ;
+- build Vercel reussi ;
+- API Express bundlee pour eviter les imports ESM non resolus ;
+- endpoint public `/api/health` valide sur la preview Vercel.
