@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply border-[#e0cfb0]; }
+  body { @apply m-0 bg-[#dff0e8] text-[#405448] antialiased; font-family: Nunito, ui-sans-serif, system-ui, sans-serif; }
+  button, input, textarea, select { font: inherit; }
+}
+
+@layer components {
+  .panel { @apply rounded-[28px] border-2 border-[#eadfc8] bg-[#fff8e9] shadow-[0_12px_30px_rgba(90,70,50,.12)]; }
+  .eyebrow { @apply text-xs font-black uppercase tracking-[0.18em] text-[#718176]; }
+  .button-primary { @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-[#6faf5c] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#84bf70]; box-shadow: 0 5px 0 #5d8c61; }
+  .button-secondary { @apply inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-[#e0cfb0] bg-[#fff3da] px-4 py-2.5 text-sm font-bold text-[#5a4632] transition hover:-translate-y-0.5 hover:bg-white; }
+  .input { @apply w-full rounded-2xl border-2 border-[#e0cfb0] bg-[#fffdf7] px-4 py-3 text-sm text-[#405448] outline-none transition focus:border-[#6faf5c]; }
+  .input::placeholder { color: #8d9b91; }
+  .page-shell { @apply rounded-[32px] border-2 border-[#eadfc8] bg-[#fff8e9] p-5 shadow-[0_14px_36px_rgba(90,70,50,.12)] sm:p-6; }
+  .page-hero { @apply rounded-[28px] bg-gradient-to-br from-[#fff6e5] to-[#f3e6c8] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.7)]; }
+  .pill { @apply inline-flex items-center gap-2 rounded-full border-2 border-[#e0cfb0] bg-white/80 px-3 py-1.5 text-xs font-black text-[#5a4632]; }
+
+  .island-card { @apply rounded-[26px] border-2 border-white/70 bg-[#fff9e9]/95 p-4 shadow-[0_10px_30px_rgba(69,93,78,.18)] transition hover:-translate-y-1; }
+  .island-eyebrow { @apply block text-[10px] font-black uppercase tracking-[.16em] text-[#718176]; }
+  .island-resource { @apply flex items-center gap-2 rounded-2xl border-2 border-white/70 bg-[#fff9e9]/95 px-3 py-2 text-[#405448] shadow-[0_8px_22px_rgba(69,93,78,.15)] transition hover:-translate-y-0.5; }
+  .island-resource small { @apply block text-[8px] font-black uppercase tracking-wider opacity-50; }
+  .island-resource strong { @apply block text-sm leading-none; }
+  .island-icon-button { @apply grid size-11 place-items-center rounded-2xl border-2 border-white/70 bg-[#fff9e9]/95 text-[#587064] shadow-[0_8px_22px_rgba(69,93,78,.15)] transition hover:-translate-y-0.5 hover:bg-white; }
+  .island-action { @apply inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#75a876] px-4 py-3 text-sm font-black text-white shadow-[0_5px_0_#5d8c61] transition hover:-translate-y-0.5; }
+}
+
+@keyframes wave-drift { to { stroke-dashoffset: -68; } }
+@keyframes cloud-drift { 50% { transform: translateX(28px); } }
+@keyframes sparkle-pulse { 50% { opacity: .25; transform: scale(.75); } }
+@keyframes zone-pulse { 50% { opacity: .25; r: 94px; } }
+
+.river-flow { animation: wave-drift 8s linear infinite; }
+.cloud-drift { animation: cloud-drift 18s ease-in-out infinite; }
+.ambient-sparkles, .water-sparkles { transform-box: fill-box; transform-origin: center; animation: sparkle-pulse 3s ease-in-out infinite; }
+.island-building, .zone-sign { cursor: pointer; outline: none; }
+.island-building .building-body { transform-box: fill-box; transform-origin: center bottom; transition: transform .22s ease, filter .22s ease; }
+.island-building.level-2 .building-body { transform: scale(1.04); }
+.island-building.level-3 .building-body { transform: translateY(-3px) scale(1.08); filter: drop-shadow(0 8px 8px rgba(255,241,168,.35)); }
+.island-building:hover .building-body, .island-building:focus .building-body, .island-building.is-active .building-body { transform: translateY(-7px) scale(1.06); filter: url(#buildingGlow); }
+.island-building.level-3:hover .building-body, .island-building.level-3:focus .building-body, .island-building.level-3.is-active .building-body { transform: translateY(-9px) scale(1.12); }
+.island-building.is-active .zone-ring { animation: zone-pulse 1.8s ease-in-out infinite; }
+.island-building.is-locked .building-body { filter: grayscale(.75); opacity: .48; }
+.island-building.is-locked { cursor: not-allowed; }
+.zone-reward { animation: sparkle-pulse 2.8s ease-in-out infinite; pointer-events: none; }
+.island-night .island-svg-scene { filter: brightness(.72) saturate(.88) hue-rotate(8deg); }
+.island-night::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 75% 10%, rgba(255,246,185,.25), transparent 18%), rgba(20,39,73,.18); z-index: 20; }
+.village-npcs { animation: cloud-drift 12s ease-in-out infinite; }
+.zone-sign { transition: transform .2s ease; }
+.zone-sign:hover, .zone-sign:focus { transform: translateY(-5px); }
+.zone-sign.is-locked { opacity: .58; cursor: not-allowed; }
+
+@media (prefers-reduced-motion: reduce) {
+  .river-flow, .cloud-drift, .ambient-sparkles, .water-sparkles, .island-building.is-active .zone-ring { animation: none; }
+  .island-building .building-body, .zone-sign { transition: none; }
+}

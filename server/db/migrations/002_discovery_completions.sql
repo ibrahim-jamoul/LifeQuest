@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS discovery_completions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  child_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  challenge_id INTEGER NOT NULL REFERENCES discovery_challenges(id) ON DELETE CASCADE,
+  completed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(child_id, challenge_id)
+);

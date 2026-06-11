@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { authenticatedUser, requireAuth, requireChild } from "../middleware/auth";
+import { achievementSummary } from "../services/achievements";
+
+export const achievementsRouter = Router();
+achievementsRouter.use(requireAuth);
+achievementsRouter.use(requireChild);
+
+achievementsRouter.get("/", (_request, response) => {
+  const user = authenticatedUser(response.locals);
+  response.json(achievementSummary(user.id));
+});
