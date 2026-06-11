@@ -1007,3 +1007,29 @@ Ajoute les tests pertinents puis lance build, tests et audit.
 LifeQuest Dashboard est un MVP full-stack local avance, coherent et utilisable. Les grands flux demandes jusqu'a la semaine 10 sont presents et relies a la progression. Le dernier audit a ferme les principaux trous entre interfaces et donnees reelles.
 
 Le prochain cap est la transformation en produit publiable : PostgreSQL/Supabase, auth production, securite, E2E, observabilite et finition UX.
+
+## 22. Etat de la migration Supabase
+
+Branche : `migration-supabase`
+
+Premier jalon prepare :
+
+- depot GitHub connecte a `https://github.com/ibrahim-jamoul/LifeQuest.git` ;
+- baseline SQLite figee sur `main` au commit `872973e` ;
+- migration PostgreSQL initiale dans `supabase/migrations` ;
+- types SQLite convertis vers PostgreSQL ;
+- RLS explicitement activee sur toutes les tables ;
+- acces direct `anon` et `authenticated` revoque ;
+- Data API conservee mais Express reste l'unique couche metier ;
+- variables `DATABASE_URL` et `DATABASE_SSL` documentees ;
+- CI GitHub pour installation, build, tests et audit.
+
+Restant avant bascule :
+
+1. Obtenir la Transaction pooler URI et le project ref Supabase.
+2. Appliquer la migration sur le projet distant.
+3. Remplacer l'adaptateur synchrone `node:sqlite` par PostgreSQL.
+4. Adapter les requetes SQLite specifiques.
+5. Creer le seed/import PostgreSQL.
+6. Executer les tests d'integration contre Supabase.
+7. Configurer et deployer Vercel.

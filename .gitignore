@@ -3,6 +3,7 @@ dist
 data
 .env
 .env.local
+.env.*.local
 *.sqlite
 *.sqlite3
 *.db
