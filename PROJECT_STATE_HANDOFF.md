@@ -1033,3 +1033,34 @@ Restant avant bascule :
 5. Creer le seed/import PostgreSQL.
 6. Executer les tests d'integration contre Supabase.
 7. Configurer et deployer Vercel.
+
+## 23. Semaine 12 - migration Supabase en cours
+
+La structure PostgreSQL a ete appliquee manuellement dans Supabase et les tables ont ete
+confirmees avec RLS actif. Les tables vides sont normales avant l'import des donnees.
+
+Outils ajoutes sur `migration-supabase` :
+
+- connexion PostgreSQL partagee pour les commandes de maintenance ;
+- verification automatique des 27 tables et de RLS ;
+- smoke test lecture/ecriture entierement annule par transaction ;
+- import generique de toutes les donnees SQLite vers PostgreSQL ;
+- verification CI du schema PostgreSQL sur un service temporaire ;
+- documentation de l'ordre de migration et distinction `DATABASE_URL` / `DIRECT_URL`.
+
+Validation locale sans secret :
+
+- `npm run build` : OK ;
+- `npm test` : 17/17 ;
+- `npm audit --audit-level=critical` : 0 vulnerabilite.
+
+Blocage restant avant de fermer la semaine 12 :
+
+1. executer manuellement la verification Supabase ;
+2. executer manuellement le smoke test ;
+3. importer les donnees SQLite ;
+4. remplacer l'adaptateur SQLite synchrone utilise par l'API Express et convertir son SQL
+   specifique avant de pouvoir deployer l'API sur PostgreSQL.
+
+La semaine 13 ne doit pas etre declaree commencee tant que ces validations Supabase ne sont
+pas passees et que l'API utilise encore SQLite au runtime.

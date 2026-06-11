@@ -30,3 +30,34 @@ jobs:
 
       - name: Audit critical vulnerabilities
         run: npm audit --audit-level=critical
+
+  validate-postgres-schema:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lifequest
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Apply PostgreSQL schema
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d lifequest -f supabase/migrations/202606110001_initial_lifequest_schema.sql
+
+      - name: Verify expected tables and RLS
+        env:
+          PGPASSWORD: postgres
+        run: |
+          test "$(psql -h localhost -U postgres -d lifequest -tAc "select count(*) from pg_tables where schemaname='public'")" -eq 27
+          test "$(psql -h localhost -U postgres -d lifequest -tAc "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and c.relrowsecurity")" -eq 27

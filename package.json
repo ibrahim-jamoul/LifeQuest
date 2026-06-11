@@ -12,6 +12,9 @@
     "db:init": "tsx server/db/init.ts",
     "db:migrate": "tsx server/db/init.ts",
     "db:seed": "tsx server/db/seed.ts",
+    "db:postgres:verify": "tsx server/db/postgresVerify.ts",
+    "db:postgres:smoke": "tsx server/db/postgresSmokeTest.ts",
+    "db:postgres:migrate-data": "tsx server/db/postgresMigrateData.ts",
     "test": "vitest run --no-file-parallelism"
   },
   "dependencies": {
@@ -19,6 +22,7 @@
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "lucide-react": "^0.468.0",
+    "pg": "^8.21.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.6.2",
@@ -30,6 +34,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.31",
+    "@types/pg": "^8.20.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^6.0.2",

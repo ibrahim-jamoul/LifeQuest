@@ -18,6 +18,7 @@ Copy the Supabase **Transaction pooler** URI from the project Connect panel and 
 
 ```env
 DATABASE_URL=postgresql://...
+DIRECT_URL=postgresql://...
 DATABASE_SSL=true
 ```
 
@@ -41,8 +42,28 @@ supabase/migrations/202606110001_initial_lifequest_schema.sql
 ## Migration order
 
 1. Apply and verify the PostgreSQL schema.
-2. Replace the SQLite database adapter and SQLite-specific SQL in the Express API.
-3. Add a PostgreSQL seed/import script.
-4. Run the complete integration suite against Supabase.
-5. Configure Vercel environment variables.
+2. Verify the connection and RLS:
 
+   ```powershell
+   node --env-file=.env.local --import tsx server/db/postgresVerify.ts
+   ```
+
+3. Run a reversible read/write smoke test:
+
+   ```powershell
+   node --env-file=.env.local --import tsx server/db/postgresSmokeTest.ts
+   ```
+
+4. Copy the existing local SQLite data into Supabase:
+
+   ```powershell
+   node --env-file=.env.local --import tsx server/db/postgresMigrateData.ts
+   ```
+
+5. Run the verification command again and confirm that the expected tables are no longer empty.
+6. Replace the SQLite runtime adapter and SQLite-specific SQL in the Express API.
+7. Run the complete integration suite against Supabase.
+8. Configure and deploy the production services.
+
+`DIRECT_URL` is used by verification and migration commands when available. `DATABASE_URL`
+is reserved for the application runtime and should use the transaction-mode pooler.
