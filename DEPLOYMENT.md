@@ -51,10 +51,15 @@ domain. The frontend will use `/api`.
    ```powershell
    $env:DEPLOYMENT_URL="https://YOUR-PREVIEW-URL"
    $env:DEPLOYMENT_TEST_PASSWORD="YOUR-NEW-CHILD-PASSWORD"
+   $env:VERCEL_AUTOMATION_BYPASS_SECRET="YOUR-VERCEL-BYPASS-SECRET"
    npm.cmd run deployment:smoke
    Remove-Item Env:DEPLOYMENT_URL
    Remove-Item Env:DEPLOYMENT_TEST_PASSWORD
+   Remove-Item Env:VERCEL_AUTOMATION_BYPASS_SECRET
    ```
+
+   For protected previews, generate the bypass secret in Vercel under
+   **Project Settings → Deployment Protection → Protection Bypass for Automation**.
 
 9. Test the child and parent interfaces manually.
 10. Only after preview validation, merge `migration-supabase` into `main`.
