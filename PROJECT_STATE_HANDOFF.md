@@ -1084,7 +1084,7 @@ Verdict semaine 12 : terminee et validee de bout en bout.
 
 Elements prepares :
 
-- entree Vercel serverless `api/index.ts` exportant Express ;
+- entree Vercel serverless `api/index.ts` avec transfert explicite du chemin vers Express ;
 - configuration Vercel pour le build Vite, l'API et le fallback SPA ;
 - CORS configurable par `ALLOWED_ORIGINS` ;
 - headers de securite minimaux et taille JSON limitee ;

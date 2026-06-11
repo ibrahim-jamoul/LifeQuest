@@ -6,7 +6,8 @@ The application supports:
 
 - local development with SQLite;
 - production runtime with PostgreSQL/Supabase when `DATABASE_URL` is configured;
-- Vercel static frontend and Express serverless API through `api/index.ts`.
+- Vercel static frontend and Express serverless API through `api/index.ts`, with the original
+  API path explicitly forwarded to Express.
 
 ## Required Vercel variables
 
