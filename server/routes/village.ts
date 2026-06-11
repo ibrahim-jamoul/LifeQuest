@@ -6,7 +6,7 @@ export const villageRouter = Router();
 villageRouter.use(requireAuth);
 villageRouter.use(requireChild);
 
-villageRouter.get("/state", (_request, response) => {
+villageRouter.get("/state", async (_request, response) => {
   const user = authenticatedUser(response.locals);
-  response.json(getVillageState(user.id));
+  response.json(await getVillageState(user.id));
 });

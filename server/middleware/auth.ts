@@ -2,9 +2,9 @@ import type { RequestHandler } from "express";
 import { getBearerToken, getSessionUser } from "../services/auth";
 import type { AuthUser } from "../types/auth";
 
-export const requireAuth: RequestHandler = (request, response, next) => {
+export const requireAuth: RequestHandler = async (request, response, next) => {
   const token = getBearerToken(request.header("authorization"));
-  const user = token ? getSessionUser(token) : null;
+  const user = token ? await getSessionUser(token) : null;
   if (!user) {
     response.status(401).json({ error: "Authentication required." });
     return;

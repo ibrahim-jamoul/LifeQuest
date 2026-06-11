@@ -1,4 +1,7 @@
-import { Pool, type PoolClient, type QueryResultRow } from "pg";
+import { Pool, types, type PoolClient, type QueryResultRow } from "pg";
+
+types.setTypeParser(20, Number);
+types.setTypeParser(1700, Number);
 
 function requiredDatabaseUrl(preferDirectConnection: boolean): string {
   const databaseUrl = preferDirectConnection

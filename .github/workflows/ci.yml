@@ -50,6 +50,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Apply PostgreSQL schema
         env:
           PGPASSWORD: postgres
@@ -61,3 +70,17 @@ jobs:
         run: |
           test "$(psql -h localhost -U postgres -d lifequest -tAc "select count(*) from pg_tables where schemaname='public'")" -eq 27
           test "$(psql -h localhost -U postgres -d lifequest -tAc "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and c.relrowsecurity")" -eq 27
+
+      - name: Prepare SQLite seed
+        run: |
+          npm run db:init
+          npm run db:seed
+
+      - name: Import seed and test PostgreSQL runtime
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lifequest
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/lifequest
+          DATABASE_SSL: "false"
+        run: |
+          npm run db:postgres:migrate-data
+          npm run db:postgres:integration

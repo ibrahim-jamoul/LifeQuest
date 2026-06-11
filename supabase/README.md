@@ -61,8 +61,13 @@ supabase/migrations/202606110001_initial_lifequest_schema.sql
    ```
 
 5. Run the verification command again and confirm that the expected tables are no longer empty.
-6. Replace the SQLite runtime adapter and SQLite-specific SQL in the Express API.
-7. Run the complete integration suite against Supabase.
+6. Run the Supabase-backed Express API integration:
+
+   ```powershell
+   node --env-file=.env.local --import tsx server/db/postgresApiIntegration.ts
+   ```
+
+7. Confirm the integration prints `Supabase-backed Express API integration passed.`
 8. Configure and deploy the production services.
 
 `DIRECT_URL` is used by verification and migration commands when available. `DATABASE_URL`
@@ -77,5 +82,6 @@ On June 11, 2026:
 - the local SQLite data import completed successfully;
 - a post-import verification confirmed the expected row counts.
 
-The Express application runtime still uses SQLite. Do not deploy it as a Supabase-backed
-production API until its synchronous database calls and SQLite-specific SQL are converted.
+The Express application runtime now selects PostgreSQL whenever `DATABASE_URL` is present
+and keeps SQLite as the local/test fallback. GitHub Actions applies the PostgreSQL schema,
+imports the demo seed, and runs the API integration against a temporary PostgreSQL service.

@@ -6,7 +6,7 @@ export const achievementsRouter = Router();
 achievementsRouter.use(requireAuth);
 achievementsRouter.use(requireChild);
 
-achievementsRouter.get("/", (_request, response) => {
+achievementsRouter.get("/", async (_request, response) => {
   const user = authenticatedUser(response.locals);
-  response.json(achievementSummary(user.id));
+  response.json(await achievementSummary(user.id));
 });

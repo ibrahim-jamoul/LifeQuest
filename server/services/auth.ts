@@ -1,5 +1,5 @@
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
-import { db } from "../db/database";
+import { store } from "../db/store";
 import type { AuthUser, UserRole } from "../types/auth";
 
 const SESSION_DAYS = 30;
@@ -22,19 +22,19 @@ function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-export function createSession(userId: number): string {
+export async function createSession(userId: number): Promise<string> {
   const token = randomBytes(32).toString("base64url");
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 86_400_000).toISOString().replace("T", " ").slice(0, 19);
-  db.prepare("INSERT INTO auth_sessions (user_id, token_hash, expires_at) VALUES (?, ?, ?)").run(userId, hashToken(token), expiresAt);
+  await store.run("INSERT INTO auth_sessions (user_id, token_hash, expires_at) VALUES (?, ?, ?)", [userId, hashToken(token), expiresAt]);
   return token;
 }
 
-export function deleteSession(token: string): void {
-  db.prepare("DELETE FROM auth_sessions WHERE token_hash = ?").run(hashToken(token));
+export async function deleteSession(token: string): Promise<void> {
+  await store.run("DELETE FROM auth_sessions WHERE token_hash = ?", [hashToken(token)]);
 }
 
-export function getSessionUser(token: string): AuthUser | null {
-  const row = db.prepare(`
+export async function getSessionUser(token: string): Promise<AuthUser | null> {
+  const row = await store.get<{ id: number; email: string; display_name: string; role: UserRole }>(`
     SELECT u.id, u.email, u.display_name,
       CASE WHEN cp.user_id IS NOT NULL THEN 'child' ELSE 'parent' END AS role
     FROM auth_sessions s
@@ -43,7 +43,7 @@ export function getSessionUser(token: string): AuthUser | null {
     LEFT JOIN parent_profiles pp ON pp.user_id = u.id
     WHERE s.token_hash = ? AND s.expires_at > CURRENT_TIMESTAMP
       AND (cp.user_id IS NOT NULL OR pp.user_id IS NOT NULL)
-  `).get(hashToken(token)) as { id: number; email: string; display_name: string; role: UserRole } | undefined;
+  `, [hashToken(token)]);
   return row ? { id: row.id, email: row.email, displayName: row.display_name, role: row.role } : null;
 }
 

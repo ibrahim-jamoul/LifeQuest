@@ -15,6 +15,7 @@
     "db:postgres:verify": "tsx server/db/postgresVerify.ts",
     "db:postgres:smoke": "tsx server/db/postgresSmokeTest.ts",
     "db:postgres:migrate-data": "tsx server/db/postgresMigrateData.ts",
+    "db:postgres:integration": "tsx server/db/postgresApiIntegration.ts",
     "test": "vitest run --no-file-parallelism"
   },
   "dependencies": {
