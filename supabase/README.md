@@ -67,3 +67,15 @@ supabase/migrations/202606110001_initial_lifequest_schema.sql
 
 `DIRECT_URL` is used by verification and migration commands when available. `DATABASE_URL`
 is reserved for the application runtime and should use the transaction-mode pooler.
+
+## Verified migration snapshot
+
+On June 11, 2026:
+
+- all 27 expected tables were present with RLS enabled;
+- the reversible read/write smoke test passed;
+- the local SQLite data import completed successfully;
+- a post-import verification confirmed the expected row counts.
+
+The Express application runtime still uses SQLite. Do not deploy it as a Supabase-backed
+production API until its synchronous database calls and SQLite-specific SQL are converted.

@@ -1036,8 +1036,8 @@ Restant avant bascule :
 
 ## 23. Semaine 12 - migration Supabase en cours
 
-La structure PostgreSQL a ete appliquee manuellement dans Supabase et les tables ont ete
-confirmees avec RLS actif. Les tables vides sont normales avant l'import des donnees.
+La structure PostgreSQL a ete appliquee manuellement dans Supabase. La connexion, le schema,
+RLS, la lecture/ecriture et l'import des donnees ont ete verifies avec succes le 11 juin 2026.
 
 Outils ajoutes sur `migration-supabase` :
 
@@ -1054,13 +1054,28 @@ Validation locale sans secret :
 - `npm test` : 17/17 ;
 - `npm audit --audit-level=critical` : 0 vulnerabilite.
 
+Validation Supabase executee manuellement par le proprietaire :
+
+- 27/27 tables presentes ;
+- RLS actif sur 27/27 tables ;
+- smoke test lecture/ecriture valide puis annule par transaction ;
+- import SQLite termine sans erreur ;
+- verification post-import validee.
+
+Volumes Supabase verifies apres import :
+
+- 2 utilisateurs, 1 profil parent et 1 profil enfant ;
+- 5 quetes, 5 habitudes, 6 evenements XP et 6 achievements ;
+- 1 achievement utilisateur et 1 mission parent-enfant ;
+- 3 domaines et 3 challenges de decouverte ;
+- 8 zones de village, 2 notifications et 1 jeu de preferences.
+
 Blocage restant avant de fermer la semaine 12 :
 
-1. executer manuellement la verification Supabase ;
-2. executer manuellement le smoke test ;
-3. importer les donnees SQLite ;
-4. remplacer l'adaptateur SQLite synchrone utilise par l'API Express et convertir son SQL
-   specifique avant de pouvoir deployer l'API sur PostgreSQL.
+1. remplacer l'adaptateur SQLite synchrone utilise par l'API Express ;
+2. convertir les requetes SQL specifiques a SQLite vers PostgreSQL ;
+3. executer les tests d'integration de l'API contre Supabase.
 
 La semaine 13 ne doit pas etre declaree commencee tant que ces validations Supabase ne sont
-pas passees et que l'API utilise encore SQLite au runtime.
+pas passees et que l'API utilise encore SQLite au runtime. Les validations Supabase sont
+maintenant passees ; le remplacement du runtime reste le dernier verrou.
