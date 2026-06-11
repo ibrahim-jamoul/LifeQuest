@@ -1568,7 +1568,7 @@ var schema3 = z11.object({
   onboardingCompleted: z11.boolean(),
   habitReminders: z11.boolean(),
   reviewReminders: z11.boolean(),
-  pushReminders: z11.boolean()
+  pushReminders: z11.boolean().default(false)
 });
 var preferencesRouter = Router17();
 preferencesRouter.use(requireAuth, requireChild);
