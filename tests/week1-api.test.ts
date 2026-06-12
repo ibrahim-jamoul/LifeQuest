@@ -210,9 +210,28 @@ describe("week 1 API", () => {
   });
 
   it("supports week 11 local notifications and profile reliability", async () => {
-    const profile = await request("/api/auth/profile", { method: "PUT", body: JSON.stringify({ displayName: "Polished Test Child", age: 11, grade: "Year 6" }) });
+    const profile = await request("/api/auth/profile", { method: "PUT", body: JSON.stringify({ displayName: "Polished Test Child", age: 11, grade: "Year 6", avatarIcon: "compass", avatarColor: "#123456" }) });
     expect(profile.status).toBe(200);
-    expect((await profile.json() as { user: { displayName: string } }).user.displayName).toBe("Polished Test Child");
+    const profilePayload = await profile.json() as { user: { displayName: string }; profile: { avatar_icon: string; avatar_color: string } };
+    expect(profilePayload.user.displayName).toBe("Polished Test Child");
+    expect(profilePayload.profile.avatar_icon).toBe("compass");
+    expect(profilePayload.profile.avatar_color).toBe("#123456");
+
+    const me = await request("/api/auth/me");
+    const mePayload = await me.json() as { profile: { avatar_icon: string; avatar_color: string } };
+    expect(mePayload.profile.avatar_icon).toBe("compass");
+    expect(mePayload.profile.avatar_color).toBe("#123456");
+
+    const today = await request("/api/dashboard/today");
+    const todayPayload = await today.json() as { profile: { avatar_icon: string; avatar_color: string } };
+    expect(todayPayload.profile.avatar_icon).toBe("compass");
+    expect(todayPayload.profile.avatar_color).toBe("#123456");
+
+    const preferences = await request("/api/preferences", { method: "PUT", body: JSON.stringify({ onboardingCompleted: true, habitReminders: true, reviewReminders: false, pushReminders: true }) });
+    expect(preferences.status).toBe(200);
+    expect(Boolean((await preferences.json() as { push_reminders: number | boolean }).push_reminders)).toBe(true);
+    const persistedPreferences = await request("/api/preferences");
+    expect(Boolean((await persistedPreferences.json() as { push_reminders: number | boolean }).push_reminders)).toBe(true);
 
     const response = await request("/api/notifications");
     expect(response.status).toBe(200);

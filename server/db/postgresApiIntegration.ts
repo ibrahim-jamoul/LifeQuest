@@ -44,6 +44,39 @@ try {
     await expectStatus(path, 200);
   }
 
+  const meResponse = await expectStatus("/auth/me", 200);
+  const me = await meResponse.json() as {
+    user: { displayName: string };
+    profile: { age: number | null; grade: string | null; avatar_icon: "spark" | "leaf" | "star" | "compass"; avatar_color: string };
+  };
+  await expectStatus("/auth/profile", 200, {
+    method: "PUT",
+    body: JSON.stringify({
+      displayName: me.user.displayName,
+      age: me.profile.age,
+      grade: me.profile.grade,
+      avatarIcon: me.profile.avatar_icon,
+      avatarColor: me.profile.avatar_color,
+    }),
+  });
+
+  const preferencesResponse = await expectStatus("/preferences", 200);
+  const preferences = await preferencesResponse.json() as {
+    onboarding_completed: boolean;
+    habit_reminders: boolean;
+    review_reminders: boolean;
+    push_reminders: boolean;
+  };
+  await expectStatus("/preferences", 200, {
+    method: "PUT",
+    body: JSON.stringify({
+      onboardingCompleted: Boolean(preferences.onboarding_completed),
+      habitReminders: Boolean(preferences.habit_reminders),
+      reviewReminders: Boolean(preferences.review_reminders),
+      pushReminders: Boolean(preferences.push_reminders),
+    }),
+  });
+
   const questResponse = await expectStatus("/quests", 201, {
     method: "POST",
     body: JSON.stringify({ title: "Supabase runtime integration quest", priority: "low" }),

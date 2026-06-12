@@ -33,16 +33,20 @@ supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
 ```
 
-The initial schema is in:
+The migrations are applied in filename order:
 
 ```text
 supabase/migrations/202606110001_initial_lifequest_schema.sql
+supabase/migrations/202606120001_advanced_phase.sql
 ```
+
+The advanced migration must be applied before deploying code that reads child avatars or
+persists browser reminder preferences.
 
 ## Migration order
 
 1. Apply and verify the PostgreSQL schema.
-2. Verify the connection and RLS:
+2. Verify the connection, RLS, and advanced columns:
 
    ```powershell
    node --env-file=.env.local --import tsx server/db/postgresVerify.ts
@@ -69,6 +73,9 @@ supabase/migrations/202606110001_initial_lifequest_schema.sql
 
 7. Confirm the integration prints `Supabase-backed Express API integration passed.`
 8. Configure and deploy the production services.
+
+The verification must print `Advanced columns: 3/3`. If it does not, run `supabase db push`
+before deploying.
 
 `DIRECT_URL` is used by verification and migration commands when available. `DATABASE_URL`
 is reserved for the application runtime and should use the transaction-mode pooler.

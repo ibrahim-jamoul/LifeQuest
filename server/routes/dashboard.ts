@@ -28,7 +28,7 @@ dashboardRouter.get("/today", async (_request, response) => {
         total_xp: number;
         current_streak: number;
     };
-    const profile = await store.get("SELECT village_level, age_group, grade, age, parent_id, 'spark' AS avatar_icon, '#75a876' AS avatar_color FROM child_profiles WHERE user_id = ?", [user.id]);
+    const profile = await store.get("SELECT village_level, age_group, grade, age, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]);
     const activeParentMissions = await store.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND status = 'pending'", [user.id]) as {
         count: number;
     };

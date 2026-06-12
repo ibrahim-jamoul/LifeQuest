@@ -14,7 +14,7 @@ const profileSchema = z.object({
   avatarColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
 });
 export const authRouter = Router();
-const childProfileSelect = "SELECT age, grade, age_group, village_level, parent_id, 'spark' AS avatar_icon, '#75a876' AS avatar_color FROM child_profiles WHERE user_id = ?";
+const childProfileSelect = "SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?";
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 20,
