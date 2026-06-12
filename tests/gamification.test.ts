@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { db } from "../server/db/database";
 import { hashPassword } from "../server/services/auth";
 import { calculateCurrentStreak, distractionRisk, levelFromXp, recordXpEvent, titleForLevel } from "../server/services/gamification";
+import { evaluateAchievements } from "../server/services/achievements";
+import { store } from "../server/db/store";
 
 describe("gamification", () => {
   it("calculates levels from total XP", () => {
@@ -54,6 +56,27 @@ describe("gamification", () => {
       expect((db.prepare("SELECT COUNT(*) AS count FROM xp_events WHERE user_id = ?").get(userId) as { count: number }).count).toBe(1);
     } finally {
       db.prepare("DELETE FROM xp_events WHERE user_id = ?").run(userId);
+      db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+    }
+  });
+
+  it("evaluates achievements using the active transaction", async () => {
+    const email = `achievement-transaction-${Date.now()}@lifequest.local`;
+    const userId = Number(db.prepare("INSERT INTO users (email, password_hash, display_name) VALUES (?, ?, ?)").run(email, hashPassword("test-password"), "Achievement Transaction Test").lastInsertRowid);
+    try {
+      await store.transaction(async (transaction) => {
+        await transaction.run("INSERT INTO tasks (user_id, title, is_completed, completed_at) VALUES (?, 'Transactional quest', 1, CURRENT_TIMESTAMP)", [userId]);
+        const unlocked = await evaluateAchievements(transaction, userId);
+        expect(unlocked.some((achievement) => achievement.code === "first_quest")).toBe(true);
+        const persisted = await transaction.get<{ count: number }>(`
+          SELECT COUNT(*) AS count
+          FROM user_achievements ua
+          JOIN achievements a ON a.id = ua.achievement_id
+          WHERE ua.user_id = ? AND a.code = 'first_quest'
+        `, [userId]);
+        expect(persisted?.count).toBe(1);
+      });
+    } finally {
       db.prepare("DELETE FROM users WHERE id = ?").run(userId);
     }
   });

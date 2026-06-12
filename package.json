@@ -7,6 +7,9 @@
     "dev": "run-p --race dev:api dev:web",
     "dev:web": "vite",
     "dev:api": "tsx watch server/index.ts",
+    "dev:e2e": "run-p --race dev:e2e:api dev:e2e:web",
+    "dev:e2e:api": "tsx watch server/index.ts",
+    "dev:e2e:web": "vite --port 3100",
     "build": "tsc -b && vite build && npm run build:api",
     "build:api": "node tools/build-vercel-api.mjs",
     "start": "tsx server/index.ts",
@@ -19,7 +22,9 @@
     "db:postgres:integration": "tsx server/db/postgresApiIntegration.ts",
     "db:postgres:rotate-passwords": "tsx server/db/postgresRotateDemoPasswords.ts",
     "deployment:smoke": "tsx server/deploymentSmokeTest.ts",
-    "test": "vitest run --no-file-parallelism"
+    "test": "vitest run --no-file-parallelism",
+    "e2e:prepare": "node tools/prepare-e2e.mjs",
+    "test:e2e": "playwright test tests/e2e/"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -36,6 +41,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.31",

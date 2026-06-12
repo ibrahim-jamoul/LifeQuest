@@ -29,7 +29,7 @@ parentRouter.get("/dashboard", async (_request, response) => {
         age_group: string;
         village_level: number;
     }>;
-    const summaries = children.map(async (child) => ({
+    const summaries = await Promise.all(children.map(async (child) => ({
         ...child,
         level: levelFromXp(child.total_xp),
         activeQuests: (await store.get("SELECT COUNT(*) AS count FROM tasks WHERE user_id = ? AND is_completed = 0", [child.id]) as {
@@ -44,6 +44,6 @@ parentRouter.get("/dashboard", async (_request, response) => {
         pendingMissions: (await store.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND parent_id = ? AND status IN ('pending','child_submitted')", [child.id, user.id]) as {
             count: number;
         }).count,
-    }));
+    })));
     response.json({ parent: user, children: summaries });
 });

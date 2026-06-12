@@ -70,10 +70,25 @@ describe("week 1 API", () => {
   it("returns a real daily snapshot", async () => {
     const response = await request("/api/dashboard/today");
     expect(response.status).toBe(200);
-    const snapshot = await response.json() as { quests: unknown[]; habits: unknown[]; progression: { totalXp: number } };
+    const snapshot = await response.json() as { quests: unknown[]; habits: unknown[]; focusPriorities: unknown[]; todayQuests: unknown[]; lifeBalance: unknown[]; progression: { totalXp: number } };
     expect(snapshot.quests).toBeInstanceOf(Array);
     expect(snapshot.habits).toBeInstanceOf(Array);
+    expect(snapshot.focusPriorities).toBeInstanceOf(Array);
+    expect(snapshot.todayQuests).toBeInstanceOf(Array);
+    expect(snapshot.lifeBalance).toBeInstanceOf(Array);
     expect(snapshot.progression.totalXp).toBeGreaterThanOrEqual(0);
+  });
+
+  it("returns real focus priorities and life-area scores in the daily snapshot", async () => {
+    db.prepare("INSERT OR REPLACE INTO life_areas (user_id, name, score, trend) VALUES (?, 'Dashboard truth', 73, 'improving')").run(childId);
+    await request("/api/quests", { method: "POST", body: JSON.stringify({ title: "Dashboard fallback quest", priority: "high" }) });
+    const snapshot = await (await request("/api/dashboard/today")).json() as {
+      focusPriorities: Array<{ priority_type: string }>;
+      todayQuests: Array<{ title: string }>;
+      lifeBalance: Array<{ name: string; score: number }>;
+    };
+    expect(snapshot.focusPriorities.length > 0 || snapshot.todayQuests.length > 0).toBe(true);
+    expect(snapshot.lifeBalance.find((area) => area.name === "Dashboard truth")?.score).toBe(73);
   });
 
   it("awards XP and updates progress when completing work", async () => {
@@ -121,6 +136,19 @@ describe("week 1 API", () => {
     const parentLoginAgain = await request("/api/auth/login", { method: "POST", body: JSON.stringify({ email: parentEmail, password }) });
     token = (await parentLoginAgain.json() as { token: string }).token;
     expect((await request(`/api/missions/${mission.id}/validate`, { method: "PATCH" })).status).toBe(200);
+    expect((await request(`/api/missions/${mission.id}/validate`, { method: "PATCH" })).status).toBe(404);
+
+    const persistedMission = db.prepare("SELECT status, validated_by_parent FROM parent_child_missions WHERE id = ?").get(mission.id) as { status: string; validated_by_parent: number };
+    const missionXp = db.prepare("SELECT COUNT(*) AS count FROM xp_events WHERE user_id = ? AND source_type = 'parent_mission' AND source_id = ?").get(childId, mission.id) as { count: number };
+    const coAdventurer = db.prepare(`
+      SELECT COUNT(*) AS count
+      FROM user_achievements ua
+      JOIN achievements a ON a.id = ua.achievement_id
+      WHERE ua.user_id = ? AND a.code = 'co_adventurer'
+    `).get(childId) as { count: number };
+    expect(persistedMission).toMatchObject({ status: "completed", validated_by_parent: 1 });
+    expect(missionXp.count).toBe(1);
+    expect(coAdventurer.count).toBe(1);
 
     const childLoginAgain = await request("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
     token = (await childLoginAgain.json() as { token: string }).token;
@@ -207,6 +235,27 @@ describe("week 1 API", () => {
     expect(payload.generatedSummary.habitCheckins).toBeGreaterThanOrEqual(0);
     expect(payload.generatedSummary.xpGained).toBeGreaterThanOrEqual(0);
     expect(payload.generatedSummary.recommendedFocus.length).toBeGreaterThan(0);
+  });
+
+  it("blocks completion of a locked discovery challenge even when its id is known", async () => {
+    const domainResult = db.prepare(`
+      INSERT INTO discovery_domains (name, description, icon, age_group, unlocked_at_village_level)
+      VALUES ('Locked test domain', 'Only available later', 'lock', 'all', 99)
+    `).run();
+    const domainId = Number(domainResult.lastInsertRowid);
+    const challengeResult = db.prepare(`
+      INSERT INTO discovery_challenges (domain_id, title, description, age_group, frequency, xp_reward)
+      VALUES (?, 'Locked known challenge', 'Must remain inaccessible', 'all', 'weekly', 50)
+    `).run(domainId);
+    const challengeId = Number(challengeResult.lastInsertRowid);
+    try {
+      const response = await request(`/api/discovery/challenges/${challengeId}/complete`, { method: "PATCH" });
+      expect(response.status).toBe(403);
+      expect(await response.json()).toMatchObject({ requiredLevel: 99 });
+      expect((db.prepare("SELECT COUNT(*) AS count FROM discovery_completions WHERE child_id = ? AND challenge_id = ?").get(childId, challengeId) as { count: number }).count).toBe(0);
+    } finally {
+      db.prepare("DELETE FROM discovery_domains WHERE id = ?").run(domainId);
+    }
   });
 
   it("supports week 11 local notifications and profile reliability", async () => {

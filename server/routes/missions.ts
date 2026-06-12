@@ -48,23 +48,34 @@ missionsRouter.patch("/:id/submit", requireChild, async (request, response) => {
 });
 missionsRouter.patch("/:id/validate", requireParent, async (request, response) => {
     const user = authenticatedUser(response.locals);
-    const missionId = String(request.params.id);
-    const mission = await store.get(`
-    SELECT * FROM parent_child_missions
-    WHERE id = ? AND parent_id = ? AND status = 'child_submitted'
-  `, [missionId, user.id]) as {
-        id: number;
-        child_id: number;
-        xp_reward: number;
-    } | undefined;
-    if (!mission)
+    const missionId = Number(request.params.id);
+    const result = await store.transaction(async (transaction) => {
+        const mission = await transaction.get(`
+      SELECT * FROM parent_child_missions
+      WHERE id = ? AND parent_id = ? AND status = 'child_submitted'
+    `, [missionId, user.id]) as {
+            id: number;
+            child_id: number;
+            xp_reward: number;
+        } | undefined;
+        if (!mission)
+            return null;
+        const updated = await transaction.run(`
+      UPDATE parent_child_missions
+      SET status = 'completed', validated_by_parent = 1, completed_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND parent_id = ? AND status = 'child_submitted'
+    `, [mission.id, user.id]);
+        if (!updated.changes)
+            return null;
+        const progression = await recordXpEvent(transaction, mission.child_id, mission.xp_reward, "parent_mission", mission.id, "Completed parent-child mission");
+        const unlockedAchievements = await evaluateAchievements(transaction, mission.child_id);
+        return {
+            mission: await transaction.get("SELECT * FROM parent_child_missions WHERE id = ?", [mission.id]),
+            progression,
+            unlockedAchievements,
+        };
+    });
+    if (!result)
         return response.status(404).json({ error: "Submitted mission not found." });
-    await store.run(`
-    UPDATE parent_child_missions
-    SET status = 'completed', validated_by_parent = 1, completed_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `, [mission.id]);
-    const progression = await recordXpEvent(mission.child_id, mission.xp_reward, "parent_mission", mission.id, "Completed parent-child mission");
-    const unlockedAchievements = await evaluateAchievements(mission.child_id);
-    return response.json({ mission: await store.get("SELECT * FROM parent_child_missions WHERE id = ?", [mission.id]), progression, unlockedAchievements });
+    return response.json(result);
 });

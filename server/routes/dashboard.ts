@@ -41,6 +41,22 @@ dashboardRouter.get("/today", async (_request, response) => {
     const weekStarted = await store.get("SELECT date('now','localtime','weekday 1','-7 days') AS week_start", []) as {
         week_start: string;
     };
+    const focusPriorities = await store.all(`
+      SELECT fp.*, g.title AS goal_title, p.title AS project_title,
+        COALESCE(g.progress, (SELECT AVG(m.progress) FROM milestones m WHERE m.project_id = p.id), 0) AS focus_progress
+      FROM focus_priorities fp
+      LEFT JOIN goals g ON g.id = fp.goal_id
+      LEFT JOIN projects p ON p.id = fp.project_id
+      WHERE fp.user_id = ? AND fp.week_start = ?
+      ORDER BY CASE fp.priority_type WHEN 'main' THEN 0 ELSE 1 END, fp.id
+    `, [user.id, weekStarted.week_start]);
+    const todayQuests = focusPriorities.length > 0 ? [] : await store.all(`
+      SELECT id, title, xp_reward, priority FROM tasks
+      WHERE user_id = ? AND is_completed = 0 AND (due_date = date('now','localtime') OR due_date IS NULL)
+      ORDER BY CASE priority WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END, id
+      LIMIT 3
+    `, [user.id]);
+    const lifeBalance = await store.all("SELECT name, score FROM life_areas WHERE user_id = ? ORDER BY name", [user.id]);
     const weeklyCompletion = await store.get(`
     SELECT
       (SELECT COUNT(*) FROM tasks WHERE user_id = ? AND is_completed = 1 AND date(completed_at, 'localtime') >= ?) +
@@ -73,6 +89,9 @@ dashboardRouter.get("/today", async (_request, response) => {
         levelTitle: titleForLevel(levelFromXp(userProgress.total_xp)),
         quests,
         habits,
+        focusPriorities,
+        todayQuests,
+        lifeBalance,
         activeGoals: activeGoals.count,
         activeProjects: activeProjects.count,
         weeklyProgress: weeklyCompletion.total,

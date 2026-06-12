@@ -41,16 +41,30 @@ discoveryRouter.get("/", async (_request, response) => {
 });
 discoveryRouter.patch("/challenges/:id/complete", async (request, response) => {
     const user = authenticatedUser(response.locals);
-    const profile = await store.get("SELECT age_group FROM child_profiles WHERE user_id = ?", [user.id]) as {
+    const profile = await store.get("SELECT age_group, village_level FROM child_profiles WHERE user_id = ?", [user.id]) as {
         age_group: string;
+        village_level: number;
     };
-    const challenge = await store.get("SELECT * FROM discovery_challenges WHERE id = ? AND age_group IN ('all', ?)", [request.params.id, profile.age_group]) as {
+    const challenge = await store.get(`
+      SELECT c.*, d.unlocked_at_village_level
+      FROM discovery_challenges c
+      JOIN discovery_domains d ON d.id = c.domain_id
+      WHERE c.id = ? AND c.age_group IN ('all', ?) AND d.age_group IN ('all', ?)
+    `, [request.params.id, profile.age_group, profile.age_group]) as {
         id: number;
         xp_reward: number;
         frequency: string;
+        unlocked_at_village_level: number;
     } | undefined;
     if (!challenge)
         return response.status(404).json({ error: "Discovery challenge not found." });
+    if (profile.village_level < challenge.unlocked_at_village_level) {
+        return response.status(403).json({
+            error: "This discovery domain is not unlocked yet.",
+            requiredLevel: challenge.unlocked_at_village_level,
+            currentLevel: profile.village_level,
+        });
+    }
     const period = periodKey(challenge.frequency);
     const result = await store.run("INSERT OR IGNORE INTO discovery_completions (child_id, challenge_id, completed_period) VALUES (?, ?, ?)", [user.id, challenge.id, period]);
     if (!result.changes)

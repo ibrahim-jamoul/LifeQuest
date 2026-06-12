@@ -45,11 +45,15 @@ export function IslandDashboard() {
   const isNight = now.getHours() < 6 || now.getHours() >= 19;
   const totalXp = todaySnapshot?.progression.totalXp ?? dashboardSummary?.totalXp ?? 0;
   const streak = todaySnapshot?.progression.currentStreak ?? dashboardSummary?.currentStreak ?? 0;
-  const todayCount = todaySnapshot ? todaySnapshot.quests.length + todaySnapshot.habits.filter((habit) => habit.completed_today).length : 0;
+  const focusItems = todaySnapshot?.focusPriorities.length
+    ? todaySnapshot.focusPriorities.map((priority) => priority.goal_title ?? priority.project_title ?? "Weekly priority")
+    : todaySnapshot?.todayQuests.map((quest) => quest.title) ?? [];
+  const todayCount = focusItems.length;
   const activeMissions = todaySnapshot?.progression.activeParentMissions ?? 0;
   const journeyProgress = Math.min(1, totalXp / 2500);
-  const weeklyProgress = todaySnapshot ? Math.min(1, (todaySnapshot.quests.filter((quest) => quest.is_completed).length + todaySnapshot.habits.filter((habit) => habit.completed_today).length) / Math.max(1, todaySnapshot.quests.length + todaySnapshot.habits.length)) : 0;
-  const lifeBalance = villageState ? Math.round((Object.values(villageState.zones).reduce((sum, zone) => sum + zone.progress, 0) / Object.keys(villageState.zones).length) * 100) : 0;
+  const mainFocus = todaySnapshot?.focusPriorities.find((priority) => priority.priority_type === "main");
+  const weeklyProgress = Math.min(1, Number(mainFocus?.focus_progress ?? 0) / 100);
+  const lifeBalance = todaySnapshot?.lifeBalance.length ? Math.round(todaySnapshot.lifeBalance.reduce((sum, area) => sum + area.score, 0) / todaySnapshot.lifeBalance.length) : 0;
 
   const zones = islandZones.map((zone, index) => {
     if (!villageState) return zone;
@@ -114,12 +118,12 @@ export function IslandDashboard() {
       </header>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex items-end justify-between gap-3 p-3 sm:p-5">
-        <div className="pointer-events-auto w-48 sm:w-56"><TodayFocusCard itemCount={todayCount} onClick={() => setPanel({ kind: "today" })} /></div>
+        <div className="pointer-events-auto w-48 sm:w-56"><TodayFocusCard items={focusItems} onClick={() => setPanel({ kind: "today" })} /></div>
         <div className="pointer-events-auto hidden items-end gap-3 md:flex">
-          <div className="w-52"><WeeklyGoalCard progress={weeklyProgress} onClick={() => setPanel({ kind: "weekly" })} /></div>
+          <div className="w-52"><WeeklyGoalCard progress={weeklyProgress} title={mainFocus?.goal_title ?? mainFocus?.project_title ?? null} onClick={() => setPanel({ kind: "weekly" })} /></div>
           <Link to="/missions" className="island-card w-44 text-left"><span className="island-eyebrow">Parent missions</span><strong className="mt-2 block text-sm">{activeMissions} active</strong></Link>
         </div>
-        <div className="pointer-events-auto w-44 sm:w-52"><LifeBalanceCard value={lifeBalance} onClick={() => setPanel({ kind: "balance" })} /></div>
+        <div className="pointer-events-auto w-44 sm:w-52"><LifeBalanceCard value={lifeBalance} areaCount={todaySnapshot?.lifeBalance.length ?? 0} onClick={() => setPanel({ kind: "balance" })} /></div>
       </div>
 
       <IslandActionPanel panel={panel} summary={summary} onClose={() => setPanel(null)} />

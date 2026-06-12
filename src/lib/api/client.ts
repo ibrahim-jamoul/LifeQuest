@@ -39,6 +39,7 @@ export interface Quest {
 
 export interface Habit {
   id: number;
+  goal_id: number | null;
   name: string;
   description: string;
   frequency: "daily" | "weekly" | "custom";
@@ -99,6 +100,9 @@ export interface TodaySnapshot {
   profile: ChildProfile;
   quests: Quest[];
   habits: Habit[];
+  focusPriorities: DashboardFocusPriority[];
+  todayQuests: DashboardQuestFallback[];
+  lifeBalance: DashboardLifeArea[];
   currentChapter?: { title: string; theme: string; progress: number } | null;
   progression: {
     totalXp: number;
@@ -126,6 +130,9 @@ export interface VillageState {
 export interface DiscoveryChallenge { id: number; domain_id: number; domain_name: string; title: string; description: string; xp_reward: number; completed: number | boolean }
 export interface DiscoveryDomain { id: number; name: string; icon: string; description: string; challenge_count: number; completed_count: number }
 export interface FocusPriority { id: number; priority_type: "main" | "secondary"; goal_id: number | null; project_id: number | null; goal_title: string | null; project_title: string | null }
+export interface DashboardFocusPriority extends FocusPriority { focus_progress: number }
+export interface DashboardLifeArea { name: string; score: number }
+export interface DashboardQuestFallback { id: number; title: string; xp_reward: number; priority: Quest["priority"] }
 export interface WeeklyChallenge { id: number; title: string; description: string; target: number; progress: number; xp_reward: number; is_completed: number | boolean }
 export interface ReviewSummary { completedTasks: number; habitCheckins: number; xpGained: number; goalsCompleted: number; goalsDelayed: number; bestStreak: number; strongestArea: string | null; weakestArea: string | null; recommendedFocus: string }
 export interface ReviewRecord { id: number; review_type: "weekly" | "monthly"; period_start: string; period_end: string; answers_json: string; summary_json: string }

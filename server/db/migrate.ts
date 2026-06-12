@@ -20,7 +20,18 @@ export function runMigrations() {
 
   for (const file of readdirSync(migrationDir).filter((name) => name.endsWith(".sql")).sort()) {
     if (applied.has(file)) continue;
-    const sql = readFileSync(join(migrationDir, file), "utf8");
+    let sql = readFileSync(join(migrationDir, file), "utf8");
+    const existingColumns = new Set([
+      ...(db.prepare("PRAGMA table_info(child_profiles)").all() as Array<{ name: string }>).map((column) => `child_profiles.${column.name}`),
+      ...(db.prepare("PRAGMA table_info(user_preferences)").all() as Array<{ name: string }>).map((column) => `user_preferences.${column.name}`),
+    ]);
+    sql = sql
+      .split(/\r?\n/)
+      .filter((line) => {
+        const addition = line.match(/^\s*ALTER TABLE\s+(\w+)\s+ADD COLUMN\s+(\w+)/i);
+        return !addition || !existingColumns.has(`${addition[1]}.${addition[2]}`);
+      })
+      .join("\n");
     db.exec("BEGIN IMMEDIATE");
     try {
       db.exec(sql);

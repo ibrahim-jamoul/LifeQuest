@@ -328,14 +328,23 @@ function titleForLevel(level) {
   const threshold = Object.keys(levelNames).map(Number).filter((value) => value <= level).sort((a, b) => b - a)[0] ?? 1;
   return levelNames[threshold];
 }
-async function recordXpEvent(userId, amount, sourceType, sourceId, reason) {
-  await store.run(`
+async function recordXpEvent(databaseOrUserId, userIdOrAmount, amountOrSourceType, sourceTypeOrSourceId, sourceIdOrReason, optionalReason) {
+  const database = typeof databaseOrUserId === "number" ? store : databaseOrUserId;
+  const userId = typeof databaseOrUserId === "number" ? databaseOrUserId : userIdOrAmount;
+  const amount = typeof databaseOrUserId === "number" ? userIdOrAmount : amountOrSourceType;
+  const sourceType = typeof databaseOrUserId === "number" ? amountOrSourceType : sourceTypeOrSourceId;
+  const sourceId = typeof databaseOrUserId === "number" ? sourceTypeOrSourceId : sourceIdOrReason;
+  const reason = typeof databaseOrUserId === "number" ? sourceIdOrReason : optionalReason;
+  if (typeof amount !== "number" || typeof sourceType !== "string" || sourceId !== null && typeof sourceId !== "number" || typeof reason !== "string") {
+    throw new Error("Invalid XP event arguments.");
+  }
+  await database.run(`
     INSERT INTO xp_events (user_id, source_type, source_id, amount, reason)
     VALUES (?, ?, ?, ?, ?)
   `, [userId, sourceType, sourceId, amount, reason]);
-  const totalXp = await store.get("SELECT COALESCE(SUM(amount), 0) AS total_xp FROM xp_events WHERE user_id = ?", [userId]);
-  const currentStreak = await calculateCurrentStreak(userId);
-  await store.run("UPDATE users SET total_xp = ?, current_streak = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [totalXp.total_xp, currentStreak, userId]);
+  const totalXp = await database.get("SELECT COALESCE(SUM(amount), 0) AS total_xp FROM xp_events WHERE user_id = ?", [userId]);
+  const currentStreak = await calculateCurrentStreak(database, userId);
+  await database.run("UPDATE users SET total_xp = ?, current_streak = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [totalXp.total_xp, currentStreak, userId]);
   return {
     totalXp: totalXp.total_xp,
     currentStreak,
@@ -343,8 +352,12 @@ async function recordXpEvent(userId, amount, sourceType, sourceId, reason) {
     levelTitle: titleForLevel(levelFromXp(totalXp.total_xp))
   };
 }
-async function calculateCurrentStreak(userId) {
-  const rows = await store.all(`
+async function calculateCurrentStreak(databaseOrUserId, optionalUserId) {
+  const database = typeof databaseOrUserId === "number" ? store : databaseOrUserId;
+  const userId = typeof databaseOrUserId === "number" ? databaseOrUserId : optionalUserId;
+  if (userId === void 0)
+    throw new Error("A user id is required to calculate a streak.");
+  const rows = await database.all(`
     SELECT DISTINCT date(created_at, 'localtime') AS day
     FROM xp_events
     WHERE user_id = ?
@@ -385,55 +398,60 @@ var definitions = [
   ["rhythm_keeper", "Rhythm Keeper", "Complete your first weekly review.", "calendar", 50],
   ["builder", "Builder", "Reach village level 2.", "hammer", 75]
 ];
-async function ensureAchievementDefinitions() {
+async function ensureAchievementDefinitions(database = store) {
   for (const definition of definitions) {
-    await store.run(`
+    await database.run(`
       INSERT OR IGNORE INTO achievements (code, name, description, icon, xp_reward)
       VALUES (?, ?, ?, ?, ?)
     `, [...definition]);
   }
 }
-async function qualifies(userId, code) {
+async function qualifies(database, userId, code) {
   if (code === "first_quest") {
-    return (await store.get("SELECT COUNT(*) AS count FROM tasks WHERE user_id = ? AND is_completed = 1", [userId])).count > 0;
+    return (await database.get("SELECT COUNT(*) AS count FROM tasks WHERE user_id = ? AND is_completed = 1", [userId])).count > 0;
   }
   if (code === "first_streak") {
-    return (await store.get("SELECT current_streak FROM users WHERE id = ?", [userId])).current_streak >= 7;
+    return (await database.get("SELECT current_streak FROM users WHERE id = ?", [userId])).current_streak >= 7;
   }
   if (code === "apprentice_explorer") {
-    return (await store.get("SELECT COUNT(*) AS count FROM discovery_completions WHERE child_id = ?", [userId])).count > 0;
+    return (await database.get("SELECT COUNT(*) AS count FROM discovery_completions WHERE child_id = ?", [userId])).count > 0;
   }
   if (code === "co_adventurer") {
-    return (await store.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND status = 'completed' AND validated_by_parent = 1", [userId])).count > 0;
+    return (await database.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND status = 'completed' AND validated_by_parent = 1", [userId])).count > 0;
   }
   if (code === "rhythm_keeper") {
-    return (await store.get("SELECT COUNT(*) AS count FROM reviews WHERE user_id = ? AND review_type = 'weekly'", [userId])).count > 0;
+    return (await database.get("SELECT COUNT(*) AS count FROM reviews WHERE user_id = ? AND review_type = 'weekly'", [userId])).count > 0;
   }
   if (code === "builder") {
-    const progress = await store.get("SELECT total_xp FROM users WHERE id = ?", [userId]);
+    const progress = await database.get("SELECT total_xp FROM users WHERE id = ?", [userId]);
     return levelFromXp(progress.total_xp) >= 2;
   }
   return false;
 }
-async function evaluateAchievements(userId) {
-  await ensureAchievementDefinitions();
-  const achievements = await store.all("SELECT id, code, name, xp_reward FROM achievements ORDER BY id", []);
+async function evaluateWithStore(database, userId) {
+  await ensureAchievementDefinitions(database);
+  const achievements = await database.all("SELECT id, code, name, xp_reward FROM achievements ORDER BY id", []);
   const unlocked = [];
-  await store.transaction(async (transaction) => {
-    for (const achievement of achievements) {
-      const exists = await transaction.get("SELECT 1 FROM user_achievements WHERE user_id = ? AND achievement_id = ?", [userId, achievement.id]);
-      if (exists || !await qualifies(userId, achievement.code))
-        continue;
-      await transaction.run("INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)", [userId, achievement.id]);
-      if (achievement.xp_reward > 0) {
-        await transaction.run("INSERT INTO xp_events (user_id, source_type, source_id, amount, reason) VALUES (?, 'achievement', ?, ?, ?)", [userId, achievement.id, achievement.xp_reward, `Achievement unlocked: ${achievement.name}`]);
-      }
-      unlocked.push({ id: achievement.id, code: achievement.code, name: achievement.name });
+  for (const achievement of achievements) {
+    const exists = await database.get("SELECT 1 FROM user_achievements WHERE user_id = ? AND achievement_id = ?", [userId, achievement.id]);
+    if (exists || !await qualifies(database, userId, achievement.code))
+      continue;
+    const result = await database.run("INSERT OR IGNORE INTO user_achievements (user_id, achievement_id) VALUES (?, ?)", [userId, achievement.id]);
+    if (!result.changes)
+      continue;
+    if (achievement.xp_reward > 0) {
+      await recordXpEvent(database, userId, achievement.xp_reward, "achievement", achievement.id, `Achievement unlocked: ${achievement.name}`);
     }
-    const total = await transaction.get("SELECT COALESCE(SUM(amount), 0) AS total FROM xp_events WHERE user_id = ?", [userId]);
-    await transaction.run("UPDATE users SET total_xp = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [total.total, userId]);
-  });
+    unlocked.push({ id: achievement.id, code: achievement.code, name: achievement.name });
+  }
   return unlocked;
+}
+async function evaluateAchievements(databaseOrUserId, optionalUserId) {
+  if (typeof databaseOrUserId === "number")
+    return store.transaction((transaction) => evaluateWithStore(transaction, databaseOrUserId));
+  if (optionalUserId === void 0)
+    throw new Error("A user id is required to evaluate achievements.");
+  return evaluateWithStore(databaseOrUserId, optionalUserId);
 }
 async function achievementSummary(userId) {
   await ensureAchievementDefinitions();
@@ -493,6 +511,22 @@ dashboardRouter.get("/today", async (_request, response) => {
   const activeGoals = await store.get("SELECT COUNT(*) AS count FROM goals WHERE user_id = ? AND status = 'in_progress'", [user.id]);
   const activeProjects = await store.get("SELECT COUNT(*) AS count FROM projects WHERE user_id = ? AND status IN ('idea','planned','active')", [user.id]);
   const weekStarted = await store.get("SELECT date('now','localtime','weekday 1','-7 days') AS week_start", []);
+  const focusPriorities = await store.all(`
+      SELECT fp.*, g.title AS goal_title, p.title AS project_title,
+        COALESCE(g.progress, (SELECT AVG(m.progress) FROM milestones m WHERE m.project_id = p.id), 0) AS focus_progress
+      FROM focus_priorities fp
+      LEFT JOIN goals g ON g.id = fp.goal_id
+      LEFT JOIN projects p ON p.id = fp.project_id
+      WHERE fp.user_id = ? AND fp.week_start = ?
+      ORDER BY CASE fp.priority_type WHEN 'main' THEN 0 ELSE 1 END, fp.id
+    `, [user.id, weekStarted.week_start]);
+  const todayQuests = focusPriorities.length > 0 ? [] : await store.all(`
+      SELECT id, title, xp_reward, priority FROM tasks
+      WHERE user_id = ? AND is_completed = 0 AND (due_date = date('now','localtime') OR due_date IS NULL)
+      ORDER BY CASE priority WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END, id
+      LIMIT 3
+    `, [user.id]);
+  const lifeBalance = await store.all("SELECT name, score FROM life_areas WHERE user_id = ? ORDER BY name", [user.id]);
   const weeklyCompletion = await store.get(`
     SELECT
       (SELECT COUNT(*) FROM tasks WHERE user_id = ? AND is_completed = 1 AND date(completed_at, 'localtime') >= ?) +
@@ -515,6 +549,9 @@ dashboardRouter.get("/today", async (_request, response) => {
     levelTitle: titleForLevel(levelFromXp(userProgress.total_xp)),
     quests,
     habits,
+    focusPriorities,
+    todayQuests,
+    lifeBalance,
     activeGoals: activeGoals.count,
     activeProjects: activeProjects.count,
     weeklyProgress: weeklyCompletion.total,
@@ -1032,21 +1069,32 @@ missionsRouter.patch("/:id/submit", requireChild, async (request, response) => {
 });
 missionsRouter.patch("/:id/validate", requireParent, async (request, response) => {
   const user = authenticatedUser(response.locals);
-  const missionId = String(request.params.id);
-  const mission = await store.get(`
-    SELECT * FROM parent_child_missions
-    WHERE id = ? AND parent_id = ? AND status = 'child_submitted'
-  `, [missionId, user.id]);
-  if (!mission)
+  const missionId = Number(request.params.id);
+  const result = await store.transaction(async (transaction) => {
+    const mission = await transaction.get(`
+      SELECT * FROM parent_child_missions
+      WHERE id = ? AND parent_id = ? AND status = 'child_submitted'
+    `, [missionId, user.id]);
+    if (!mission)
+      return null;
+    const updated = await transaction.run(`
+      UPDATE parent_child_missions
+      SET status = 'completed', validated_by_parent = 1, completed_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND parent_id = ? AND status = 'child_submitted'
+    `, [mission.id, user.id]);
+    if (!updated.changes)
+      return null;
+    const progression = await recordXpEvent(transaction, mission.child_id, mission.xp_reward, "parent_mission", mission.id, "Completed parent-child mission");
+    const unlockedAchievements = await evaluateAchievements(transaction, mission.child_id);
+    return {
+      mission: await transaction.get("SELECT * FROM parent_child_missions WHERE id = ?", [mission.id]),
+      progression,
+      unlockedAchievements
+    };
+  });
+  if (!result)
     return response.status(404).json({ error: "Submitted mission not found." });
-  await store.run(`
-    UPDATE parent_child_missions
-    SET status = 'completed', validated_by_parent = 1, completed_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `, [mission.id]);
-  const progression = await recordXpEvent(mission.child_id, mission.xp_reward, "parent_mission", mission.id, "Completed parent-child mission");
-  const unlockedAchievements = await evaluateAchievements(mission.child_id);
-  return response.json({ mission: await store.get("SELECT * FROM parent_child_missions WHERE id = ?", [mission.id]), progression, unlockedAchievements });
+  return response.json(result);
 });
 
 // server/routes/parent.ts
@@ -1069,14 +1117,14 @@ parentRouter.get("/dashboard", async (_request, response) => {
     FROM child_profiles cp JOIN users u ON u.id = cp.user_id
     WHERE cp.parent_id = ? ORDER BY u.display_name
   `, [user.id]);
-  const summaries = children.map(async (child) => ({
+  const summaries = await Promise.all(children.map(async (child) => ({
     ...child,
     level: levelFromXp(child.total_xp),
     activeQuests: (await store.get("SELECT COUNT(*) AS count FROM tasks WHERE user_id = ? AND is_completed = 0", [child.id])).count,
     activeHabits: (await store.get("SELECT COUNT(*) AS count FROM habits WHERE user_id = ? AND is_active = 1", [child.id])).count,
     completedQuests: (await store.get("SELECT COUNT(*) AS count FROM tasks WHERE user_id = ? AND is_completed = 1", [child.id])).count,
     pendingMissions: (await store.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND parent_id = ? AND status IN ('pending','child_submitted')", [child.id, user.id])).count
-  }));
+  })));
   response.json({ parent: user, children: summaries });
 });
 
@@ -1390,10 +1438,22 @@ discoveryRouter.get("/", async (_request, response) => {
 });
 discoveryRouter.patch("/challenges/:id/complete", async (request, response) => {
   const user = authenticatedUser(response.locals);
-  const profile = await store.get("SELECT age_group FROM child_profiles WHERE user_id = ?", [user.id]);
-  const challenge = await store.get("SELECT * FROM discovery_challenges WHERE id = ? AND age_group IN ('all', ?)", [request.params.id, profile.age_group]);
+  const profile = await store.get("SELECT age_group, village_level FROM child_profiles WHERE user_id = ?", [user.id]);
+  const challenge = await store.get(`
+      SELECT c.*, d.unlocked_at_village_level
+      FROM discovery_challenges c
+      JOIN discovery_domains d ON d.id = c.domain_id
+      WHERE c.id = ? AND c.age_group IN ('all', ?) AND d.age_group IN ('all', ?)
+    `, [request.params.id, profile.age_group, profile.age_group]);
   if (!challenge)
     return response.status(404).json({ error: "Discovery challenge not found." });
+  if (profile.village_level < challenge.unlocked_at_village_level) {
+    return response.status(403).json({
+      error: "This discovery domain is not unlocked yet.",
+      requiredLevel: challenge.unlocked_at_village_level,
+      currentLevel: profile.village_level
+    });
+  }
   const period = periodKey(challenge.frequency);
   const result = await store.run("INSERT OR IGNORE INTO discovery_completions (child_id, challenge_id, completed_period) VALUES (?, ?, ?)", [user.id, challenge.id, period]);
   if (!result.changes)
