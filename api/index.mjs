@@ -170,7 +170,21 @@ function postgresStore() {
   });
   return createStore((text, values) => pool.query(text, values));
 }
-var store = process.env.DATABASE_URL ? postgresStore() : sqliteStore();
+function unavailableServerlessStore() {
+  const unavailable = async () => {
+    throw new Error("DATABASE_URL is required in the Vercel project environment variables.");
+  };
+  return {
+    get: unavailable,
+    all: unavailable,
+    run: unavailable,
+    transaction: unavailable,
+    close: async () => {
+    }
+  };
+}
+var databaseRuntime = process.env.DATABASE_URL ? "postgresql" : process.env.VERCEL ? "unconfigured" : "sqlite";
+var store = databaseRuntime === "postgresql" ? postgresStore() : databaseRuntime === "unconfigured" ? unavailableServerlessStore() : sqliteStore();
 
 // server/services/auth.ts
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
@@ -1666,8 +1680,16 @@ function createApp() {
     next();
   });
   app2.get("/api/health", async (_request, response) => {
+    if (databaseRuntime === "unconfigured") {
+      return response.status(503).json({
+        status: "error",
+        service: "lifequest-api",
+        database: "unconfigured",
+        error: "DATABASE_URL is missing from this Vercel deployment."
+      });
+    }
     await store.get("SELECT 1 AS ready");
-    response.json({ status: "ok", service: "lifequest-api", database: process.env.DATABASE_URL ? "postgresql" : "sqlite" });
+    return response.json({ status: "ok", service: "lifequest-api", database: databaseRuntime });
   });
   app2.use("/api/auth", authRouter);
   app2.use("/api/achievements", achievementsRouter);

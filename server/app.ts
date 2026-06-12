@@ -20,7 +20,7 @@ import { insightsRouter } from "./routes/insights";
 import { preferencesRouter } from "./routes/preferences";
 import { notificationsRouter } from "./routes/notifications";
 import { observeRequests } from "./middleware/observability";
-import { store } from "./db/store";
+import { databaseRuntime, store } from "./db/store";
 
 export function createApp() {
   const app = express();
@@ -44,8 +44,16 @@ export function createApp() {
     next();
   });
   app.get("/api/health", async (_request, response) => {
+    if (databaseRuntime === "unconfigured") {
+      return response.status(503).json({
+        status: "error",
+        service: "lifequest-api",
+        database: "unconfigured",
+        error: "DATABASE_URL is missing from this Vercel deployment.",
+      });
+    }
     await store.get("SELECT 1 AS ready");
-    response.json({ status: "ok", service: "lifequest-api", database: process.env.DATABASE_URL ? "postgresql" : "sqlite" });
+    return response.json({ status: "ok", service: "lifequest-api", database: databaseRuntime });
   });
   app.use("/api/auth", authRouter);
   app.use("/api/achievements", achievementsRouter);

@@ -160,4 +160,27 @@ function postgresStore(): Store {
   return createStore((text, values) => pool.query(text, values));
 }
 
-export const store = process.env.DATABASE_URL ? postgresStore() : sqliteStore();
+function unavailableServerlessStore(): Store {
+  const unavailable = async (): Promise<never> => {
+    throw new Error("DATABASE_URL is required in the Vercel project environment variables.");
+  };
+  return {
+    get: unavailable,
+    all: unavailable,
+    run: unavailable,
+    transaction: unavailable,
+    close: async () => {},
+  };
+}
+
+export const databaseRuntime = process.env.DATABASE_URL
+  ? "postgresql"
+  : process.env.VERCEL
+    ? "unconfigured"
+    : "sqlite";
+
+export const store = databaseRuntime === "postgresql"
+  ? postgresStore()
+  : databaseRuntime === "unconfigured"
+    ? unavailableServerlessStore()
+    : sqliteStore();
