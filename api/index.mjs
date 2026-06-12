@@ -268,6 +268,7 @@ var profileSchema = z.object({
   avatarColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional()
 });
 var authRouter = Router();
+var childProfileSelect = "SELECT age, grade, age_group, village_level, parent_id, 'spark' AS avatar_icon, '#75a876' AS avatar_color FROM child_profiles WHERE user_id = ?";
 var loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1e3,
   limit: 20,
@@ -284,7 +285,7 @@ authRouter.post("/login", loginLimiter, async (request, response) => {
 });
 authRouter.get("/me", requireAuth, async (_request, response) => {
   const user = authenticatedUser(response.locals);
-  const profile = user.role === "child" ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
+  const profile = user.role === "child" ? await store.get(childProfileSelect, [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   response.json({ user, profile });
 });
 authRouter.post("/logout", requireAuth, async (_request, response) => {
@@ -305,7 +306,7 @@ authRouter.put("/profile", requireAuth, async (request, response) => {
     }
   });
   const updatedUser = { ...user, displayName: parsed.data.displayName };
-  const profile = user.role === "child" ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
+  const profile = user.role === "child" ? await store.get(childProfileSelect, [user.id]) : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   return response.json({ user: updatedUser, profile });
 });
 
@@ -487,7 +488,7 @@ dashboardRouter.get("/today", async (_request, response) => {
     FROM habits h WHERE h.user_id = ? AND h.is_active = 1 ORDER BY h.id
   `, [user.id])).filter((habit) => isHabitDueToday(habit.frequency, habit.custom_schedule));
   const userProgress = await store.get("SELECT total_xp, current_streak FROM users WHERE id = ?", [user.id]);
-  const profile = await store.get("SELECT village_level, age_group, grade, age, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id]);
+  const profile = await store.get("SELECT village_level, age_group, grade, age, parent_id, 'spark' AS avatar_icon, '#75a876' AS avatar_color FROM child_profiles WHERE user_id = ?", [user.id]);
   const activeParentMissions = await store.get("SELECT COUNT(*) AS count FROM parent_child_missions WHERE child_id = ? AND status = 'pending'", [user.id]);
   const activeGoals = await store.get("SELECT COUNT(*) AS count FROM goals WHERE user_id = ? AND status = 'in_progress'", [user.id]);
   const activeProjects = await store.get("SELECT COUNT(*) AS count FROM projects WHERE user_id = ? AND status IN ('idea','planned','active')", [user.id]);

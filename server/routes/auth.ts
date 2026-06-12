@@ -14,6 +14,7 @@ const profileSchema = z.object({
   avatarColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
 });
 export const authRouter = Router();
+const childProfileSelect = "SELECT age, grade, age_group, village_level, parent_id, 'spark' AS avatar_icon, '#75a876' AS avatar_color FROM child_profiles WHERE user_id = ?";
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 20,
@@ -33,7 +34,7 @@ authRouter.post("/login", loginLimiter, async (request, response) => {
 authRouter.get("/me", requireAuth, async (_request, response) => {
   const user = authenticatedUser(response.locals);
   const profile = user.role === "child"
-    ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id])
+    ? await store.get(childProfileSelect, [user.id])
     : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   response.json({ user, profile });
 });
@@ -58,7 +59,7 @@ authRouter.put("/profile", requireAuth, async (request, response) => {
   });
   const updatedUser = { ...user, displayName: parsed.data.displayName };
   const profile = user.role === "child"
-    ? await store.get("SELECT age, grade, age_group, village_level, parent_id, avatar_icon, avatar_color FROM child_profiles WHERE user_id = ?", [user.id])
+    ? await store.get(childProfileSelect, [user.id])
     : await store.get("SELECT id FROM parent_profiles WHERE user_id = ?", [user.id]);
   return response.json({ user: updatedUser, profile });
 });
