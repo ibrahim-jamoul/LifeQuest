@@ -44,16 +44,18 @@ export function createApp() {
     next();
   });
   app.get("/api/health", async (_request, response) => {
+    const release = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local";
     if (databaseRuntime === "unconfigured") {
       return response.status(503).json({
         status: "error",
         service: "lifequest-api",
         database: "unconfigured",
+        release,
         error: "DATABASE_URL is missing from this Vercel deployment.",
       });
     }
     await store.get("SELECT 1 AS ready");
-    return response.json({ status: "ok", service: "lifequest-api", database: databaseRuntime });
+    return response.json({ status: "ok", service: "lifequest-api", database: databaseRuntime, release });
   });
   app.use("/api/auth", authRouter);
   app.use("/api/achievements", achievementsRouter);
