@@ -1,14 +1,15 @@
 import type { IslandBuildingType } from "../types";
 
 const buildingAssets: Record<IslandBuildingType, { href: string; width: number; height: number; y: number }> = {
-  home: { href: "/assets/island/buildings/home-area/home-area-lv1.png", width: 190, height: 190, y: -140 },
-  garden: { href: "/assets/island/buildings/garden/garden-lv1.png", width: 205, height: 205, y: -148 },
-  workshop: { href: "/assets/island/buildings/workshop/workshop-lv1.png", width: 190, height: 190, y: -140 },
-  learning: { href: "/assets/island/buildings/learning-corner/learning-corner-lv1.png", width: 190, height: 190, y: -140 },
-  townHall: { href: "/assets/island/buildings/town-hall/town-hall-lv1.png", width: 220, height: 165, y: -125 },
-  market: { href: "/assets/island/buildings/market-square/market-square-lv1.png", width: 220, height: 220, y: -160 },
-  lighthouse: { href: "/assets/island/buildings/lighthouse/lighthouse-lv1.png", width: 155, height: 232, y: -185 },
-  pathways: { href: "/assets/island/buildings/pathways/pathways-lv1.png", width: 230, height: 130, y: -92 },
+  // Do not replace island scene assets; these values only normalize visual scale.
+  home: { href: "/assets/island/buildings/home-area/home-area-lv1.png", width: 178, height: 178, y: -128 },
+  garden: { href: "/assets/island/buildings/garden/garden-lv1.png", width: 200, height: 200, y: -143 },
+  workshop: { href: "/assets/island/buildings/workshop/workshop-lv1.png", width: 178, height: 178, y: -128 },
+  learning: { href: "/assets/island/buildings/learning-corner/learning-corner-lv1.png", width: 178, height: 178, y: -128 },
+  townHall: { href: "/assets/island/buildings/town-hall/town-hall-lv1.png", width: 205, height: 154, y: -114 },
+  market: { href: "/assets/island/buildings/market-square/market-square-lv1.png", width: 205, height: 205, y: -148 },
+  lighthouse: { href: "/assets/island/buildings/lighthouse/lighthouse-lv1.png", width: 145, height: 218, y: -172 },
+  pathways: { href: "/assets/island/buildings/pathways/pathways-lv1.png", width: 210, height: 118, y: -82 },
 };
 
 export function IslandBuilding({ type }: { type: IslandBuildingType; color: string }) {
