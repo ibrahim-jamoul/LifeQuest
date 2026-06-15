@@ -2,14 +2,5 @@ import { Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function NotFoundPage() {
-  return (
-    <main className="grid min-h-screen place-items-center bg-[#dff0e8] p-4">
-      <section className="panel max-w-lg p-8 text-center">
-        <p className="eyebrow">Lost pathway</p>
-        <h1 className="mt-2 text-4xl font-black text-[#3f3528]">This path does not exist</h1>
-        <p className="mt-3 text-sm leading-6 text-[#716452]">Return to the village and choose another place to explore.</p>
-        <Link className="button-primary mt-6" to="/"><Home className="size-4" />Return home</Link>
-      </section>
-    </main>
-  );
+  return <main className="grid min-h-screen place-items-center bg-[#fff6e5] p-4"><section className="max-w-xl text-center"><svg className="mx-auto h-64 w-full" viewBox="0 0 420 250" aria-label="A small lost island"><path d="M0 190q50-20 100 0t100 0 100 0 120 0v60H0Z" fill="#4FC3D9"/><ellipse cx="210" cy="184" rx="117" ry="22" fill="#E8C982"/><path d="M112 177q17-87 98-84 82-3 98 84-96 34-196 0Z" fill="#8CCB68" stroke="#6FAF5C" strokeWidth="5"/><path d="M213 169v-74" stroke="#8B633E" strokeWidth="9"/><circle cx="213" cy="75" r="38" fill="#6FAF5C"/><circle cx="185" cy="89" r="27" fill="#8FBF68"/><circle cx="241" cy="91" r="28" fill="#8CCB68"/><g transform="translate(310 162)" stroke="#6B4F3A" strokeWidth="3"><circle cy="-15" r="16" fill="#E98F67"/><path d="M-13-25-17-43-4-29M13-25 17-43 4-29" fill="#E98F67"/><circle cx="-6" cy="-17" r="2" fill="#3F3528"/><circle cx="6" cy="-17" r="2" fill="#3F3528"/><path d="M-16 24V0h32v24" fill="#E98F67"/></g><path d="M294 122q12-24 24 0" fill="none" stroke="#6B4F3A" strokeWidth="4"/></svg><p className="eyebrow">Lost pathway</p><h1 className="mt-2 text-4xl font-extrabold text-[#3f3528]">Oops, cette île n’existe pas !</h1><p className="mx-auto mt-3 max-w-md text-base font-semibold leading-7 text-[#7a6a58]">Même les meilleurs explorateurs prennent parfois le mauvais pont. Le village t’attend juste à côté.</p><Link className="button-primary mt-6" to="/"><Home className="size-4" />Retour au village</Link></section></main>;
 }

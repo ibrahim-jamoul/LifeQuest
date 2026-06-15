@@ -2,7 +2,7 @@ const trees = [[170, 250], [205, 205], [170, 575], [330, 155], [420, 170], [760,
 const flowers = [[345, 290], [470, 225], [745, 350], [820, 600], [310, 620], [930, 390], [490, 510]];
 
 function Tree({ x, y }: { x: number; y: number }) {
-  return <g transform={`translate(${x} ${y})`}><ellipse cy="19" rx="18" ry="8" fill="#47794e" opacity=".25" /><rect x="-5" y="-2" width="10" height="30" rx="4" fill="#875d3f" /><circle cy="-18" r="28" fill="#4b9459" /><circle cx="-16" cy="-11" r="17" fill="#69aa64" /><circle cx="15" cy="-8" r="18" fill="#5ca05f" /></g>;
+  return <g className="tree-sway" transform={`translate(${x} ${y})`}><ellipse cy="19" rx="18" ry="8" fill="#47794e" opacity=".25" /><rect x="-5" y="-2" width="10" height="30" rx="4" fill="#875d3f" /><circle cy="-18" r="28" fill="#4b9459" /><circle cx="-16" cy="-11" r="17" fill="#69aa64" /><circle cx="15" cy="-8" r="18" fill="#5ca05f" /></g>;
 }
 export function VegetationLayer() {
   return (

@@ -2,6 +2,7 @@ import { CheckSquare, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { StatCard } from "../components/StatCard";
+import { VillageMascot } from "../components/VillageMascot";
 import { api, type Quest } from "../lib/api/client";
 import { useAppStore } from "../store";
 
@@ -35,10 +36,10 @@ export function QuestsPage() {
   }, [filter, quests]);
   const completedCount = quests.filter((quest) => Boolean(quest.is_completed)).length;
 
-  return <div className="space-y-6">
+  return <div className="cozy-page">
     {flashMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900">{flashMessage}<button className="ml-3 text-xs font-black uppercase tracking-wide text-emerald-700" onClick={clearFlashMessage}>Dismiss</button></div> : null}
     {error ? <div className="rounded-2xl bg-[#ffe0da] p-4 text-sm font-bold text-[#7a2626]">{error}</div> : null}
-    <header className="space-y-2"><p className="eyebrow">Daily execution</p><h1 className="text-3xl font-black tracking-tight">Quests</h1><p className="max-w-2xl text-sm leading-6 text-slate-400">Create concrete daily actions linked to goals and projects. Keep the list short and executable.</p></header>
+    <header className="space-y-2"><p className="eyebrow">Daily execution</p><h1>Quests</h1><p className="cozy-subtitle">Create concrete daily actions linked to goals and projects. Keep the list short and executable.</p></header>
     <div className="grid gap-4 md:grid-cols-4">
       <StatCard label="Open quests" value={String(quests.length - completedCount)} meta="Active execution items" icon={CheckSquare} />
       <StatCard label="Completed" value={String(completedCount)} meta="Done so far" icon={CheckSquare} accent="text-emerald-400" />
@@ -62,9 +63,9 @@ export function QuestsPage() {
       </form>
     </section>
     <section className="panel p-4 md:p-6">
-      <div className="mb-4 flex flex-wrap gap-2">{(["all", "today", "active", "completed"] as const).map((item) => <button key={item} className={`rounded-full px-3 py-1.5 text-sm font-semibold ${filter === item ? "bg-mint text-slate-950" : "bg-slate-800 text-slate-300"}`} onClick={() => setFilter(item)}>{item}</button>)}</div>
+      <div className="mb-4 flex flex-wrap gap-2">{(["all", "today", "active", "completed"] as const).map((item) => <button key={item} className={`filter-pill ${filter === item ? "filter-pill-active" : ""}`} onClick={() => setFilter(item)}>{item}</button>)}</div>
       {visibleQuests.length === 0 ? <EmptyState icon={CheckSquare} title="No quests yet" description="Add the first daily action you want to execute today." action="Create first quest" /> : <div className="space-y-3">{visibleQuests.map((quest) =>
-        <article key={quest.id} className="rounded-2xl border border-line bg-panel/70 p-4">
+        <article key={quest.id} className="cozy-item">
           {editingQuest?.id === quest.id ? <form className="grid gap-3 md:grid-cols-2" onSubmit={async (event) => {
             event.preventDefault();
             await api.quests.update(quest.id, { title: editingQuest.title, description: editingQuest.description, dueDate: editingQuest.due_date, priority: editingQuest.priority, estimatedMinutes: editingQuest.estimated_minutes, goalId: editingQuest.goal_id, projectId: editingQuest.project_id });
@@ -77,10 +78,11 @@ export function QuestsPage() {
             <input aria-label="Edit quest effort" className="input" type="number" min="1" max="1440" value={editingQuest.estimated_minutes ?? ""} onChange={(event) => setEditingQuest({ ...editingQuest, estimated_minutes: event.target.value ? Number(event.target.value) : null })} />
             <div className="flex gap-2 md:col-span-2"><button className="button-primary" type="submit"><Save className="size-4" />Save quest</button><button className="button-secondary" type="button" onClick={() => setEditingQuest(null)}><X className="size-4" />Cancel</button></div>
           </form> : <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div><div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500"><span>{quest.priority}</span><span>·</span><span>{quest.due_date ?? "no due date"}</span><span>·</span><span>{quest.estimated_minutes ? `${quest.estimated_minutes} min` : "effort unset"}</span><span>·</span><span>{quest.xp_reward} XP</span></div><h3 className="mb-1 mt-2 text-base font-bold">{quest.title}</h3><p className="m-0 text-sm leading-6 text-slate-400">{quest.description || "No description"}</p></div>
+            <div><div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#7a6a58]"><span className="pill">{quest.priority}</span><span>·</span><span>{quest.due_date ?? "no due date"}</span><span>·</span><span>{quest.estimated_minutes ? `${quest.estimated_minutes} min` : "effort unset"}</span><span className="font-extrabold text-[#f4a261]">+{quest.xp_reward} XP</span></div><h3 className="mb-1 mt-2 text-base font-bold">{quest.title}</h3><p className="m-0 text-sm leading-6 text-[#7a6a58]">{quest.description || "No description"}</p></div>
             <div className="flex items-center gap-2"><button aria-label={`Edit ${quest.title}`} className="button-secondary" onClick={() => setEditingQuest(quest)}><Pencil className="size-4" /></button><button className="button-secondary" onClick={() => completeQuest(quest.id)} disabled={loading || Boolean(quest.is_completed)}>{quest.is_completed ? "Completed" : "Complete"}</button><button aria-label={`Delete ${quest.title}`} className="button-secondary" disabled={loading} onClick={() => removeQuest(quest.id)}><Trash2 className="size-4" /></button></div>
           </div>}
         </article>)}</div>}
     </section>
+    <VillageMascot type="squirrel" message="Small actions every day build a beautiful life." />
   </div>;
 }

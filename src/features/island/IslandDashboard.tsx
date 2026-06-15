@@ -90,12 +90,12 @@ export function IslandDashboard() {
       ) : null}
 
       <header className="pointer-events-none absolute inset-x-0 top-0 z-40 flex items-start justify-between gap-3 p-3 sm:p-5">
-        <div className="pointer-events-auto rounded-[24px] border border-white/70 bg-[#fff9e9]/90 px-4 py-3 shadow-[0_10px_30px_rgba(31,68,60,.22)] backdrop-blur-md">
+        <div className="pointer-events-auto rounded-[22px] border-2 border-[#e8d8b8]/90 bg-[#fff4dc]/95 px-4 py-3 shadow-[0_10px_30px_rgba(31,68,60,.18)] backdrop-blur-md">
           <div className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-2xl bg-[#75a876] text-white"><Sparkles className="size-4" /></span>
             <div>
               <span className="island-eyebrow">LifeQuest Island</span>
-              <h1 className="m-0 text-base font-black sm:text-lg">{todaySnapshot?.currentChapter ? `${todaySnapshot.currentChapter.title} · ${todaySnapshot.currentChapter.theme}` : "Chapter One · New beginnings"}</h1>
+              <h1 className="m-0 font-display text-base font-bold sm:text-lg">{todaySnapshot?.currentChapter ? `${todaySnapshot.currentChapter.title} · ${todaySnapshot.currentChapter.theme}` : "Chapter One · New beginnings"}</h1>
             </div>
           </div>
           <div className="mt-2 flex items-center gap-2 text-[10px] font-black text-[#718176]"><ChildAvatar size="sm" icon={todaySnapshot?.profile.avatar_icon} color={todaySnapshot?.profile.avatar_color} /><span>{todaySnapshot?.user.displayName ?? "Explorer"}</span></div>
@@ -107,10 +107,13 @@ export function IslandDashboard() {
           {error ? <p className="mt-2 text-[11px] font-semibold text-red-600">{error}</p> : null}
         </div>
 
-        <div className="pointer-events-auto flex flex-wrap items-center justify-end gap-2">
+        <div className="pointer-events-auto absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 lg:flex">
           <button onClick={() => setPanel({ kind: "progression" })} className="island-resource"><Zap className="size-4 text-[#e5a84f]" /><span><small>XP</small><strong>{totalXp}</strong></span></button>
           <button onClick={() => setPanel({ kind: "progression" })} className="island-resource"><Sparkles className="size-4 text-[#8b80c8]" /><span><small>Level</small><strong>{summary.level}</strong></span></button>
-          <button onClick={() => setPanel({ kind: "progression" })} className="island-resource hidden sm:flex"><Flame className="size-4 text-[#e77f63]" /><span><small>Streak</small><strong>{streak}</strong></span></button>
+          <button onClick={() => setPanel({ kind: "progression" })} className="island-resource"><Flame className="size-4 text-[#e77f63]" /><span><small>Streak</small><strong>{streak}</strong></span></button>
+        </div>
+        <div className="pointer-events-auto ml-auto flex flex-wrap items-center justify-end gap-2">
+          <button onClick={() => setPanel({ kind: "progression" })} className="island-resource lg:hidden"><Zap className="size-4 text-[#e5a84f]" /><span><small>XP</small><strong>{totalXp}</strong></span></button>
           <Link to="/reviews/weekly" aria-label="Open journal" className="island-icon-button"><BookMarked className="size-5" /></Link>
           <Link to="/settings" aria-label="Open settings" className="island-icon-button hidden sm:grid"><Settings className="size-5" /></Link>
           <button aria-label="Open village menu" onClick={() => setMenuOpen(true)} className="island-icon-button"><Menu className="size-5" /></button>
@@ -121,7 +124,7 @@ export function IslandDashboard() {
         <div className="pointer-events-auto w-48 sm:w-56"><TodayFocusCard items={focusItems} onClick={() => setPanel({ kind: "today" })} /></div>
         <div className="pointer-events-auto hidden items-end gap-3 md:flex">
           <div className="w-52"><WeeklyGoalCard progress={weeklyProgress} title={mainFocus?.goal_title ?? mainFocus?.project_title ?? null} onClick={() => setPanel({ kind: "weekly" })} /></div>
-          <Link to="/missions" className="island-card w-44 text-left"><span className="island-eyebrow">Parent missions</span><strong className="mt-2 block text-sm">{activeMissions} active</strong></Link>
+          <Link to="/missions" className="w-44 rounded-[24px] border-2 border-[#d5b6ef] bg-[#b98ae8]/95 p-4 text-left text-[#fff6e5] shadow-[0_10px_30px_rgba(75,47,100,.2)] transition hover:-translate-y-1"><span className="block text-[10px] font-extrabold uppercase tracking-[.16em] text-[#fff6e5]/70">Parent mission</span><strong className="mt-2 block text-sm">{activeMissions} active</strong></Link>
         </div>
         <div className="pointer-events-auto w-44 sm:w-52"><LifeBalanceCard value={lifeBalance} areaCount={todaySnapshot?.lifeBalance.length ?? 0} onClick={() => setPanel({ kind: "balance" })} /></div>
       </div>

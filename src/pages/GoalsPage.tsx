@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { api } from "../lib/api/client";
 import { useAppStore } from "../store";
+import { VillageMascot } from "../components/VillageMascot";
 
 export function GoalsPage() {
   const bootstrap = useAppStore((state) => state.bootstrap);
@@ -23,7 +24,7 @@ const [description, setDescription] = useState("");
   const visibleGoals = useMemo(() => goals.filter((goal) => filter === "all" || (filter === "completed" ? goal.status === "completed" : goal.status !== "completed" && goal.status !== "paused")), [filter, goals]);
 
   return (
-    <div className="space-y-6">
+    <div className="cozy-page">
       <section className="page-hero space-y-4">
         <div className="flex flex-wrap items-center gap-3">
           <span className="pill"><Target className="size-4 text-[#6faf5c]" />Goals</span>
@@ -76,6 +77,7 @@ const [description, setDescription] = useState("");
           <button className="button-primary md:col-start-1 md:w-fit" type="submit">Save goal</button>
         </form>
       </section>
+      <VillageMascot type="fox" message="Big dreams grow from clear little steps." />
     </div>
   );
 }

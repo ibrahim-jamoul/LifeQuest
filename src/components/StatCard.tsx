@@ -10,7 +10,7 @@ export function StatCard({ label, value, meta, icon: Icon, accent = "text-mint" 
         <Icon className={`size-4 ${accent}`} />
       </div>
       <p className="mb-1 mt-5 text-3xl font-black tracking-tight">{value}</p>
-      <p className="m-0 text-xs text-slate-500">{meta}</p>
+      <p className="m-0 text-xs font-semibold text-[#7a6a58]">{meta}</p>
     </article>
   );
 }

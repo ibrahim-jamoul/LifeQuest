@@ -1,0 +1,3 @@
+export function BuildingLabel({ name, level, progress }: { name: string; level: number; progress: number }) {
+  return <div className="rounded-[16px] border-4 border-[#8b633e] bg-[#6b4f3a] px-4 py-3 text-center text-[#fff6e5] shadow-panel"><strong className="font-display text-base">{name}</strong><div className="text-xs text-[#f4a261]">{"★".repeat(Math.min(level, 5))}{"☆".repeat(Math.max(0, 5-level))}</div><div className="mt-2 h-2 overflow-hidden rounded-full bg-[#4d3829]"><div className="h-full bg-[#6faf5c]" style={{ width: `${progress}%` }}/></div><small className="mt-1 block font-extrabold">{progress}%</small></div>;
+}

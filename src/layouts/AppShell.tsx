@@ -2,6 +2,8 @@ import { Bell, LogOut, Menu, Search, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Brand } from "../components/Brand";
+import { ChildAvatar } from "../components/ChildAvatar";
+import { CozyPageDecor } from "../components/CozyPageDecor";
 import { navigationForRole } from "../config/navigation";
 import { useAppStore } from "../store";
 import { api, type NotificationRecord } from "../lib/api/client";
@@ -29,20 +31,22 @@ export function AppShell() {
   };
   useEffect(() => { void loadNotifications(); }, [user?.id, user?.role]);
   return (
-    <div className="min-h-screen bg-[#dff0e8]">
-      <aside className={`fixed inset-y-0 left-0 z-30 w-64 border-r-2 border-[#d8c39e] bg-[#6b4f3a] p-4 text-[#fff8e9] shadow-[8px_0_30px_rgba(90,70,50,.18)] transition-transform lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <Brand />
-        <nav className="mt-8 space-y-1">
+    <div className="min-h-screen bg-[#fff6e5]">
+      <aside className={`fixed inset-y-0 left-0 z-30 w-64 overflow-hidden border-r-2 border-[#8b684d] bg-[#6b4f3a] p-4 text-[#fff8e9] shadow-[8px_0_30px_rgba(90,70,50,.18)] transition-transform lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "repeating-linear-gradient(90deg,transparent 0 36px,#fff6e5 37px 38px)" }} />
+        <div className="relative"><Brand inverse /></div>
+        <nav className="relative mt-7 max-h-[calc(100vh-12rem)] space-y-1 overflow-y-auto pr-1">
           {navigationForRole(user?.role).map(({ label, path, icon: Icon }) => (
             <NavLink key={path} to={path} onClick={() => setMenuOpen(false)}
-              className={({ isActive }) => `flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition ${isActive ? "bg-[#fff3da] text-[#5a4632]" : "text-[#f6ead6] hover:bg-white/10 hover:text-white"}`}>
+              className={({ isActive }) => `flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition ${isActive ? "bg-[#6faf5c] text-[#fff6e5] shadow-[0_4px_0_#4f8c43]" : "text-[#fff6e5]/75 hover:bg-[#fff6e5]/10 hover:text-[#fff6e5]"}`}>
               <Icon className="size-4" />{label}
             </NavLink>
           ))}
         </nav>
-        <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border-2 border-[#d8c39e] bg-[#fff8e9] p-4 text-[#5a4632] shadow-[0_12px_30px_rgba(90,70,50,.12)]">
-          <div className="flex items-center justify-between text-xs font-black uppercase tracking-wide"><span>{user?.role === "parent" ? "Parent" : `Level ${summary?.level ?? 1}`}</span><span className="text-[#6faf5c]">{summary?.totalXp ?? 0} XP</span></div>
-          <p className="mb-0 mt-3 text-xs font-medium text-[#8d7a64]">{user?.displayName ?? "LifeQuest"}</p>
+        <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border-2 border-[#9b7658] bg-[#5b402f] p-3 text-[#fff6e5] shadow-[0_12px_30px_rgba(40,25,16,.18)]">
+          <div className="flex items-center gap-3"><ChildAvatar size="md" /><div className="min-w-0"><p className="truncate font-display text-base font-bold">{user?.displayName ?? "LifeQuest"}</p><p className="text-xs font-extrabold text-[#8fbf68]">{user?.role === "parent" ? "Parent lodge" : `Level ${summary?.level ?? 1}`}</p></div></div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#3f2d21]"><div className="h-full rounded-full bg-[#f4a261]" style={{ width: `${Math.min(100, ((summary?.totalXp ?? 0) % 500) / 5)}%` }} /></div>
+          <p className="mb-0 mt-1 text-[11px] font-bold text-[#fff6e5]/65">{summary?.totalXp ?? 0} XP · next level at {Math.ceil(((summary?.totalXp ?? 0) + 1) / 500) * 500} XP</p>
         </div>
       </aside>
 
@@ -66,7 +70,8 @@ export function AppShell() {
             <div className="grid size-9 place-items-center rounded-2xl bg-[#cfa7ff] text-sm font-black text-[#4a3a5f]">{user?.displayName?.slice(0, 2).toUpperCase() ?? "LQ"}</div>
           </div>
         </header>
-        <main className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8"><Outlet /></main>
+        <main className="internal-main relative z-[1] mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8"><Outlet /></main>
+        <CozyPageDecor />
       </div>
     </div>
   );

@@ -4,13 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#080b12",
-        panel: "#10151f",
-        line: "#202938",
-        mint: "#65e6a6",
-        violet: "#8b7cf6",
+        ink: "#3F3528",
+        panel: "#FFF6E5",
+        line: "#E8D8B8",
+        mint: "#6FAF5C",
+        violet: "#B98AE8",
       },
-      boxShadow: { panel: "0 16px 50px rgba(0,0,0,.24)" },
+      fontFamily: { sans: ["Nunito", "sans-serif"], display: ["Baloo 2", "Nunito", "sans-serif"] },
+      boxShadow: { panel: "0 4px 12px rgba(63,53,40,.08)" },
     },
   },
   plugins: [],

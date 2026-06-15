@@ -2,6 +2,7 @@ import { CalendarDays, CheckCircle2, Pencil, Plus, Save, Trash2, X } from "lucid
 import { useEffect, useMemo, useState } from "react";
 import { EmptyState } from "../components/EmptyState";
 import { StatCard } from "../components/StatCard";
+import { VillageMascot } from "../components/VillageMascot";
 import { api, type Habit } from "../lib/api/client";
 import { useAppStore } from "../store";
 
@@ -25,10 +26,10 @@ export function HabitsPage() {
   const completedToday = useMemo(() => habits.filter((habit) => Boolean(habit.completed_today)).length, [habits]);
   const categoryCount = useMemo(() => new Set(habits.map((habit) => habit.category)).size, [habits]);
 
-  return <div className="space-y-6">
+  return <div className="cozy-page">
     {flashMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900">{flashMessage}<button className="ml-3 text-xs font-black uppercase tracking-wide text-emerald-700" onClick={clearFlashMessage}>Dismiss</button></div> : null}
     {error ? <div className="rounded-2xl bg-[#ffe0da] p-4 text-sm font-bold text-[#7a2626]">{error}</div> : null}
-    <header className="space-y-2"><p className="eyebrow">Consistency engine</p><h1 className="text-3xl font-black tracking-tight">Habits</h1><p className="max-w-2xl text-sm leading-6 text-slate-400">Track repeatable actions, keep streaks visible, and make the daily baseline hard to ignore.</p></header>
+    <header className="space-y-2"><p className="eyebrow">Consistency engine</p><h1>Habits</h1><p className="cozy-subtitle">Track repeatable actions, keep streaks visible, and make the daily baseline hard to ignore.</p></header>
     <div className="grid gap-4 md:grid-cols-4"><StatCard label="Habits" value={String(habits.length)} meta="Active repeatables" icon={CheckCircle2} /><StatCard label="Done today" value={String(completedToday)} meta="Checked in already" icon={CheckCircle2} accent="text-emerald-400" /><StatCard label="Categories" value={String(categoryCount)} meta="Active habit areas" icon={CheckCircle2} accent="text-sky-400" /><StatCard label="Loading" value={loading ? "Yes" : "No"} meta="Bootstrap state" icon={CheckCircle2} accent="text-violet-400" /></div>
     <section className="panel p-4 md:p-6"><h2 className="mb-4 text-lg font-bold">Create habit</h2>
       <form className="grid gap-3 md:grid-cols-2" onSubmit={async (event) => {
@@ -46,7 +47,7 @@ export function HabitsPage() {
     </section>
     <section className="panel p-4 md:p-6">
       {habits.length === 0 ? <EmptyState icon={CheckCircle2} title="No habits yet" description="Add the first repeatable action you want to make automatic." action="Create first habit" /> : <div className="space-y-3">{habits.map((habit) =>
-        <article key={habit.id} className="rounded-2xl border border-line bg-panel/70 p-4">
+        <article key={habit.id} className="cozy-item">
           {editingHabit?.id === habit.id ? <form className="grid gap-3 md:grid-cols-2" onSubmit={async (event) => {
             event.preventDefault(); await api.habits.update(habit.id, { name: editingHabit.name, description: editingHabit.description, category: editingHabit.category, frequency: editingHabit.frequency, customSchedule: editingHabit.custom_schedule, goalId: editingHabit.goal_id }); setEditingHabit(null); await refreshCollections();
           }}>
@@ -58,11 +59,12 @@ export function HabitsPage() {
             <select aria-label="Edit habit goal" className="input md:col-span-2" value={editingHabit.goal_id ?? ""} onChange={(event) => setEditingHabit({ ...editingHabit, goal_id: event.target.value ? Number(event.target.value) : null })}><option value="">No linked goal</option>{goals.map((goal) => <option key={goal.id} value={goal.id}>{goal.title}</option>)}</select>
             <div className="flex gap-2 md:col-span-2"><button className="button-primary" type="submit"><Save className="size-4" />Save habit</button><button className="button-secondary" type="button" onClick={() => setEditingHabit(null)}><X className="size-4" />Cancel</button></div>
           </form> : <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div><div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500"><span>{habit.frequency}</span><span>·</span><span>{habit.category}</span><span>·</span><span>{habit.current_streak} day streak</span></div><h3 className="mb-1 mt-2 text-base font-bold">{habit.name}</h3><p className="m-0 text-sm leading-6 text-slate-400">{habit.description || "No description"}</p></div>
+            <div><div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#7a6a58]"><span className="pill">{habit.frequency}</span><span>·</span><span>{habit.category}</span><span>·</span><span>{habit.current_streak} day streak</span></div><h3 className="mb-1 mt-2 text-base font-bold">{habit.name}</h3><p className="m-0 text-sm leading-6 text-[#7a6a58]">{habit.description || "No description"}</p></div>
             <div className="flex flex-wrap items-center gap-2"><button aria-label={`Edit ${habit.name}`} className="button-secondary" onClick={() => setEditingHabit(habit)}><Pencil className="size-4" /></button><button aria-label={`View history for ${habit.name}`} className="button-secondary" onClick={async () => setHistory({ habitId: habit.id, logs: await api.habits.logs(habit.id) })}><CalendarDays className="size-4" /></button><button className="button-secondary" disabled={loading || Boolean(habit.completed_today)} onClick={() => logHabit(habit.id, "Checked from habits page")}>{habit.completed_today ? "Logged today" : "Log today"}</button><button aria-label={`Delete ${habit.name}`} className="button-secondary" disabled={loading} onClick={() => removeHabit(habit.id)}><Trash2 className="size-4" /></button></div>
           </div>}
           {history?.habitId === habit.id ? <div className="mt-4 rounded-2xl border-2 border-[#eadfc8] bg-[#fffdf7] p-4"><div className="flex items-center justify-between"><strong className="text-sm text-[#5a4632]">Last 30 days</strong><button aria-label="Close habit history" className="button-secondary p-2" onClick={() => setHistory(null)}><X className="size-4" /></button></div>{history.logs.length ? <ul className="mt-3 grid gap-2 sm:grid-cols-2">{history.logs.map((log) => <li className="rounded-xl bg-[#edf7e9] px-3 py-2 text-xs font-bold text-[#47783b]" key={log.id}>{log.completed_on}{log.note ? ` · ${log.note}` : ""}</li>)}</ul> : <p className="mt-3 text-sm text-[#7a6652]">No check-in recorded in the last 30 days.</p>}</div> : null}
         </article>)}</div>}
     </section>
+    <VillageMascot type="bear" message="Keep going, you’re doing great!" />
   </div>;
 }

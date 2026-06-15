@@ -1,0 +1,3 @@
+export function CozyPageDecor() {
+  return <svg className="pointer-events-none fixed bottom-0 left-64 right-0 z-0 hidden h-20 w-[calc(100%-16rem)] opacity-60 lg:block" preserveAspectRatio="none" viewBox="0 0 1200 80" aria-hidden="true"><path d="M0 68q120-24 240 0t240 0 240 0 240 0 280 0v12H0Z" fill="#8ccb68"/>{[80,310,550,840,1080].map((x)=><g key={x} transform={`translate(${x} 56)`}><rect x="-3" y="-20" width="6" height="25" rx="3" fill="#8b633e"/><circle cy="-25" r="18" fill="#6faf5c"/><circle cx="-11" cy="-19" r="12" fill="#8fbf68"/><circle cx="12" cy="-18" r="12" fill="#8ccb68"/></g>)}</svg>;
+}
