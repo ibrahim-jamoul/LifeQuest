@@ -19,14 +19,14 @@ export function ReviewsHubPage() {
     <div className="space-y-6">
       <section className="page-hero space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="pill"><ScrollText className="size-4 text-[#cfa7ff]" />Reviews</span>
+          <span className="pill"><ScrollText className="size-4 text-text-secondary" />Reviews</span>
           <span className="pill">{reviews.length} total</span>
           <span className="pill">{weeklyCount} weekly</span>
         </div>
         <div>
           <p className="eyebrow">Reflection system</p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-[#5a4632]">Reviews</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#7a6652]">Capture weekly and monthly reflections in a warm, readable workspace that stays close to the village feel.</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-text-primary">Reviews</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">Capture weekly and monthly reflections in a warm, readable workspace that stays close to the village feel.</p>
         </div>
       </section>
 
@@ -39,7 +39,7 @@ export function ReviewsHubPage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="eyebrow capitalize">{review.review_type}</p>
-                  <h2 className="mt-1 text-xl font-black text-[#5a4632]">{review.period_start}</h2>
+                  <h2 className="mt-1 text-xl font-black text-text-primary">{review.period_start}</h2>
                 </div>
                 <span className="pill">Saved</span>
               </div>

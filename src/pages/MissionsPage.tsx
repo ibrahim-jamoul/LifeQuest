@@ -16,22 +16,22 @@ export function MissionsPage() {
     <div className="space-y-6">
       <section className="page-hero">
         <p className="eyebrow">Together in the real world</p>
-        <h1 className="mt-2 text-4xl font-black text-[#5a4632]">Parent missions</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-[#7a6652]">These missions create meaningful moments with a parent. The reward unlocks only after parent validation.</p>
+        <h1 className="mt-2 text-4xl font-black text-text-primary">Parent missions</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-text-secondary">These missions create meaningful moments with a parent. The reward unlocks only after parent validation.</p>
       </section>
-      {error ? <div className="rounded-2xl bg-[#ffe0da] p-4 text-sm font-bold text-[#7a2626]">{error}</div> : null}
+      {error ? <div className="rounded-2xl bg-danger-bg p-4 text-sm font-bold text-danger">{error}</div> : null}
       <section className="grid gap-4 lg:grid-cols-2">
         {missions.length === 0 ? (
-          <div className="panel p-6 text-sm text-[#7a6652]">No parent mission is available yet.</div>
+          <div className="panel p-6 text-sm text-text-secondary">No parent mission is available yet.</div>
         ) : missions.map((mission) => (
           <article key={mission.id} className="panel p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="pill"><HeartHandshake className="size-4" />With {mission.parent_name}</span>
               <span className="pill"><Sparkles className="size-4" />+{mission.xp_reward} XP</span>
             </div>
-            <h2 className="mt-4 text-xl font-black text-[#5a4632]">{mission.title}</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7a6652]">{mission.description}</p>
-            <div className={`mt-5 rounded-[20px] border-2 p-4 text-sm font-bold ${mission.status === "completed" ? "border-[#b9dab0] bg-[#edf7e9] text-[#47783b]" : "border-[#f0d49b] bg-[#fff6dc] text-[#8a6421]"}`}>
+            <h2 className="mt-4 text-xl font-black text-text-primary">{mission.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">{mission.description}</p>
+            <div className={`mt-5 rounded-cozy-md border-2 p-4 text-sm font-bold ${mission.status === "completed" ? "border-border bg-cream-secondary text-text-secondary" : "border-border bg-cream-secondary text-text-secondary"}`}>
               <ShieldCheck className="mr-2 inline size-4" />
               {mission.status === "completed" ? "Validated together" : mission.status === "child_submitted" ? "Sent to parent for validation" : "Complete it, then submit it to your parent"}
             </div>

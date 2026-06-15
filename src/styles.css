@@ -3,23 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  * { @apply border-[#e0cfb0]; }
-  body { @apply m-0 bg-[#fff6e5] text-[#3f3528] antialiased; font-family: Nunito, sans-serif; }
+  * { @apply border-border-strong; }
+  body { @apply m-0 bg-cream text-text-primary antialiased; font-family: Nunito, sans-serif; }
   h1, h2, h3, .font-display { font-family: "Baloo 2", Nunito, sans-serif; }
   button, input, textarea, select { font: inherit; }
   button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #f4a261; outline-offset: 3px; }
 }
 
 @layer components {
-  .panel { @apply rounded-[28px] border-2 border-[#e8d8b8] bg-[#fff6e5] shadow-[0_4px_12px_rgba(63,53,40,.08)]; }
-  .eyebrow { @apply text-xs font-extrabold uppercase tracking-[0.18em] text-[#7a6a58]; }
-  .button-primary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] bg-[#6faf5c] px-5 py-2.5 text-sm font-extrabold text-[#fff6e5] transition duration-200 hover:-translate-y-0.5 hover:bg-[#5d9d4b] active:translate-y-0 active:scale-[.98] disabled:cursor-not-allowed disabled:bg-[#d8d1c3] disabled:text-[#8a8173]; box-shadow: 0 4px 0 #4f8c43; }
-  .button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border-2 border-[#e8d8b8] bg-[#f5e9d0] px-4 py-2.5 text-sm font-bold text-[#3f3528] transition duration-200 hover:-translate-y-0.5 hover:border-[#8fbf68] hover:bg-[#fff6e5] active:translate-y-0 active:scale-[.98] disabled:cursor-not-allowed disabled:bg-[#d8d1c3] disabled:text-[#8a8173]; }
-  .input { @apply w-full rounded-[18px] border-2 border-[#e8d8b8] bg-[#f5e9d0] px-4 py-3 text-sm font-semibold text-[#3f3528] outline-none transition focus:border-[#6faf5c] focus:bg-[#fff6e5]; }
+  .panel { @apply rounded-cozy-xl border-2 border-border bg-cream shadow-panel; }
+  .eyebrow { @apply text-xs font-extrabold uppercase tracking-[0.18em] text-text-secondary; }
+  .button-primary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-cozy-md bg-primary px-5 py-2.5 text-sm font-extrabold text-cream transition duration-200 hover:-translate-y-0.5 hover:bg-primary-hover active:translate-y-0 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; box-shadow: 0 4px 0 #4f8c43; }
+  .button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-cozy-md border-2 border-border bg-cream-secondary px-4 py-2.5 text-sm font-bold text-text-primary transition duration-200 hover:-translate-y-0.5 hover:border-success hover:bg-cream active:translate-y-0 active:scale-[.98] disabled:cursor-not-allowed disabled:bg-[#d8d1c3] disabled:text-[#8a8173]; }
+  .input { @apply w-full rounded-cozy-md border-2 border-border bg-cream-secondary px-4 py-3 text-sm font-semibold text-text-primary outline-none transition focus:border-primary focus:bg-cream-light; }
   .input::placeholder { color: #9b8b78; }
-  .page-shell { @apply rounded-[32px] border-2 border-[#e8d8b8] bg-[#fff6e5] p-5 shadow-[0_4px_12px_rgba(63,53,40,.08)] sm:p-6; }
-  .page-hero { @apply rounded-[28px] border-2 border-[#ead9b7] bg-gradient-to-br from-[#fff6e5] to-[#f5e9d0] p-5 shadow-[0_4px_12px_rgba(63,53,40,.08)]; }
-  .pill { @apply inline-flex items-center gap-2 rounded-full border-2 border-[#e8d8b8] bg-[#f5e9d0] px-3 py-1.5 text-xs font-extrabold text-[#7a6a58]; }
+  .page-shell { @apply rounded-cozy-xl border-2 border-border bg-cream p-5 shadow-panel sm:p-6; }
+  .page-hero { @apply rounded-cozy-xl border-2 border-border bg-gradient-to-br from-cream to-cream-secondary p-5 shadow-panel; }
+  .pill { @apply inline-flex items-center gap-2 rounded-full border-2 border-border bg-cream-secondary px-3 py-1.5 text-xs font-extrabold text-text-secondary; }
   .cozy-item { @apply rounded-[20px] border-2 border-[#e8d8b8] bg-[#fff6e5] p-4 text-[#3f3528] shadow-[0_4px_12px_rgba(63,53,40,.06)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(63,53,40,.1)]; }
   .cozy-page { @apply relative min-h-[calc(100vh-7rem)] space-y-6 pb-24; }
   .cozy-page > header:not(.no-cozy-hero) { @apply page-hero; }

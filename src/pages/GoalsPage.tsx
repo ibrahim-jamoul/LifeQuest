@@ -5,6 +5,7 @@ import { EmptyState } from "../components/EmptyState";
 import { api } from "../lib/api/client";
 import { useAppStore } from "../store";
 import { VillageMascot } from "../components/VillageMascot";
+import { StatusBadge } from "../components/StatusBadge";
 
 export function GoalsPage() {
   const bootstrap = useAppStore((state) => state.bootstrap);
@@ -27,17 +28,17 @@ const [description, setDescription] = useState("");
     <div className="cozy-page">
       <section className="page-hero space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="pill"><Target className="size-4 text-[#6faf5c]" />Goals</span>
+          <span className="pill"><Target className="size-4 text-primary" />Goals</span>
           <span className="pill">{goals.length} total</span>
           <span className="pill">{activeGoals} active</span>
         </div>
         <div>
           <p className="eyebrow">Outcome system</p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-[#5a4632]">Goals</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#7a6652]">Create clear outcomes, connect milestones and keep the direction visible without losing the cozy tone.</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-text-primary">Goals</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">Create clear outcomes, connect milestones and keep the direction visible without losing the cozy tone.</p>
         </div>
       </section>
-      {error ? <div className="rounded-2xl bg-[#ffe0da] p-4 text-sm font-bold text-[#7a2626]">{error}</div> : null}
+      {error ? <div className="rounded-2xl bg-danger-bg p-4 text-sm font-bold text-danger">{error}</div> : null}
       <div className="flex gap-2">{(["all", "active", "completed"] as const).map((item) => <button key={item} className={filter === item ? "button-primary" : "button-secondary"} onClick={() => setFilter(item)}>{item}</button>)}</div>
 
       {visibleGoals.length === 0 ? (
@@ -49,15 +50,15 @@ const [description, setDescription] = useState("");
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="eyebrow">{goal.category}</p>
-                  <h2 className="mt-1 text-xl font-black text-[#5a4632]">{goal.title}</h2>
+                  <h2 className="mt-1 text-xl font-black text-text-primary">{goal.title}</h2>
                 </div>
                 <span className="pill">{goal.progress}%</span>
               </div>
-              <div className="mt-4 h-3 overflow-hidden rounded-full bg-[#eadfc8]">
-                <div className="h-full rounded-full bg-[#6faf5c]" style={{ width: `${goal.progress}%` }} />
+              <div className="mt-4 h-3 overflow-hidden rounded-full bg-cream-secondary">
+                <div className="h-full rounded-full bg-primary" style={{ width: `${goal.progress}%` }} />
               </div>
-              <div className="mt-4 flex items-center justify-between text-sm text-[#7a6652]">
-                <span className="font-bold capitalize">{goal.status.replaceAll("_", " ")}</span>
+              <div className="mt-4 flex items-center justify-between text-sm text-text-secondary">
+                <StatusBadge variant={goal.status === "completed" ? "habit" : "medium"}>{goal.status.replaceAll("_", " ")}</StatusBadge>
                 <Link to={`/goals/${goal.id}`} className="button-secondary text-xs"><ChevronRight className="size-4" />Open</Link>
               </div>
             </article>
@@ -66,7 +67,7 @@ const [description, setDescription] = useState("");
       )}
 
       <section className="panel p-5">
-        <h2 className="text-lg font-black text-[#5a4632]">Create goal</h2>
+        <h2 className="text-lg font-black text-text-primary">Create goal</h2>
         <form className="mt-4 grid gap-3 md:grid-cols-3" onSubmit={async (e) => {
           e.preventDefault();
           try { await api.goals.create({ title, category, description, status: "in_progress" }); setTitle(""); setDescription(""); setGoals(await api.goals.list()); } catch (reason) { setError(reason instanceof Error ? reason.message : "Unable to create goal."); }

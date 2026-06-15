@@ -14,7 +14,7 @@ function Guard({ role }: { role?: UserRole }) {
   }, [bootstrap]);
 
   if (!ready) {
-    return <main className="grid min-h-screen place-items-center bg-[#dff0e8] text-sm font-bold text-[#5a4632]">Loading your village...</main>;
+    return <main className="grid min-h-screen place-items-center bg-cream-secondary text-sm font-bold text-text-primary">Loading your village...</main>;
   }
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;

@@ -23,6 +23,10 @@ import { DiscoveryPage } from "./pages/DiscoveryPage";
 import { FocusPage } from "./pages/FocusPage";
 import { LifeAreasPage } from "./pages/LifeAreasPage";
 import { CampaignPage } from "./pages/CampaignPage";
+import { TodayPage } from "./pages/TodayPage";
+import { ProgressionHubPage } from "./pages/ProgressionHubPage";
+import { JournalHubPage } from "./pages/JournalHubPage";
+import { FamilyHubPage } from "./pages/FamilyHubPage";
 const InsightsPage = lazy(() => import("./pages/InsightsPage").then((module) => ({ default: module.InsightsPage })));
 
 export default function App() {
@@ -37,6 +41,10 @@ export default function App() {
           <Route element={<AppShell />}>
             <Route element={<RequireChild />}>
               <Route path="goals" element={<GoalsPage />} />
+              <Route path="today" element={<TodayPage />} />
+              <Route path="progression" element={<ProgressionHubPage />} />
+              <Route path="journal" element={<JournalHubPage />} />
+              <Route path="family" element={<FamilyHubPage />} />
               <Route path="goals/:goalId" element={<GoalDetailPage />} />
               <Route path="tasks" element={<QuestsPage />} />
               <Route path="quests" element={<QuestsPage />} />

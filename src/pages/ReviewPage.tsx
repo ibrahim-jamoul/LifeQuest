@@ -30,8 +30,8 @@ export function ReviewPage({ period }: { period: "weekly" | "monthly" }) {
   }, [dates.start, period]);
 
   return <div className="space-y-6">
-    <header className="page-hero"><p className="eyebrow">Reflection system</p><h1 className="mb-2 mt-2 text-3xl font-black text-[#5a4632]">{period === "weekly" ? "Weekly review" : "Monthly review"}</h1><p className="m-0 text-sm text-[#7a6652]">Review progress honestly, then choose the next useful move.</p></header>
-    {message ? <div className="rounded-2xl border-2 border-[#b9dab0] bg-[#edf7e9] p-4 text-sm font-bold text-[#47783b]">{message}</div> : null}
+    <header className="page-hero"><p className="eyebrow">Reflection system</p><h1 className="mb-2 mt-2 text-3xl font-black text-text-primary">{period === "weekly" ? "Weekly review" : "Monthly review"}</h1><p className="m-0 text-sm text-text-secondary">Review progress honestly, then choose the next useful move.</p></header>
+    {message ? <div className="rounded-2xl border-2 border-border bg-cream-secondary p-4 text-sm font-bold text-text-secondary">{message}</div> : null}
     <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
       <form className="panel space-y-5 p-5 sm:p-6" onSubmit={async (event) => {
         event.preventDefault(); setSaving(true); setMessage(null);
@@ -42,10 +42,10 @@ export function ReviewPage({ period }: { period: "weekly" | "monthly" }) {
           setMessage(result.progression ? "Review saved. +75 XP earned." : "Review updated.");
         } catch (reason) { setMessage(reason instanceof Error ? reason.message : "Unable to save review."); } finally { setSaving(false); }
       }}>
-        {prompts.map((prompt) => <label key={prompt} className="block"><span className="mb-2 block text-sm font-bold text-[#5a4632]">{prompt}</span><textarea className="input min-h-24 resize-y" value={answers[prompt] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [prompt]: event.target.value }))} placeholder="Write a short, useful answer..." /></label>)}
+        {prompts.map((prompt) => <label key={prompt} className="block"><span className="mb-2 block text-sm font-bold text-text-primary">{prompt}</span><textarea className="input min-h-24 resize-y" value={answers[prompt] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [prompt]: event.target.value }))} placeholder="Write a short, useful answer..." /></label>)}
         <button className="button-primary" disabled={saving}><Save className="size-4" />{saving ? "Saving..." : "Complete review"}</button>
       </form>
-      <aside className="panel h-fit p-5"><BarChart3 className="size-5 text-[#6faf5c]" /><h2 className="mb-2 mt-4 text-lg font-bold text-[#5a4632]">Generated summary</h2>{summary ? <div className="space-y-2 text-sm text-[#7a6652]"><p>{summary.completedTasks} quests completed</p><p>{summary.habitCheckins} habit check-ins</p><p>{summary.xpGained} XP gained</p><p>{summary.goalsCompleted} goals completed · {summary.goalsDelayed} delayed</p><p>Best streak: {summary.bestStreak} days</p><p>Recommended focus: <strong>{summary.recommendedFocus}</strong></p></div> : <p className="text-sm leading-6 text-[#7a6652]">Complete the review to generate a summary from your real activity.</p>}<div className="mt-4 pill"><Sparkles className="size-4" />+75 XP first save</div></aside>
+      <aside className="panel h-fit p-5"><BarChart3 className="size-5 text-primary" /><h2 className="mb-2 mt-4 text-lg font-bold text-text-primary">Generated summary</h2>{summary ? <div className="space-y-2 text-sm text-text-secondary"><p>{summary.completedTasks} quests completed</p><p>{summary.habitCheckins} habit check-ins</p><p>{summary.xpGained} XP gained</p><p>{summary.goalsCompleted} goals completed · {summary.goalsDelayed} delayed</p><p>Best streak: {summary.bestStreak} days</p><p>Recommended focus: <strong>{summary.recommendedFocus}</strong></p></div> : <p className="text-sm leading-6 text-text-secondary">Complete the review to generate a summary from your real activity.</p>}<div className="mt-4 pill"><Sparkles className="size-4" />+75 XP first save</div></aside>
     </div>
   </div>;
 }

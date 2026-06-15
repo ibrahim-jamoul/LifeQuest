@@ -2,6 +2,7 @@ import { ArrowLeft, CheckSquare, Flame, Plus, Save, Target, Trash2 } from "lucid
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import { api, goalApi, type Habit, type Quest } from "../lib/api/client";
 import { useAppStore } from "../store";
 
@@ -66,6 +67,7 @@ export function GoalDetailPage() {
   const [noteContent, setNoteContent] = useState("");
   const [noteType, setNoteType] = useState<NoteRecord["note_type"]>("reflection");
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const load = async () => {
     if (!goalId) return;
@@ -124,42 +126,42 @@ export function GoalDetailPage() {
         <div className="grid gap-4 lg:grid-cols-[1.4fr_.9fr]">
           <div>
             <p className="eyebrow">Goal workspace</p>
-            <h1 className="mt-2 text-4xl font-black tracking-tight text-[#5a4632]">{goal.title}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[#7a6652]">{goal.description || "No description yet."}</p>
+            <h1 className="mt-2 text-4xl font-black tracking-tight text-text-primary">{goal.title}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-text-secondary">{goal.description || "No description yet."}</p>
           </div>
           <div className="panel p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="eyebrow">Progress</p>
-                <strong className="text-2xl text-[#5a4632]">{goal.progress}%</strong>
+                <strong className="text-2xl text-text-primary">{goal.progress}%</strong>
               </div>
-              <Flame className="size-7 text-[#f4a261]" />
+              <Flame className="size-7 text-accent" />
             </div>
-            <div className="mt-4 h-3 overflow-hidden rounded-full bg-[#eadfc8]">
-              <div className="h-full rounded-full bg-[#6faf5c]" style={{ width: `${goal.progress}%` }} />
+            <div className="mt-4 h-3 overflow-hidden rounded-full bg-cream-secondary">
+              <div className="h-full rounded-full bg-primary" style={{ width: `${goal.progress}%` }} />
             </div>
-            <p className="mt-3 text-sm text-[#7a6652]">Level up the goal by completing milestones and small actions around it.</p>
+            <p className="mt-3 text-sm text-text-secondary">Level up the goal by completing milestones and small actions around it.</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
           <button className="button-primary" disabled={goal.status === "completed"} onClick={async () => { if (!goalId) return; await api.goals.complete(Number(goalId)); await Promise.all([load(), useAppStore.getState().refreshToday(), useAppStore.getState().refreshVillage()]); }}>Complete goal</button>
-          <button className="button-secondary" onClick={async () => { if (!goalId || !confirm("Delete this goal?")) return; await api.goals.remove(Number(goalId)); navigate("/goals"); }}><Trash2 className="size-4" />Delete goal</button>
+          <button className="button-secondary" onClick={() => setDeleteOpen(true)}><Trash2 className="size-4" />Delete goal</button>
         </div>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.2fr_.8fr]">
         <div className="space-y-4">
           <div className="panel p-5">
-            <h2 className="text-lg font-black text-[#5a4632]">Milestones</h2>
+            <h2 className="text-lg font-black text-text-primary">Milestones</h2>
             <div className="mt-4 space-y-3">
               {milestones.length === 0 ? (
-                <p className="text-sm text-[#7a6652]">No milestones yet. Add the first step of this goal.</p>
+                <p className="text-sm text-text-secondary">No milestones yet. Add the first step of this goal.</p>
               ) : milestones.map((item) => (
-                <article key={item.id} className="rounded-[22px] border-2 border-[#eadfc8] bg-[#fffdf7] p-4">
+                <article key={item.id} className="rounded-cozy-lg border-2 border-border bg-cream-light p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="font-black text-[#5a4632]">{item.title}</h3>
-                      <p className="mt-1 text-sm text-[#7a6652]">{item.description || "No description"}</p>
+                      <h3 className="font-black text-text-primary">{item.title}</h3>
+                      <p className="mt-1 text-sm text-text-secondary">{item.description || "No description"}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="pill">{item.progress}%</span>
@@ -187,8 +189,8 @@ export function GoalDetailPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#eadfc8]">
-                    <div className="h-full rounded-full bg-[#74b9d6]" style={{ width: `${item.progress}%` }} />
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-cream-secondary">
+                    <div className="h-full rounded-full bg-cream-secondary" style={{ width: `${item.progress}%` }} />
                   </div>
                 </article>
               ))}
@@ -196,7 +198,7 @@ export function GoalDetailPage() {
           </div>
 
           <div className="panel p-5">
-            <h2 className="text-lg font-black text-[#5a4632]">{editingMilestone ? "Edit milestone" : "Create milestone"}</h2>
+            <h2 className="text-lg font-black text-text-primary">{editingMilestone ? "Edit milestone" : "Create milestone"}</h2>
             <form
               className="mt-4 grid gap-3 md:grid-cols-2"
               onSubmit={async (event) => {
@@ -227,7 +229,7 @@ export function GoalDetailPage() {
 
         <div className="space-y-4">
           <div className="panel p-5">
-            <h2 className="text-lg font-black text-[#5a4632]">Goal details</h2>
+            <h2 className="text-lg font-black text-text-primary">Goal details</h2>
             <form className="mt-4 space-y-3" onSubmit={async (event) => { event.preventDefault(); await api.goals.update(goal.id, { title: goalTitle, description: goalDescription, category: goalCategory, priority: goalPriority, deadline: goalDeadline || null, status: goalStatus, progress: goal.progress, notes: goal.notes }); await load(); }}>
               <input className="input" value={goalTitle} onChange={(event) => setGoalTitle(event.target.value)} required />
               <textarea className="input" value={goalDescription} onChange={(event) => setGoalDescription(event.target.value)} rows={3} />
@@ -240,7 +242,7 @@ export function GoalDetailPage() {
           </div>
 
           <div className="panel p-5">
-            <h2 className="text-lg font-black text-[#5a4632]">Goal notes</h2>
+            <h2 className="text-lg font-black text-text-primary">Goal notes</h2>
             <form
               className="mt-4 space-y-3"
               onSubmit={async (event) => {
@@ -272,16 +274,16 @@ export function GoalDetailPage() {
             </form>
             <div className="mt-5 space-y-3">
               {notes.length === 0 ? (
-                <p className="text-sm text-[#7a6652]">No notes yet. Capture ideas, blockers, or progress here.</p>
+                <p className="text-sm text-text-secondary">No notes yet. Capture ideas, blockers, or progress here.</p>
               ) : notes.map((note) => (
-                <article key={note.id} className="rounded-[22px] border-2 border-[#eadfc8] bg-[#fffdf7] p-4">
+                <article key={note.id} className="rounded-cozy-lg border-2 border-border bg-cream-light p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-black text-[#5a4632]">{note.title}</h3>
+                        <h3 className="font-black text-text-primary">{note.title}</h3>
                         <span className="pill text-[11px]">{noteTypeLabels[note.note_type]}</span>
                       </div>
-                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[#7a6652]">{note.content || "No content."}</p>
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-text-secondary">{note.content || "No content."}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -307,7 +309,7 @@ export function GoalDetailPage() {
                       </button>
                     </div>
                   </div>
-                  <p className="mt-3 flex items-center gap-2 text-xs text-[#8f7c67]">
+                  <p className="mt-3 flex items-center gap-2 text-xs text-text-muted">
                     <CheckSquare className="size-4" />
                     Created {new Date(note.created_at).toLocaleDateString()}
                   </p>
@@ -317,13 +319,14 @@ export function GoalDetailPage() {
           </div>
 
           <div className="panel p-5">
-            <h2 className="text-lg font-black text-[#5a4632]">Linked actions</h2>
-            <p className="mt-3 text-sm text-[#7a6652]">{tasks.length} linked quests · {habits.length} linked habits</p>
-            <div className="mt-4 space-y-2">{tasks.map((task) => <div key={task.id} className="rounded-2xl bg-[#fffdf7] p-3 text-sm"><strong className="text-[#5a4632]">{task.title}</strong><span className="ml-2 text-[#7a6652]">{task.is_completed ? "Completed" : "Active"}</span></div>)}{habits.map((habit) => <div key={habit.id} className="rounded-2xl bg-[#fffdf7] p-3 text-sm"><strong className="text-[#5a4632]">{habit.name}</strong><span className="ml-2 text-[#7a6652]">{habit.current_streak} day streak</span></div>)}</div>
-            <p className="mt-4 text-xs text-[#8f7c67]">Link new actions from the Quests and Habits creation forms.</p>
+            <h2 className="text-lg font-black text-text-primary">Linked actions</h2>
+            <p className="mt-3 text-sm text-text-secondary">{tasks.length} linked quests · {habits.length} linked habits</p>
+            <div className="mt-4 space-y-2">{tasks.map((task) => <div key={task.id} className="rounded-2xl bg-cream-light p-3 text-sm"><strong className="text-text-primary">{task.title}</strong><span className="ml-2 text-text-secondary">{task.is_completed ? "Completed" : "Active"}</span></div>)}{habits.map((habit) => <div key={habit.id} className="rounded-2xl bg-cream-light p-3 text-sm"><strong className="text-text-primary">{habit.name}</strong><span className="ml-2 text-text-secondary">{habit.current_streak} day streak</span></div>)}</div>
+            <p className="mt-4 text-xs text-text-muted">Link new actions from the Quests and Habits creation forms.</p>
           </div>
         </div>
       </section>
+      <ConfirmDialog open={deleteOpen} title="Delete this goal?" description="This action removes the goal and cannot be undone." confirmLabel="Delete goal" onClose={() => setDeleteOpen(false)} onConfirm={async () => { if (!goalId) return; await api.goals.remove(Number(goalId)); navigate("/goals"); }} />
     </div>
   );
 }
