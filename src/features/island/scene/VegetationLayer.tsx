@@ -1,15 +1,40 @@
-const trees = [[170, 250], [205, 205], [170, 575], [330, 155], [420, 170], [760, 155], [820, 190], [1010, 370], [1005, 540], [740, 650], [390, 670], [185, 450]];
-const flowers = [[345, 290], [470, 225], [745, 350], [820, 600], [310, 620], [930, 390], [490, 510]];
+type Decoration = { href: string; x: number; y: number; width: number; height: number; className?: string };
 
-function Tree({ x, y }: { x: number; y: number }) {
-  return <g className="tree-sway" transform={`translate(${x} ${y})`}><ellipse cy="19" rx="18" ry="8" fill="#47794e" opacity=".25" /><rect x="-5" y="-2" width="10" height="30" rx="4" fill="#875d3f" /><circle cy="-18" r="28" fill="#4b9459" /><circle cx="-16" cy="-11" r="17" fill="#69aa64" /><circle cx="15" cy="-8" r="18" fill="#5ca05f" /></g>;
+const trees: Decoration[] = [
+  { href: "/assets/island/nature/trees/tree-leafy-01.png", x: 128, y: 202, width: 112, height: 112 },
+  { href: "/assets/island/nature/trees/tree-blossom-01.png", x: 178, y: 155, width: 102, height: 102 },
+  { href: "/assets/island/nature/trees/tree-pine-01.png", x: 330, y: 110, width: 105, height: 105 },
+  { href: "/assets/island/nature/trees/tree-pine-02.png", x: 744, y: 112, width: 108, height: 108 },
+  { href: "/assets/island/nature/trees/tree-leafy-01.png", x: 1000, y: 320, width: 112, height: 112 },
+  { href: "/assets/island/nature/trees/tree-pine-02.png", x: 1010, y: 490, width: 106, height: 106 },
+  { href: "/assets/island/nature/trees/tree-blossom-01.png", x: 720, y: 620, width: 105, height: 105 },
+  { href: "/assets/island/nature/trees/tree-leafy-01.png", x: 350, y: 625, width: 112, height: 112 },
+  { href: "/assets/island/nature/trees/tree-pine-01.png", x: 132, y: 505, width: 104, height: 104 },
+];
+
+const decorations: Decoration[] = [
+  { href: "/assets/island/nature/flowers/flower-cluster-mixed.png", x: 332, y: 276, width: 54, height: 54 },
+  { href: "/assets/island/nature/flowers/flower-cluster-pink.png", x: 450, y: 206, width: 48, height: 48 },
+  { href: "/assets/island/nature/flowers/flower-cluster-yellow.png", x: 764, y: 335, width: 48, height: 48 },
+  { href: "/assets/island/nature/flowers/flower-cluster-mixed.png", x: 800, y: 575, width: 52, height: 52 },
+  { href: "/assets/island/nature/flowers/flower-cluster-pink.png", x: 285, y: 605, width: 45, height: 45 },
+  { href: "/assets/island/nature/bushes/bush-flowering-01.png", x: 92, y: 320, width: 88, height: 60 },
+  { href: "/assets/island/nature/bushes/bush-plain-01.png", x: 1040, y: 410, width: 92, height: 62 },
+  { href: "/assets/island/nature/bushes/bush-flowering-01.png", x: 650, y: 675, width: 82, height: 56 },
+  { href: "/assets/island/nature/rocks/rock-cluster-01.png", x: 945, y: 360, width: 70, height: 54 },
+  { href: "/assets/island/nature/rocks/rock-cluster-02.png", x: 460, y: 645, width: 72, height: 52 },
+  { href: "/assets/island/nature/rocks/rock-cluster-01.png", x: 170, y: 405, width: 62, height: 48 },
+];
+
+function DecorationImage({ decoration }: { decoration: Decoration }) {
+  return <image className={decoration.className} href={decoration.href} x={decoration.x} y={decoration.y} width={decoration.width} height={decoration.height} preserveAspectRatio="xMidYMid meet" />;
 }
+
 export function VegetationLayer() {
   return (
-    <g>
-      {trees.map(([x, y]) => <Tree key={`${x}-${y}`} x={x} y={y} />)}
-      {flowers.map(([x, y]) => <g key={`${x}-${y}`} transform={`translate(${x} ${y})`}><circle r="10" fill="#5b9d55" /><circle cx="-6" cy="-7" r="4" fill="#ffd98b" /><circle cx="6" cy="-6" r="4" fill="#e98f9e" /><circle cy="5" r="4" fill="#f8f0bd" /></g>)}
-      <g fill="#75b66b" opacity=".85">{[[135,340],[1080,430],[1070,260],[495,130],[690,700]].map(([x,y])=><ellipse key={`${x}-${y}`} cx={x} cy={y} rx="28" ry="14" />)}</g>
+    <g pointerEvents="none">
+      {decorations.map((decoration) => <DecorationImage key={`${decoration.href}-${decoration.x}-${decoration.y}`} decoration={decoration} />)}
+      {trees.map((decoration) => <DecorationImage key={`${decoration.href}-${decoration.x}-${decoration.y}`} decoration={{ ...decoration, className: "tree-sway" }} />)}
     </g>
   );
 }

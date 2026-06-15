@@ -51,12 +51,21 @@
 @keyframes smoke-rise { 0% { transform: translateY(5px); opacity: 0; } 45% { opacity: .65; } 100% { transform: translateY(-20px); opacity: 0; } }
 @keyframes lighthouse-sweep { to { transform: rotate(360deg); } }
 @keyframes tree-sway { 50% { transform: skewX(1.5deg) scaleX(.99); } }
+@keyframes sailboat-rock { 50% { transform: translateY(-5px) rotate(-1.5deg); } }
+@keyframes bird-flight { 50% { transform: translate(22px, -7px); } }
+@keyframes villager-idle { 50% { transform: translateY(-4px); } }
+@keyframes water-shimmer { 50% { opacity: .35; } }
 
 .river-flow { animation: wave-drift 8s linear infinite; }
 .cloud-drift { animation: cloud-drift 18s ease-in-out infinite; }
+.cloud-drift-reverse { animation-direction: reverse; animation-duration: 22s; }
+.water-texture { animation: water-shimmer 8s ease-in-out infinite; }
+.water-sparkles-delayed { animation-delay: -3s; }
 .ambient-sparkles, .water-sparkles { transform-box: fill-box; transform-origin: center; animation: sparkle-pulse 3s ease-in-out infinite; }
 .island-building, .zone-sign { cursor: pointer; outline: none; }
 .island-building .building-body { transform-box: fill-box; transform-origin: center bottom; transition: transform .22s ease, filter .22s ease; }
+.building-hit-area { pointer-events: all; }
+.building-image { user-select: none; }
 .island-building.level-2 .building-body { transform: scale(1.04); }
 .island-building.level-3 .building-body { transform: translateY(-3px) scale(1.08); filter: drop-shadow(0 8px 8px rgba(255,241,168,.35)); }
 .island-building.level-4 .building-body { transform: translateY(-5px) scale(1.12); filter: drop-shadow(0 10px 9px rgba(244,169,195,.42)); }
@@ -76,13 +85,18 @@
 .zone-sign:hover, .zone-sign:focus { transform: translateY(-5px); }
 .zone-sign.is-locked { opacity: .58; cursor: not-allowed; }
 .balloon-float { animation: balloon-float 6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.sailboat-rock { animation: sailboat-rock 7s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+.bird-flight { animation: bird-flight 12s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.island-villager { animation: villager-idle 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+.villager-rabbit { animation-delay: -1.2s; }
+.villager-bear { animation-delay: -2.4s; }
 .chimney-smoke { animation: smoke-rise 4s ease-out infinite; transform-box: fill-box; transform-origin: center; }
 .lighthouse-beam { animation: lighthouse-sweep 4s linear infinite; transform-box: fill-box; transform-origin: center; }
 .tree-sway { animation: tree-sway 7s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
-  .river-flow, .cloud-drift, .ambient-sparkles, .water-sparkles, .island-building.is-active .zone-ring, .balloon-float, .chimney-smoke, .lighthouse-beam, .tree-sway { animation: none; }
+  .river-flow, .cloud-drift, .ambient-sparkles, .water-sparkles, .water-texture, .island-building.is-active .zone-ring, .balloon-float, .sailboat-rock, .bird-flight, .island-villager, .chimney-smoke, .lighthouse-beam, .tree-sway { animation: none; }
   .island-building .building-body, .zone-sign { transition: none; }
 }
 

@@ -12,13 +12,16 @@ import { VegetationLayer } from "./VegetationLayer";
 export function CodedIslandScene({ zones, season, avatar, activeZoneId, onZoneClick }: { zones: IslandZoneData[]; season: string; avatar?: ChildProfile; activeZoneId?: string; onZoneClick: (zone: IslandZoneData) => void }) {
   return (
     <div className="absolute inset-0 overflow-auto bg-[#54b9cb]">
-      <svg className="island-svg-scene relative left-1/2 top-1/2 h-full min-h-[700px] min-w-[1050px] -translate-x-1/2 -translate-y-1/2" viewBox="0 0 1200 800" role="img" aria-label="Interactive coded LifeQuest village island">
+      <svg className="island-svg-scene relative left-1/2 top-1/2 h-full min-h-[700px] min-w-[1050px] -translate-x-1/2 -translate-y-1/2" viewBox="0 0 1200 800" role="img" aria-label="Interactive illustrated LifeQuest village island">
         <defs>
           <linearGradient id="oceanGradient" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#56bed0" /><stop offset="1" stopColor="#309caf" /></linearGradient>
           <linearGradient id="grassGradient" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#a9d982" /><stop offset="1" stopColor="#7dbe69" /></linearGradient>
           <filter id="terrainShadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="14" floodColor="#175d64" floodOpacity=".32" /></filter>
           <filter id="labelShadow" x="-30%" y="-50%" width="160%" height="220%"><feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#345548" floodOpacity=".22" /></filter>
           <filter id="buildingGlow" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#fff8c7" floodOpacity=".9" /></filter>
+          <pattern id="waterTexture" width="256" height="256" patternUnits="userSpaceOnUse">
+            <image href="/assets/island/terrain/water-texture-tile.png" width="256" height="256" />
+          </pattern>
         </defs>
         <OceanLayer />
         <IslandTerrain />
