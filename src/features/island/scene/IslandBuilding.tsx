@@ -2,13 +2,13 @@ import type { IslandBuildingType } from "../types";
 
 const buildingAssets: Record<IslandBuildingType, { href: string; width: number; height: number; y: number }> = {
   // Do not replace island scene assets; these values only normalize visual scale.
-  home: { href: "/assets/island/buildings/home-area/home-area-lv1.png", width: 116, height: 116, y: -84 },
+  home: { href: "/assets/island/buildings/home-area/home-area-lv1.png", width: 102, height: 102, y: -74 },
   garden: { href: "/assets/island/buildings/garden/garden-lv1.png", width: 124, height: 124, y: -90 },
-  workshop: { href: "/assets/island/buildings/workshop/workshop-lv1.png", width: 118, height: 118, y: -85 },
+  workshop: { href: "/assets/island/buildings/workshop/workshop-lv1.png", width: 104, height: 104, y: -75 },
   learning: { href: "/assets/island/buildings/learning-corner/learning-corner-lv1.png", width: 100, height: 100, y: -72 },
   townHall: { href: "/assets/island/buildings/town-hall/town-hall-lv1.png", width: 152, height: 114, y: -84 },
-  market: { href: "/assets/island/buildings/market-square/market-square-lv1.png", width: 124, height: 124, y: -90 },
-  lighthouse: { href: "/assets/island/buildings/lighthouse/lighthouse-lv1.png", width: 92, height: 138, y: -108 },
+  market: { href: "/assets/island/buildings/market-square/market-square-lv1.png", width: 108, height: 108, y: -78 },
+  lighthouse: { href: "/assets/island/buildings/lighthouse/lighthouse-lv1.png", width: 112, height: 168, y: -132 },
   pathways: { href: "/assets/island/buildings/pathways/pathways-lv1.png", width: 156, height: 88, y: -61 },
 };
 

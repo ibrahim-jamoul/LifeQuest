@@ -7,7 +7,7 @@ export function AmbientEffects({ season, avatar }: { season: string; avatar?: Ch
     <g pointerEvents="none">
       <image href="/assets/island/ambience/cloud-soft-01.png" x="25" y="38" width="140" height="87" opacity=".74" />
       <image href="/assets/island/ambience/cloud-soft-01.png" x="980" y="58" width="132" height="82" opacity=".42" />
-      <image href="/assets/island/ambience/hot-air-balloon.png" x="1088" y="150" width="78" height="104" />
+      <image href="/assets/island/ambience/hot-air-balloon.png" x="1076" y="136" width="104" height="138" />
       <image href="/assets/island/ambience/sailboat.png" x="45" y="625" width="111" height="87" />
       <image href="/assets/island/ambience/bird-flight-01.png" x="850" y="98" width="52" height="52" opacity=".8" />
 
