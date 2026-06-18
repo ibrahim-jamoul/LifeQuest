@@ -15,7 +15,7 @@ function Bridge({ href, x, y, width, height, rotate = 0 }: { href: string; x: nu
 export function BridgeLayer() {
   return (
     <g>
-      <Bridge href="/assets/island/structures/bridge-main.png" x={650} y={350} width={122} height={70} rotate={-20} />
+      <Bridge href="/assets/island/structures/bridge-main.png" x={650} y={350} width={90} height={52} rotate={-20} />
     </g>
   );
 }
