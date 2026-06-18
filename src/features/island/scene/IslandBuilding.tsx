@@ -4,7 +4,7 @@ const buildingAssets: Record<IslandBuildingType, { href: string; width: number; 
   // Do not replace island scene assets; these values only normalize visual scale.
   home: { href: "/assets/island/buildings/home-area/home-area-lv1.png", width: 102, height: 102, y: -74 },
   garden: { href: "/assets/island/buildings/garden/garden-lv1.png", width: 124, height: 124, y: -90 },
-  workshop: { href: "/assets/island/buildings/workshop/workshop-lv1.png", width: 104, height: 104, y: -75 },
+  workshop: { href: "/assets/island/buildings/workshop/workshop-lv1.png", width: 94, height: 94, y: -68 },
   learning: { href: "/assets/island/buildings/learning-corner/learning-corner-lv1.png", width: 100, height: 100, y: -72 },
   townHall: { href: "/assets/island/buildings/town-hall/town-hall-lv1.png", width: 174, height: 130, y: -96 },
   market: { href: "/assets/island/buildings/market-square/market-square-lv1.png", width: 108, height: 108, y: -78 },
