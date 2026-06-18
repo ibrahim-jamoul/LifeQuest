@@ -19,11 +19,11 @@ export function IslandBuilding({ type }: { type: IslandBuildingType; color: stri
     <>
       <rect
         className="building-hit-area"
-        x={-asset.width * 0.35}
-        y={asset.y + asset.height * 0.2}
-        width={asset.width * 0.7}
-        height={asset.height * 0.62}
-        rx="28"
+        x={-asset.width * 0.42}
+        y={asset.y + asset.height * 0.28}
+        width={asset.width * 0.84}
+        height={asset.height * 0.54}
+        rx="34"
         fill="transparent"
       />
       <image

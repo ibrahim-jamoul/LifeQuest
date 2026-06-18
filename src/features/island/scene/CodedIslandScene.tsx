@@ -5,9 +5,6 @@ import { BridgeLayer } from "./BridgeLayer";
 import { BuildingLayer } from "./BuildingLayer";
 import { IslandTerrain } from "./IslandTerrain";
 import { OceanLayer } from "./OceanLayer";
-import { PathLayer } from "./PathLayer";
-import { RiverLayer } from "./RiverLayer";
-import { VegetationLayer } from "./VegetationLayer";
 
 export function CodedIslandScene({ zones, season, avatar, activeZoneId, onZoneClick }: { zones: IslandZoneData[]; season: string; avatar?: ChildProfile; activeZoneId?: string; onZoneClick: (zone: IslandZoneData) => void }) {
   return (
@@ -19,16 +16,10 @@ export function CodedIslandScene({ zones, season, avatar, activeZoneId, onZoneCl
           <filter id="terrainShadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="14" floodColor="#175d64" floodOpacity=".32" /></filter>
           <filter id="labelShadow" x="-30%" y="-50%" width="160%" height="220%"><feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#345548" floodOpacity=".22" /></filter>
           <filter id="buildingGlow" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#fff8c7" floodOpacity=".9" /></filter>
-          <pattern id="waterTexture" width="256" height="256" patternUnits="userSpaceOnUse">
-            <image href="/assets/island/terrain/water-texture-tile.png" width="256" height="256" />
-          </pattern>
         </defs>
         <OceanLayer />
         <IslandTerrain />
-        <RiverLayer />
-        <PathLayer />
         <BridgeLayer />
-        <VegetationLayer />
         <BuildingLayer zones={zones} activeZoneId={activeZoneId} onZoneClick={onZoneClick} />
         <AmbientEffects season={season} avatar={avatar} />
       </svg>
