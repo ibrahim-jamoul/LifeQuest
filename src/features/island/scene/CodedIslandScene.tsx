@@ -8,8 +8,8 @@ import { OceanLayer } from "./OceanLayer";
 
 export function CodedIslandScene({ zones, season, avatar, activeZoneId, onZoneClick }: { zones: IslandZoneData[]; season: string; avatar?: ChildProfile; activeZoneId?: string; onZoneClick: (zone: IslandZoneData) => void }) {
   return (
-    <div className="absolute inset-0 overflow-auto bg-[#54b9cb]">
-      <svg className="island-svg-scene relative left-1/2 top-1/2 h-full min-h-[700px] min-w-[1050px] -translate-x-1/2 -translate-y-1/2" viewBox="0 0 1200 800" role="img" aria-label="Interactive illustrated LifeQuest village island">
+    <div className="island-scene-viewport absolute inset-0 overflow-auto">
+      <svg className="island-svg-scene relative left-1/2 top-1/2 z-[2] h-full min-h-[700px] min-w-[1050px] -translate-x-1/2 -translate-y-1/2" viewBox="0 0 1200 800" role="img" aria-label="Interactive illustrated LifeQuest village island">
         <defs>
           <linearGradient id="oceanGradient" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#56bed0" /><stop offset="1" stopColor="#309caf" /></linearGradient>
           <linearGradient id="grassGradient" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#a9d982" /><stop offset="1" stopColor="#7dbe69" /></linearGradient>
