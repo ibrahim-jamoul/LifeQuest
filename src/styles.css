@@ -42,7 +42,7 @@
   .island-icon-button { @apply grid size-11 place-items-center rounded-2xl border-2 border-[#e8d8b8]/90 bg-[#fff4dc]/95 text-[#587064] shadow-[0_8px_22px_rgba(69,93,78,.15)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-[#fff6e5]; }
   .island-icon-button.is-active { @apply border-[#75a876] bg-[#75a876] text-white; }
   .island-icon-button:disabled { @apply cursor-not-allowed opacity-50 hover:translate-y-0 hover:bg-[#fff4dc]/95; }
-  .island-camera-menu { @apply pointer-events-none absolute right-3 top-1/2 z-40 size-[10.75rem] -translate-y-1/2 sm:right-5; }
+  .island-camera-menu { @apply pointer-events-auto absolute right-3 top-1/2 z-40 size-[10.75rem] -translate-y-1/2 sm:right-5; }
   .island-camera-grid { @apply absolute inset-0 grid grid-cols-3 grid-rows-3 place-items-center gap-2; }
   .island-camera-trigger { @apply pointer-events-auto col-start-2 row-start-2 grid size-14 place-items-center rounded-[20px] border-2 border-[#e8d8b8]/90 bg-[#fff4dc]/95 text-[#587064] shadow-[0_12px_26px_rgba(69,93,78,.2)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-[#fff8ea] active:translate-y-0 active:scale-95; }
   .island-camera-trigger.is-active { @apply border-[#75a876] bg-[#75a876] text-white shadow-[0_14px_30px_rgba(78,127,84,.24)]; }
