@@ -43,6 +43,15 @@
   .island-action { @apply inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#75a876] px-4 py-3 text-sm font-black text-white shadow-[0_5px_0_#5d8c61] transition hover:-translate-y-0.5; }
 }
 
+.island-page {
+  background: #0a6f9a url("/assets/island/ocean-contour.png") center / cover no-repeat;
+}
+
+.island-scene-viewport {
+  z-index: 1;
+  background: transparent;
+}
+
 @keyframes wave-drift { to { stroke-dashoffset: -68; } }
 @keyframes cloud-drift { 50% { transform: translateX(28px); } }
 @keyframes sparkle-pulse { 50% { opacity: .25; transform: scale(.75); } }
