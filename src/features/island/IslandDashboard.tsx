@@ -1,5 +1,6 @@
-import { BookMarked, Flame, Menu, Settings, Sparkles, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookMarked, Compass, Crosshair, Flame, Menu, RotateCcw, Settings, Sparkles, Zap, ZoomIn, ZoomOut } from "lucide-react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { islandZones } from "./data";
 import { IslandActionPanel } from "./IslandActionPanel";
@@ -22,10 +23,72 @@ function seasonForDate(date: Date): string {
   return "Spring";
 }
 
+const MAP_ASPECT_RATIO = 1672 / 941;
+const ISLAND_STAGE_OVERSCAN = 1.06;
+const MIN_CAMERA_ZOOM = 1;
+const MAX_CAMERA_ZOOM = 1.6;
+const CAMERA_ZOOM_STEP = 0.08;
+const CAMERA_PAN_STEP = 90;
+
+type CameraPan = { x: number; y: number };
+type CameraPointer = { x: number; y: number };
+type CameraGesture = {
+  startX: number;
+  startY: number;
+  startPan: CameraPan;
+  dragging: boolean;
+  pinchStartDistance: number | null;
+  pinchStartZoom: number;
+};
+
+function clampCameraZoom(value: number): number {
+  return Math.min(MAX_CAMERA_ZOOM, Math.max(MIN_CAMERA_ZOOM, Number(value.toFixed(2))));
+}
+
+function getCameraPanBounds(zoom: number): CameraPan {
+  if (typeof window === "undefined" || typeof document === "undefined") return { x: 0, y: 0 };
+
+  const viewport = document.querySelector<HTMLElement>(".island-viewport");
+  const viewportWidth = viewport?.clientWidth ?? window.innerWidth;
+  const viewportHeight = viewport?.clientHeight ?? window.innerHeight;
+  const stageWidth = Math.max(viewportWidth * ISLAND_STAGE_OVERSCAN, viewportHeight * MAP_ASPECT_RATIO * ISLAND_STAGE_OVERSCAN);
+  const stageHeight = stageWidth / MAP_ASPECT_RATIO;
+
+  return {
+    x: Math.max(0, Math.floor((stageWidth * zoom - viewportWidth) / 2)),
+    y: Math.max(0, Math.floor((stageHeight * zoom - viewportHeight) / 2)),
+  };
+}
+
+function clampCameraPan(value: CameraPan, bounds: CameraPan): CameraPan {
+  return {
+    x: Math.min(bounds.x, Math.max(-bounds.x, Math.round(value.x))),
+    y: Math.min(bounds.y, Math.max(-bounds.y, Math.round(value.y))),
+  };
+}
+
+function getPointerDistance(pointers: CameraPointer[]): number {
+  if (pointers.length < 2) return 0;
+
+  return Math.hypot(pointers[0].x - pointers[1].x, pointers[0].y - pointers[1].y);
+}
+
 export function IslandDashboard() {
   const [panel, setPanel] = useState<IslandPanel>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [cameraControlsOpen, setCameraControlsOpen] = useState(false);
+  const [cameraZoom, setCameraZoom] = useState(1);
+  const [cameraPan, setCameraPan] = useState<CameraPan>({ x: 0, y: 0 });
+  const [cameraPanBounds, setCameraPanBounds] = useState<CameraPan>({ x: 0, y: 0 });
+  const [cameraDragging, setCameraDragging] = useState(false);
+  const cameraZoomRef = useRef(cameraZoom);
+  const cameraPanRef = useRef(cameraPan);
+  const cameraPanBoundsRef = useRef(cameraPanBounds);
+  const cameraPointersRef = useRef<Map<number, CameraPointer>>(new Map());
+  const cameraGestureRef = useRef<CameraGesture | null>(null);
+  const suppressNextZoneClickRef = useRef(false);
+  const cameraMenuRef = useRef<HTMLDivElement | null>(null);
   const bootstrap = useAppStore((state) => state.bootstrap);
   const loading = useAppStore((state) => state.loading);
   const error = useAppStore((state) => state.error);
@@ -40,7 +103,45 @@ export function IslandDashboard() {
     void api.preferences.get().then((value) => setShowOnboarding(!Boolean(value.onboarding_completed)));
   }, [bootstrap]);
 
-  const openZone = (zone: IslandZoneData) => setPanel({ kind: "zone", zone });
+  useEffect(() => {
+    const syncCameraBounds = () => {
+      const bounds = getCameraPanBounds(cameraZoomRef.current);
+      const nextPan = clampCameraPan(cameraPanRef.current, bounds);
+
+      setCameraPanBounds(bounds);
+      setCameraPan(nextPan);
+      cameraPanBoundsRef.current = bounds;
+      cameraPanRef.current = nextPan;
+    };
+
+    syncCameraBounds();
+    window.addEventListener("resize", syncCameraBounds);
+    return () => window.removeEventListener("resize", syncCameraBounds);
+  }, [cameraZoom]);
+
+  useEffect(() => {
+    if (!cameraControlsOpen) return;
+
+    const closeCameraMenuOnOutsidePress = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (cameraMenuRef.current?.contains(target)) return;
+
+      setCameraControlsOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeCameraMenuOnOutsidePress);
+    return () => document.removeEventListener("pointerdown", closeCameraMenuOnOutsidePress);
+  }, [cameraControlsOpen]);
+
+  const openZone = (zone: IslandZoneData) => {
+    if (suppressNextZoneClickRef.current) {
+      suppressNextZoneClickRef.current = false;
+      return;
+    }
+
+    setPanel({ kind: "zone", zone });
+  };
   const now = new Date();
   const isNight = now.getHours() < 6 || now.getHours() >= 19;
   const totalXp = todaySnapshot?.progression.totalXp ?? dashboardSummary?.totalXp ?? 0;
@@ -54,6 +155,151 @@ export function IslandDashboard() {
   const mainFocus = todaySnapshot?.focusPriorities.find((priority) => priority.priority_type === "main");
   const weeklyProgress = Math.min(1, Number(mainFocus?.focus_progress ?? 0) / 100);
   const lifeBalance = todaySnapshot?.lifeBalance.length ? Math.round(todaySnapshot.lifeBalance.reduce((sum, area) => sum + area.score, 0) / todaySnapshot.lifeBalance.length) : 0;
+  const setCameraPanSafely = (nextValue: CameraPan, bounds = cameraPanBoundsRef.current) => {
+    const nextPan = clampCameraPan(nextValue, bounds);
+
+    cameraPanRef.current = nextPan;
+    setCameraPan(nextPan);
+  };
+  const updateCameraZoom = (nextValue: number) => {
+    const nextZoom = clampCameraZoom(nextValue);
+    const nextBounds = getCameraPanBounds(nextZoom);
+
+    cameraZoomRef.current = nextZoom;
+    cameraPanBoundsRef.current = nextBounds;
+    setCameraZoom(nextZoom);
+    setCameraPanBounds(nextBounds);
+    setCameraPan((value) => {
+      const nextPan = clampCameraPan(value, nextBounds);
+      cameraPanRef.current = nextPan;
+      return nextPan;
+    });
+  };
+  const moveCamera = (delta: CameraPan) => {
+    setCameraPanSafely({ x: cameraPanRef.current.x + delta.x, y: cameraPanRef.current.y + delta.y });
+  };
+  const resetCamera = () => {
+    const bounds = getCameraPanBounds(1);
+
+    cameraZoomRef.current = 1;
+    cameraPanRef.current = { x: 0, y: 0 };
+    cameraPanBoundsRef.current = bounds;
+    setCameraZoom(1);
+    setCameraPan({ x: 0, y: 0 });
+    setCameraPanBounds(bounds);
+  };
+  const resetCameraPan = () => setCameraPanSafely({ x: 0, y: 0 });
+  const zoomIn = () => updateCameraZoom(cameraZoom + CAMERA_ZOOM_STEP);
+  const zoomOut = () => updateCameraZoom(cameraZoom - CAMERA_ZOOM_STEP);
+  const panUp = () => moveCamera({ x: 0, y: CAMERA_PAN_STEP });
+  const panDown = () => moveCamera({ x: 0, y: -CAMERA_PAN_STEP });
+  const panLeft = () => moveCamera({ x: CAMERA_PAN_STEP, y: 0 });
+  const panRight = () => moveCamera({ x: -CAMERA_PAN_STEP, y: 0 });
+  const centerView = resetCameraPan;
+  const cameraActionStyle = (): CSSProperties => ({
+    opacity: cameraControlsOpen ? 1 : 0,
+    pointerEvents: cameraControlsOpen ? "auto" : "none",
+    transform: cameraControlsOpen ? "translate(0, 0) scale(1)" : "translate(var(--camera-start-x), var(--camera-start-y)) scale(.62)",
+  });
+  const handleCameraWheel = (event: ReactWheelEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    updateCameraZoom(cameraZoomRef.current + (event.deltaY < 0 ? CAMERA_ZOOM_STEP : -CAMERA_ZOOM_STEP));
+  };
+  const handleCameraPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    cameraPointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    const pointers = Array.from(cameraPointersRef.current.values());
+    if (pointers.length === 1) {
+      cameraGestureRef.current = {
+        startX: event.clientX,
+        startY: event.clientY,
+        startPan: cameraPanRef.current,
+        dragging: false,
+        pinchStartDistance: null,
+        pinchStartZoom: cameraZoomRef.current,
+      };
+      return;
+    }
+
+    if (pointers.length === 2) {
+      cameraGestureRef.current = {
+        startX: event.clientX,
+        startY: event.clientY,
+        startPan: cameraPanRef.current,
+        dragging: true,
+        pinchStartDistance: getPointerDistance(pointers),
+        pinchStartZoom: cameraZoomRef.current,
+      };
+      suppressNextZoneClickRef.current = true;
+      setCameraDragging(true);
+    }
+  };
+  const handleCameraPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!cameraPointersRef.current.has(event.pointerId)) return;
+
+    cameraPointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const gesture = cameraGestureRef.current;
+    if (!gesture) return;
+
+    const pointers = Array.from(cameraPointersRef.current.values());
+    if (pointers.length >= 2 && gesture.pinchStartDistance) {
+      event.preventDefault();
+      suppressNextZoneClickRef.current = true;
+      setCameraDragging(true);
+      updateCameraZoom(gesture.pinchStartZoom * (getPointerDistance(pointers) / gesture.pinchStartDistance));
+      return;
+    }
+
+    if (pointers.length === 1) {
+      const deltaX = event.clientX - gesture.startX;
+      const deltaY = event.clientY - gesture.startY;
+      const movedEnough = Math.abs(deltaX) + Math.abs(deltaY) > 4;
+
+      if (movedEnough) {
+        event.preventDefault();
+        gesture.dragging = true;
+        suppressNextZoneClickRef.current = true;
+        setCameraDragging(true);
+      }
+
+      if (gesture.dragging) {
+        setCameraPanSafely({ x: gesture.startPan.x + deltaX, y: gesture.startPan.y + deltaY });
+      }
+    }
+  };
+  const finishCameraPointer = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (cameraGestureRef.current?.dragging) {
+      suppressNextZoneClickRef.current = true;
+      window.setTimeout(() => {
+        suppressNextZoneClickRef.current = false;
+      }, 0);
+    }
+
+    cameraPointersRef.current.delete(event.pointerId);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    const pointers = Array.from(cameraPointersRef.current.values());
+    if (pointers.length === 1) {
+      cameraGestureRef.current = {
+        startX: pointers[0].x,
+        startY: pointers[0].y,
+        startPan: cameraPanRef.current,
+        dragging: false,
+        pinchStartDistance: null,
+        pinchStartZoom: cameraZoomRef.current,
+      };
+      setCameraDragging(false);
+      return;
+    }
+
+    cameraGestureRef.current = null;
+    setCameraDragging(false);
+  };
 
   const zones = islandZones.map((zone, index) => {
     if (!villageState) return zone;
@@ -80,7 +326,21 @@ export function IslandDashboard() {
 
   return (
     <div className={`island-page relative h-[100svh] min-h-[680px] overflow-hidden text-island-ink ${isNight ? "island-night" : ""}`}>
-      <CodedIslandScene zones={summary.zones} season={summary.season} avatar={todaySnapshot?.profile} activeZoneId={panel?.kind === "zone" ? panel.zone.id : undefined} onZoneClick={openZone} />
+      <CodedIslandScene
+        zones={summary.zones}
+        season={summary.season}
+        avatar={todaySnapshot?.profile}
+        activeZoneId={panel?.kind === "zone" ? panel.zone.id : undefined}
+        cameraZoom={cameraZoom}
+        cameraPan={cameraPan}
+        isCameraDragging={cameraDragging}
+        onCameraPointerDown={handleCameraPointerDown}
+        onCameraPointerMove={handleCameraPointerMove}
+        onCameraPointerUp={finishCameraPointer}
+        onCameraPointerCancel={finishCameraPointer}
+        onCameraWheel={handleCameraWheel}
+        onZoneClick={openZone}
+      />
       <div className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-b from-[#143d3c]/25 via-transparent to-[#143d3c]/25" />
       {flashMessage ? (
         <div className="pointer-events-none absolute right-4 top-24 z-50 rounded-2xl border border-white/70 bg-cream-secondary/95 px-4 py-3 text-sm font-semibold text-text-secondary shadow-cozy-lg">
@@ -88,6 +348,29 @@ export function IslandDashboard() {
           <button className="pointer-events-auto ml-3 text-xs font-black uppercase tracking-wide text-text-secondary" onClick={clearFlashMessage}>Dismiss</button>
         </div>
       ) : null}
+
+      <div ref={cameraMenuRef} className={`island-camera-menu ${cameraControlsOpen ? "is-open" : ""}`}>
+        <div id="island-camera-controls" className="island-camera-grid" role={cameraControlsOpen ? "dialog" : undefined} aria-label="Camera view controls">
+          <button aria-label="Zoom in" title="Zoom in" className={`island-camera-button camera-cell-tl ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={zoomIn} disabled={cameraZoom >= MAX_CAMERA_ZOOM} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><ZoomIn className="size-5" /></button>
+          <button aria-label="Move view up" title="Move view up" className={`island-camera-button camera-cell-t ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={panUp} disabled={cameraPan.y >= cameraPanBounds.y} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><ArrowUp className="size-5" /></button>
+          <button aria-label="Zoom out" title="Zoom out" className={`island-camera-button camera-cell-tr ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={zoomOut} disabled={cameraZoom <= MIN_CAMERA_ZOOM} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><ZoomOut className="size-5" /></button>
+          <button aria-label="Move view left" title="Move view left" className={`island-camera-button camera-cell-l ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={panLeft} disabled={cameraPan.x >= cameraPanBounds.x} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><ArrowLeft className="size-5" /></button>
+          <button aria-label="Move view right" title="Move view right" className={`island-camera-button camera-cell-r ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={panRight} disabled={cameraPan.x <= -cameraPanBounds.x} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><ArrowRight className="size-5" /></button>
+          <button aria-label="Reset camera" title="Reset camera" className={`island-camera-button camera-cell-bl ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={resetCamera} disabled={cameraZoom === 1 && cameraPan.x === 0 && cameraPan.y === 0} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><RotateCcw className="size-5" /></button>
+          <button aria-label="Move view down" title="Move view down" className={`island-camera-button camera-cell-b ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={panDown} disabled={cameraPan.y <= -cameraPanBounds.y} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><ArrowDown className="size-5" /></button>
+          <button aria-label="Center view" title="Center view" className={`island-camera-button camera-cell-br island-camera-center ${cameraControlsOpen ? "is-visible" : ""}`} style={cameraActionStyle()} onClick={centerView} disabled={cameraPan.x === 0 && cameraPan.y === 0} tabIndex={cameraControlsOpen ? 0 : -1} aria-hidden={!cameraControlsOpen}><Crosshair className="size-5" /></button>
+          <button
+            aria-controls="island-camera-controls"
+            aria-expanded={cameraControlsOpen}
+            aria-label="Camera controls"
+            title="Camera controls"
+            className={`island-camera-trigger ${cameraControlsOpen ? "is-active" : ""}`}
+            onClick={() => setCameraControlsOpen((value) => !value)}
+          >
+            <Compass className="size-6" />
+          </button>
+        </div>
+      </div>
 
       <header className="pointer-events-none absolute inset-x-0 top-0 z-40 flex items-start justify-between gap-3 p-3 sm:p-5">
         <div className="pointer-events-auto rounded-cozy-lg border-2 border-border/90 bg-cream-light/95 px-4 py-3 shadow-cozy-lg backdrop-blur-md">
