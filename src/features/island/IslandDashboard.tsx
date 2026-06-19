@@ -79,7 +79,7 @@ export function IslandDashboard() {
   };
 
   return (
-    <div className={`island-page relative h-[100svh] min-h-[680px] overflow-hidden text-island-ink ${isNight ? "island-night" : ""}`}>
+    <div className={`relative h-[100svh] min-h-[680px] overflow-hidden bg-ocean text-island-ink ${isNight ? "island-night" : ""}`}>
       <CodedIslandScene zones={summary.zones} season={summary.season} avatar={todaySnapshot?.profile} activeZoneId={panel?.kind === "zone" ? panel.zone.id : undefined} onZoneClick={openZone} />
       <div className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-b from-[#143d3c]/25 via-transparent to-[#143d3c]/25" />
       {flashMessage ? (
