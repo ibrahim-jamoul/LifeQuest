@@ -113,7 +113,7 @@ function createSeededRandom(seed: number) {
 }
 
 const FOAM_CONFIG = {
-  totalInstances: 46,
+  totalInstances: 47,
   groupCount: 6,
   instancesPerGroup: 6,
   minDistanceBetween: 118,
