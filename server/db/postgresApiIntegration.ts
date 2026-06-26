@@ -3,7 +3,7 @@ import { createApp } from "../app";
 import { store } from "./store";
 
 const email = process.env.POSTGRES_TEST_EMAIL ?? "child@lifequest.local";
-const password = process.env.POSTGRES_TEST_PASSWORD ?? "lifequest123";
+const password = process.env.POSTGRES_TEST_PASSWORD ?? "lifequest2026";
 let token = "";
 let server: Server | undefined;
 

@@ -56,6 +56,95 @@
   .island-camera-button.is-visible:disabled { pointer-events: none; opacity: .45; transform: translate(0, 0) scale(1); }
   .island-camera-center { @apply border-[#75a876]/75 text-[#75a876]; }
   .island-action { @apply inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#75a876] px-4 py-3 text-sm font-black text-white shadow-[0_5px_0_#5d8c61] transition hover:-translate-y-0.5; }
+  .home-breath-ring { @apply grid size-28 place-items-center rounded-full border-2 border-[#e8d8b8] bg-[radial-gradient(circle_at_30%_30%,#fff8ea_0%,#fff1d1_35%,#f5e0b6_100%)] text-primary shadow-[0_16px_32px_rgba(63,53,40,.08)]; }
+  .home-breath-ring.is-running[data-mode="slow"] { animation: home-breath-slow 6s ease-in-out infinite; }
+  .home-breath-ring.is-running[data-mode="focus"] { animation: home-breath-focus 4s ease-in-out infinite; }
+  .home-breath-ring.is-running[data-mode="sleep"] { animation: home-breath-sleep 7s ease-in-out infinite; }
+  .lighthouse-pendulum { @apply absolute top-10 grid place-items-center; width: 4.5rem; height: 9rem; transform-origin: top center; animation: lighthouse-pendulum-sway 4.8s ease-in-out infinite; }
+  .lighthouse-pendulum.is-paused { animation-play-state: paused; }
+  .pendulum-string { @apply absolute top-0 h-20 w-px bg-white/60; }
+  .pendulum-bob { @apply absolute top-16 size-8 rounded-full border border-white/20 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,.95)_0%,rgba(255,255,255,.55)_50%,rgba(255,255,255,.18)_100%)] shadow-[0_10px_20px_rgba(0,0,0,.18)]; }
+  .focus-ambient-stage { @apply relative h-[22rem] w-full overflow-hidden rounded-[30px] shadow-[0_18px_48px_rgba(0,0,0,.2)]; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.08); }
+  .focus-ambient-stage.is-paused .focus-ambient-orb,
+  .focus-ambient-stage.is-paused .focus-ambient-line,
+  .focus-ambient-stage.is-paused .focus-ambient-particle,
+  .focus-ambient-stage.is-paused .focus-theme-visual > * { animation-play-state: paused; }
+  .focus-ambient-backdrop { @apply absolute inset-0; }
+  .focus-ambient-orb { @apply absolute rounded-full; filter: blur(6px); }
+  .focus-ambient-orb-a { left: 17%; top: 15%; height: 13.5rem; width: 13.5rem; animation: focus-ambient-drift 12s ease-in-out infinite; }
+  .focus-ambient-orb-b { right: 11%; top: 19%; height: 8.8rem; width: 8.8rem; animation: focus-ambient-float 9s ease-in-out infinite reverse; }
+  .focus-ambient-orb-c { left: 37%; bottom: 17%; height: 7rem; width: 7rem; animation: focus-ambient-float 10s ease-in-out infinite; }
+  .focus-ambient-ring { @apply absolute left-1/2 top-1/2 rounded-full border; transform: translate(-50%, -50%); }
+  .focus-ambient-ring-outer { height: 16rem; width: 16rem; opacity: .4; }
+  .focus-ambient-ring-inner { height: 11rem; width: 11rem; opacity: .24; }
+  .focus-ambient-line { @apply absolute left-[12%] right-[12%] top-1/2 h-[2px] rounded-full; opacity: .65; animation: focus-ambient-line-sway 7s ease-in-out infinite; }
+  .focus-ambient-progress-track { @apply absolute inset-x-7 bottom-6 h-1.5 overflow-hidden rounded-full; background: rgba(255,255,255,.12); }
+  .focus-ambient-progress-fill { @apply h-full rounded-full; box-shadow: 0 0 22px rgba(255,255,255,.2); transition: width .8s ease; }
+  .focus-ambient-particle { @apply absolute rounded-full; height: .4rem; width: .4rem; opacity: .72; animation: focus-ambient-particle-rise 8s ease-in-out infinite; }
+  .focus-ambient-particle-1 { left: 12%; bottom: 18%; animation-delay: -1s; }
+  .focus-ambient-particle-2 { left: 28%; bottom: 11%; animation-delay: -3s; }
+  .focus-ambient-particle-3 { left: 46%; bottom: 15%; animation-delay: -2s; }
+  .focus-ambient-particle-4 { right: 28%; bottom: 13%; animation-delay: -5s; }
+  .focus-ambient-particle-5 { right: 16%; bottom: 20%; animation-delay: -4s; }
+  .focus-ambient-particle-6 { left: 62%; bottom: 10%; animation-delay: -6s; }
+  .focus-theme-visual { @apply pointer-events-none absolute inset-0; z-index: 1; }
+  .focus-theme-disc { @apply absolute left-1/2 top-[31%] size-28 rounded-full; transform: translateX(-50%); background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.96) 0%, rgba(255,255,255,.46) 32%, rgba(255,255,255,.08) 68%, transparent 100%); box-shadow: 0 0 32px rgba(255,255,255,.18); animation: focus-theme-glow 5.4s ease-in-out infinite; }
+  .focus-theme-wave { @apply absolute left-1/2 rounded-[999px] border border-white/30; transform: translateX(-50%); }
+  .focus-theme-wave-a { top: 42%; width: 12rem; height: 2.8rem; opacity: .72; animation: focus-theme-wave-slide 8s ease-in-out infinite; }
+  .focus-theme-wave-b { top: 48%; width: 16rem; height: 3.8rem; opacity: .42; animation: focus-theme-wave-slide 10s ease-in-out infinite reverse; }
+  .focus-theme-wave-c { top: 56%; width: 19rem; height: 4.6rem; opacity: .26; animation: focus-theme-wave-slide 12s ease-in-out infinite; }
+  .focus-theme-dot { @apply absolute rounded-full bg-white/80; box-shadow: 0 0 16px rgba(255,255,255,.2); }
+  .focus-theme-dot-1 { left: 37%; top: 34%; height: .55rem; width: .55rem; animation: focus-theme-dot-float 7s ease-in-out infinite; }
+  .focus-theme-dot-2 { right: 35%; top: 38%; height: .4rem; width: .4rem; animation: focus-theme-dot-float 8.5s ease-in-out infinite -2s; }
+  .focus-theme-dot-3 { left: 52%; top: 27%; height: .34rem; width: .34rem; animation: focus-theme-dot-float 9.5s ease-in-out infinite -4s; }
+  .focus-theme-canopy { @apply absolute left-1/2 top-[23%] h-32 w-48 rounded-[999px]; transform: translateX(-56%); background: radial-gradient(circle at 35% 35%, rgba(244,255,241,.95) 0%, rgba(198,234,191,.82) 34%, rgba(115,163,104,.42) 72%, transparent 100%); filter: blur(.2px); animation: focus-theme-canopy-breathe-left 6.2s ease-in-out infinite; }
+  .focus-theme-canopy-b { top: 29%; width: 13rem; height: 7rem; transform: translateX(-4%); opacity: .82; animation: focus-theme-canopy-breathe-right 7.4s ease-in-out infinite -2.4s; }
+  .focus-theme-ground { @apply absolute inset-x-[24%] bottom-[28%] h-24 rounded-[999px]; background: linear-gradient(180deg, rgba(255,255,255,.1) 0%, rgba(74,125,64,.18) 24%, rgba(74,125,64,.45) 100%); filter: blur(2px); }
+  .focus-theme-leaf { @apply absolute h-6 w-3 rounded-[999px]; background: linear-gradient(180deg, rgba(244,255,241,.92) 0%, rgba(101,158,80,.85) 100%); box-shadow: 0 0 12px rgba(255,255,255,.14); }
+  .focus-theme-leaf-1 { left: 42%; top: 33%; animation: focus-theme-leaf-drift 9s ease-in-out infinite; }
+  .focus-theme-leaf-2 { right: 39%; top: 29%; animation: focus-theme-leaf-drift 11s ease-in-out infinite -3s; }
+  .focus-theme-leaf-3 { left: 58%; top: 39%; animation: focus-theme-leaf-drift 10s ease-in-out infinite -6s; }
+  .focus-theme-window { @apply absolute left-1/2 top-[23%] h-36 w-28 rounded-[28px]; transform: translateX(-50%); border: 1px solid rgba(255,255,255,.18); background: linear-gradient(180deg, rgba(255,251,241,.82) 0%, rgba(255,236,194,.5) 34%, rgba(255,255,255,.08) 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 0 36px rgba(255,238,198,.18); }
+  .focus-theme-window::before,
+  .focus-theme-window::after { content: ""; position: absolute; background: rgba(255,255,255,.2); }
+  .focus-theme-window::before { left: 50%; top: .75rem; bottom: .75rem; width: 1px; transform: translateX(-50%); }
+  .focus-theme-window::after { left: .75rem; right: .75rem; top: 50%; height: 1px; transform: translateY(-50%); }
+  .focus-theme-lamp-glow { @apply absolute left-1/2 top-[22%] h-44 w-44 rounded-full; transform: translateX(-50%); background: radial-gradient(circle, rgba(255,247,220,.36) 0%, rgba(255,247,220,.14) 34%, transparent 72%); animation: focus-theme-glow 6.8s ease-in-out infinite; }
+  .focus-theme-book { @apply absolute left-1/2 bottom-[28%] h-20 w-36 rounded-[22px]; transform: translateX(-50%) perspective(300px) rotateX(18deg); background: linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,248,232,.82) 55%, rgba(232,214,176,.7) 100%); box-shadow: 0 18px 30px rgba(40,28,18,.14); }
+  .focus-theme-book-line { @apply absolute left-1/2 h-px rounded-full bg-[#d6b57a]/70; transform: translateX(-50%); }
+  .focus-theme-book-line-a { bottom: calc(28% + 2.2rem); width: 5.6rem; animation: focus-theme-line-breathe 5s ease-in-out infinite; }
+  .focus-theme-book-line-b { bottom: calc(28% + 1.3rem); width: 4.2rem; animation: focus-theme-line-breathe 6.2s ease-in-out infinite -1.8s; }
+  .focus-sound-toggle { @apply inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] backdrop-blur-md transition sm:px-3; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+  .focus-sound-toggle:hover { background: rgba(255,255,255,.18); color: rgba(255,255,255,1); }
+  .focus-sound-toggle:active { transform: scale(.98); }
+  .focus-ambient-stage.theme-night_lighthouse::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 62% 32%, rgba(255,255,255,.16) 0%, transparent 18%), linear-gradient(180deg, rgba(11,31,57,.08) 0%, rgba(9,21,39,.36) 100%); }
+  .focus-ambient-stage.theme-calm_ocean::after { content: ""; position: absolute; inset: auto -8% 15% -8%; height: 5rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); opacity: .34; animation: lighthouse-wave-drift 12s linear infinite; }
+  .focus-ambient-stage.theme-forest_desk::after { content: ""; position: absolute; inset: auto 0 0 0; height: 24%; background: linear-gradient(180deg, rgba(94,71,43,0) 0%, rgba(94,71,43,.22) 30%, rgba(94,71,43,.48) 100%); }
+  .focus-ambient-stage.theme-rainy_window::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(180deg, rgba(255,255,255,.12) 0%, transparent 35%); opacity: .5; }
+  .focus-ambient-stage.theme-simple::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 54px 54px; opacity: .26; }
+  .focus-ambient-stage.theme-cozy_clock::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(255,250,232,.3) 0%, transparent 34%); }
+  .lighthouse-night-stars { @apply absolute inset-0; opacity: .55; background-image: radial-gradient(rgba(255,255,255,.85) 1px, transparent 1px); background-size: 32px 32px; }
+  .lighthouse-night-sea { @apply absolute inset-x-0 bottom-0 h-[38%]; opacity: .55; background: linear-gradient(180deg, rgba(73,134,169,0) 0%, rgba(42,97,138,.35) 30%, rgba(15,51,82,.85) 100%); }
+  .lighthouse-beam { @apply absolute -top-[12%] right-[12%] h-[135%] w-[34%] opacity-50; background: linear-gradient(115deg, rgba(255,243,179,0) 10%, rgba(255,243,179,.58) 48%, rgba(255,243,179,0) 78%); filter: blur(14px); transform-origin: top right; animation: lighthouse-beam-sweep 9s ease-in-out infinite; }
+  .lighthouse-ocean-wash { @apply absolute inset-0; opacity: .35; background: radial-gradient(circle at 50% 120%, rgba(255,255,255,.28) 0%, rgba(255,255,255,.12) 18%, transparent 50%); }
+  .lighthouse-ocean-wave { @apply absolute left-[-10%] h-24 w-[130%] rounded-[999px] border border-white/20; opacity: .35; }
+  .lighthouse-ocean-wave-a { bottom: 18%; animation: lighthouse-wave-drift 11s linear infinite; }
+  .lighthouse-ocean-wave-b { bottom: 10%; animation: lighthouse-wave-drift 15s linear infinite reverse; }
+  .lighthouse-forest-glow { @apply absolute inset-0 opacity-40; background: radial-gradient(circle at 18% 18%, rgba(255,255,255,.42) 0%, rgba(255,255,255,.18) 18%, transparent 42%); }
+  .lighthouse-forest-leaf { @apply absolute h-48 w-48 rounded-full opacity-20; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.52) 0%, rgba(255,255,255,.16) 28%, transparent 65%); }
+  .lighthouse-forest-leaf-a { left: -3rem; top: 4rem; animation: lighthouse-leaf-sway 9s ease-in-out infinite; }
+  .lighthouse-forest-leaf-b { right: -2rem; top: 7rem; animation: lighthouse-leaf-sway 11s ease-in-out infinite reverse; }
+  .lighthouse-desk-band { @apply absolute inset-x-0 bottom-0 h-[24%]; opacity: .45; background: linear-gradient(180deg, rgba(106,74,45,0) 0%, rgba(106,74,45,.24) 25%, rgba(106,74,45,.54) 100%); }
+  .lighthouse-rain-window { @apply absolute inset-0; opacity: .26; background: linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.08) 24%, transparent 70%); }
+  .lighthouse-rain-streak { @apply absolute top-[-10%] h-[130%] w-px bg-white/35; filter: blur(.3px); }
+  .lighthouse-rain-streak-a { left: 22%; animation: lighthouse-rain-fall 5.5s linear infinite; }
+  .lighthouse-rain-streak-b { left: 54%; animation: lighthouse-rain-fall 6.2s linear infinite -2s; }
+  .lighthouse-rain-streak-c { left: 78%; animation: lighthouse-rain-fall 4.8s linear infinite -1s; }
+  .lighthouse-simple-grid { @apply absolute inset-0; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px); background-size: 48px 48px; }
+  .lighthouse-cozy-glow { @apply absolute inset-0; opacity: .38; background: radial-gradient(circle at 50% 22%, rgba(255,251,236,.72) 0%, rgba(255,251,236,.2) 16%, transparent 44%); }
+  .lighthouse-cozy-orbit { @apply absolute rounded-full border border-white/20 opacity-30; }
+  .lighthouse-cozy-orbit-a { left: 14%; top: 18%; height: 14rem; width: 14rem; animation: lighthouse-orbit-float 12s ease-in-out infinite; }
+  .lighthouse-cozy-orbit-b { right: 12%; bottom: 14%; height: 10rem; width: 10rem; animation: lighthouse-orbit-float 15s ease-in-out infinite reverse; }
 }
 
 .island-page {
@@ -240,6 +329,26 @@
 @keyframes bird-flight { 50% { transform: translate(22px, -7px); } }
 @keyframes villager-idle { 50% { transform: translateY(-4px); } }
 @keyframes water-shimmer { 50% { opacity: .35; } }
+@keyframes home-breath-slow { 0%, 100% { transform: scale(.92); } 50% { transform: scale(1.06); } }
+@keyframes home-breath-focus { 0%, 100% { transform: scale(.96); } 50% { transform: scale(1.1); } }
+@keyframes home-breath-sleep { 0%, 100% { transform: scale(.9); opacity: .92; } 50% { transform: scale(1.03); opacity: 1; } }
+@keyframes lighthouse-pendulum-sway { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+@keyframes focus-ambient-drift { 0%, 100% { transform: translate(0, 0) scale(.98); } 50% { transform: translate(18px, -12px) scale(1.04); } }
+@keyframes focus-ambient-float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-14px) scale(1.05); } }
+@keyframes focus-ambient-line-sway { 0%, 100% { transform: translateY(0) scaleX(.96); opacity: .52; } 50% { transform: translateY(-6px) scaleX(1); opacity: .88; } }
+@keyframes focus-ambient-particle-rise { 0% { transform: translateY(12px) scale(.82); opacity: 0; } 25% { opacity: .85; } 100% { transform: translateY(-54px) scale(1.08); opacity: 0; } }
+@keyframes focus-theme-wave-slide { 0%, 100% { transform: translateX(-50%) scaleX(.96); } 50% { transform: translateX(-50%) scaleX(1.03) translateY(-4px); } }
+@keyframes focus-theme-dot-float { 0%, 100% { transform: translateY(0) scale(.95); opacity: .48; } 50% { transform: translateY(-10px) scale(1.08); opacity: .9; } }
+@keyframes focus-theme-leaf-drift { 0%, 100% { transform: translate(0, 0) rotate(-8deg); } 50% { transform: translate(-8px, 12px) rotate(12deg); } }
+@keyframes focus-theme-canopy-breathe-left { 0%, 100% { transform: translateX(-56%) scale(1); } 50% { transform: translateX(-56%) scale(1.03); } }
+@keyframes focus-theme-canopy-breathe-right { 0%, 100% { transform: translateX(-4%) scale(1); } 50% { transform: translateX(-4%) scale(1.04); } }
+@keyframes focus-theme-glow { 0%, 100% { opacity: .72; transform: translateX(-50%) scale(.98); } 50% { opacity: 1; transform: translateX(-50%) scale(1.04); } }
+@keyframes focus-theme-line-breathe { 0%, 100% { opacity: .55; } 50% { opacity: .95; } }
+@keyframes lighthouse-beam-sweep { 0%, 100% { transform: rotate(12deg) translateX(0); opacity: .35; } 50% { transform: rotate(22deg) translateX(-6%); opacity: .58; } }
+@keyframes lighthouse-wave-drift { 0% { transform: translateX(0); } 50% { transform: translateX(-4%); } 100% { transform: translateX(0); } }
+@keyframes lighthouse-leaf-sway { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(8deg); } }
+@keyframes lighthouse-rain-fall { 0% { transform: translateY(-8%) skewX(8deg); opacity: 0; } 20% { opacity: .4; } 100% { transform: translateY(12%) skewX(8deg); opacity: 0; } }
+@keyframes lighthouse-orbit-float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.03); } }
 
 .river-flow { animation: wave-drift 8s linear infinite; }
 .cloud-drift { animation: cloud-drift 18s ease-in-out infinite; }
@@ -260,6 +369,9 @@
 .island-building.is-active .zone-ring { animation: zone-pulse 1.8s ease-in-out infinite; }
 .island-building.is-locked .building-body { filter: grayscale(.75); opacity: .48; }
 .island-building.is-locked { cursor: not-allowed; }
+.island-building.is-review-pending .building-body { filter: grayscale(.92) saturate(.35) brightness(.9); opacity: .6; }
+.island-building.is-review-current .building-body { filter: saturate(1.03) brightness(1.02); }
+.island-building.is-review-pending:hover .building-body, .island-building.is-review-pending:focus .building-body, .island-building.is-review-pending.is-active .building-body { transform: translateY(-7px) scale(1.04); filter: grayscale(.45) saturate(.7) brightness(.98); }
 .zone-reward { animation: sparkle-pulse 2.8s ease-in-out infinite; pointer-events: none; }
 .island-night .island-svg-scene { filter: brightness(.72) saturate(.88) hue-rotate(8deg); }
 .island-night::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 75% 10%, rgba(255,246,185,.25), transparent 18%), rgba(20,39,73,.18); z-index: 20; }
@@ -269,6 +381,11 @@
 .zone-sign { transition: transform .2s ease; }
 .zone-sign:hover, .zone-sign:focus { transform: translateY(-5px); }
 .zone-sign.is-locked { opacity: .58; cursor: not-allowed; }
+.zone-sign.is-review-pending { opacity: .72; }
+.zone-sign.is-review-pending rect:first-of-type { fill: #6d665d; stroke: #8f8577; }
+.zone-sign.is-review-pending text { fill: #f0e7d5; }
+.zone-sign.is-review-pending rect:last-of-type { fill: #9db0a0; }
+.zone-sign.is-review-current rect:first-of-type { fill: #6b4f3a; stroke: #9d7448; }
 .balloon-float { animation: balloon-float 6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .sailboat-rock { animation: sailboat-rock 7s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
 .bird-flight { animation: bird-flight 12s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }

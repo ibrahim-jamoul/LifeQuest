@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 
-export const childAccount = { email: "child@lifequest.local", password: "lifequest123" };
-export const parentAccount = { email: "parent@lifequest.local", password: "lifequest123" };
+export const childAccount = { email: "child@lifequest.local", password: "lifequest2026" };
+export const parentAccount = { email: "parent@lifequest.local", password: "lifequest2026" };
 
 export async function login(page: Page, account = childAccount) {
   await page.goto("/login");

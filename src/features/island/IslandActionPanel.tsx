@@ -9,7 +9,7 @@ export function IslandActionPanel({ panel, summary, onClose }: { panel: IslandPa
     today: { icon: CheckCircle2, title: "Today's Focus", text: "Your daily quests will collect the most useful tasks for today.", route: "/tasks", action: "Open tasks" },
     weekly: { icon: Flag, title: "Weekly Goal", text: "Choose one main priority and use your weekly review to keep direction.", route: "/reviews/weekly", action: "Open weekly planning" },
     balance: { icon: HeartPulse, title: "Life Balance", text: "Compare progress across every island zone and find neglected areas.", route: "/life-areas", action: "Open life areas" },
-    progression: { icon: Zap, title: `Level ${summary.level} · ${summary.levelTitle}`, text: `${summary.totalXp} XP earned. Complete meaningful actions to restore and upgrade the island.`, route: "/achievements", action: "Open progression" },
+    progression: { icon: Zap, title: `Level ${summary.level} · ${summary.levelTitle}`, text: `${summary.totalXp} XP earned. Complete meaningful actions to restore and upgrade the island.`, route: "/achievements", action: "Open rewards" },
   } as const;
   const info = panel.kind === "zone" ? null : generic[panel.kind];
   const InfoIcon = info?.icon ?? Sparkles;
@@ -27,7 +27,7 @@ export function IslandActionPanel({ panel, summary, onClose }: { panel: IslandPa
               {[["Goals", panel.zone.linkedGoals], ["Tasks", panel.zone.linkedTasks], ["XP", panel.zone.xpEarned]].map(([label, value]) => <div key={label} className="rounded-2xl bg-cream-secondary p-3"><strong className="block text-lg">{value}</strong><span className="text-[10px] font-black uppercase tracking-wider opacity-50">{label}</span></div>)}
             </div>
             <div className="rounded-3xl bg-cream-secondary p-4"><span className="island-eyebrow">Next recommended action</span><p className="mb-0 mt-2 text-sm font-bold">{panel.zone.nextAction}</p></div>
-            <Link to={panel.zone.route} className="island-action">Visit workspace <ArrowRight className="size-4" /></Link>
+            <Link to={panel.zone.route} className="island-action">Open place <ArrowRight className="size-4" /></Link>
           </div>
         ) : info ? (
           <div className="mt-8">
