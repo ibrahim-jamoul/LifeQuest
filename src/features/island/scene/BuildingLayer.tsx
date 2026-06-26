@@ -7,9 +7,13 @@ export function BuildingLayer({ zones, activeZoneId, onZoneClick }: { zones: Isl
   const orderedZones = [...zones].sort((a, b) => a.position.y - b.position.y);
 
   return (
-    <g>
-      {orderedZones.map((zone) => <IslandZoneMarker key={zone.id} zone={zone} active={activeZoneId === zone.id} onClick={() => onZoneClick(zone)} />)}
-      {orderedZones.map((zone) => <IslandZoneLabel key={`label-${zone.id}`} zone={zone} onClick={() => onZoneClick(zone)} />)}
+    <g className="island-building-layer">
+      <g className="island-zone-marker-layer">
+        {orderedZones.map((zone) => <IslandZoneMarker key={zone.id} zone={zone} active={activeZoneId === zone.id} onClick={() => onZoneClick(zone)} />)}
+      </g>
+      <g className="island-zone-label-layer">
+        {orderedZones.map((zone) => <IslandZoneLabel key={`label-${zone.id}`} zone={zone} onClick={() => onZoneClick(zone)} />)}
+      </g>
     </g>
   );
 }

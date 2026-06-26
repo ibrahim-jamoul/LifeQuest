@@ -5,6 +5,7 @@ import { AppShell } from "./layouts/AppShell";
 import { ImmersiveHomeLayout } from "./layouts/ImmersiveHomeLayout";
 import { DashboardPage } from "./pages/DashboardPage";
 import { AchievementsPage } from "./pages/AchievementsPage";
+import { HomeAreaPage } from "./pages/HomeAreaPage";
 import { GoalDetailPage } from "./pages/GoalDetailPage";
 import { GoalsPage } from "./pages/GoalsPage";
 import { HabitsPage } from "./pages/HabitsPage";
@@ -37,9 +38,11 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route element={<RequireChild />}>
             <Route element={<ImmersiveHomeLayout />}><Route index element={<DashboardPage />} /></Route>
+            <Route path="focus" element={<FocusPage />} />
           </Route>
           <Route element={<AppShell />}>
             <Route element={<RequireChild />}>
+              <Route path="home" element={<HomeAreaPage />} />
               <Route path="goals" element={<GoalsPage />} />
               <Route path="today" element={<TodayPage />} />
               <Route path="progression" element={<ProgressionHubPage />} />
@@ -52,7 +55,6 @@ export default function App() {
               <Route path="projects" element={<ProjectsPage />} />
               <Route path="projects/:projectId" element={<ProjectDetailPage />} />
               <Route path="discovery" element={<DiscoveryPage />} />
-              <Route path="focus" element={<FocusPage />} />
               <Route path="life-areas" element={<LifeAreasPage />} />
               <Route path="campaign" element={<CampaignPage />} />
               <Route path="insights" element={<Suspense fallback={<div className="panel p-6">Loading insights...</div>}><InsightsPage /></Suspense>} />

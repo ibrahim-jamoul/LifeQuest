@@ -8,7 +8,7 @@ import { CodedIslandScene } from "./scene/CodedIslandScene";
 import { LifeBalanceCard } from "./LifeBalanceCard";
 import { ProgressResourceBar } from "./ProgressResourceBar";
 import { TodayFocusCard } from "./TodayFocusCard";
-import type { IslandPanel, IslandSummary, IslandZoneData } from "./types";
+import type { IslandPanel, IslandSummary, IslandZoneData, IslandZoneReviewStatus } from "./types";
 import { VillageMenu } from "./VillageMenu";
 import { WeeklyGoalCard } from "./WeeklyGoalCard";
 import { useAppStore } from "../../store";
@@ -29,6 +29,7 @@ const MIN_CAMERA_ZOOM = 1;
 const MAX_CAMERA_ZOOM = 1.6;
 const CAMERA_ZOOM_STEP = 0.08;
 const CAMERA_PAN_STEP = 90;
+const VISUAL_REVIEW_COMPLETED_ZONE_IDS: string[] = [];
 
 type CameraPan = { x: number; y: number };
 type CameraPointer = { x: number; y: number };
@@ -71,6 +72,10 @@ function getPointerDistance(pointers: CameraPointer[]): number {
   if (pointers.length < 2) return 0;
 
   return Math.hypot(pointers[0].x - pointers[1].x, pointers[0].y - pointers[1].y);
+}
+
+function isInteractiveSceneTarget(target: EventTarget | null): boolean {
+  return target instanceof Element && Boolean(target.closest(".island-building, .zone-sign, a, button"));
 }
 
 export function IslandDashboard() {
@@ -207,6 +212,7 @@ export function IslandDashboard() {
   };
   const handleCameraPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (isInteractiveSceneTarget(event.target)) return;
 
     cameraPointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -309,6 +315,16 @@ export function IslandDashboard() {
     const state: "quiet" | "growing" | "thriving" = progress >= 65 ? "thriving" : progress >= 35 ? "growing" : "quiet";
     return { ...zone, progress, level: live.level, state, unlocked: index < 4 || villageState.villageLevel >= 2 };
   });
+  const currentReviewZoneId = islandZones.find((zone) => !VISUAL_REVIEW_COMPLETED_ZONE_IDS.includes(zone.id))?.id;
+  const reviewZones: IslandZoneData[] = zones.map((zone) => {
+    const reviewStatus: IslandZoneReviewStatus = VISUAL_REVIEW_COMPLETED_ZONE_IDS.includes(zone.id)
+      ? "completed"
+      : zone.id === currentReviewZoneId
+        ? "current"
+        : "pending";
+
+    return { ...zone, reviewStatus };
+  });
 
   const summary: IslandSummary = {
     currentDay: now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }),
@@ -321,7 +337,7 @@ export function IslandDashboard() {
     todayFocusItems: todayCount,
     weeklyProgress,
     lifeBalance,
-    zones,
+    zones: reviewZones,
   };
 
   return (

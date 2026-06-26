@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 
 export type IslandZoneState = "quiet" | "growing" | "thriving";
 export type IslandBuildingType = "home" | "garden" | "workshop" | "learning" | "townHall" | "market" | "lighthouse" | "pathways";
+export type IslandZoneReviewStatus = "completed" | "current" | "pending";
 
 export interface IslandZoneData {
   id: string;
@@ -22,6 +23,7 @@ export interface IslandZoneData {
   color: string;
   icon: LucideIcon;
   unlocked?: boolean;
+  reviewStatus?: IslandZoneReviewStatus;
 }
 
 export interface IslandSummary {

@@ -78,7 +78,7 @@ The idempotent development seed creates:
 
 - Child: `child@lifequest.local`
 - Parent: `parent@lifequest.local`
-- Password for both: `lifequest123`
+- Password for both: `lifequest2026`
 - Five habits, five quests, three discovery domains, one parent-child mission, and eight village zones
 
 ## API

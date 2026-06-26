@@ -12,7 +12,7 @@ const buildingAssets: Record<IslandBuildingType, { href: string; width: number; 
   pathways: { href: "/assets/island/buildings/pathways/pathways-lv1.png", width: 156, height: 88, y: -61 },
 };
 
-export function IslandBuilding({ type }: { type: IslandBuildingType; color: string }) {
+export function IslandBuilding({ type }: { type: IslandBuildingType }) {
   const asset = buildingAssets[type];
 
   return (

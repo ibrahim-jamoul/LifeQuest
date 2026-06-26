@@ -127,7 +127,7 @@ Comptes seed locaux :
 
 - enfant : `child@lifequest.local`
 - parent : `parent@lifequest.local`
-- mot de passe : `lifequest123`
+- mot de passe : `lifequest2026`
 
 L'ecran de connexion apparait normalement lorsqu'aucune session n'existe. Cela ne signifie pas que le projet ou les donnees ont ete remis a zero.
 

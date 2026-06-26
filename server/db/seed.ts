@@ -4,7 +4,7 @@ import { hashPassword } from "../services/auth";
 
 const CHILD_EMAIL = "child@lifequest.local";
 const PARENT_EMAIL = "parent@lifequest.local";
-const DEMO_PASSWORD = "lifequest123";
+const DEMO_PASSWORD = "lifequest2026";
 
 function ensureUser(email: string, displayName: string): number {
   const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(email) as { id: number } | undefined;

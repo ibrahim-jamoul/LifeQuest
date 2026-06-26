@@ -2,7 +2,7 @@ const deploymentUrl = process.env.DEPLOYMENT_URL?.replace(/\/$/, "");
 if (!deploymentUrl) throw new Error("DEPLOYMENT_URL is required.");
 
 const email = process.env.DEPLOYMENT_TEST_EMAIL ?? "child@lifequest.local";
-const password = process.env.DEPLOYMENT_TEST_PASSWORD ?? "lifequest123";
+const password = process.env.DEPLOYMENT_TEST_PASSWORD ?? "lifequest2026";
 const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 let token = "";
 
