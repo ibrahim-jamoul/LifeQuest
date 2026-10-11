@@ -1,0 +1,254 @@
+[
+  {
+    "id": "LQ-01-01",
+    "phase": "01 — Fondations du jeu",
+    "tache": "Auditer code/assets existants",
+    "etat": "fait : prototype, archives HTML et dépôt historique comparés en lecture seule",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-01-02",
+    "phase": "01 — Fondations du jeu",
+    "tache": "Définir architecture MVP",
+    "etat": "fait : prototype autonome statique",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-01-03",
+    "phase": "01 — Fondations du jeu",
+    "tache": "Créer PWA et fonctionnement local",
+    "etat": "partiel : installation dépend HTTPS/support navigateur",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-01-04",
+    "phase": "01 — Fondations du jeu",
+    "tache": "Concevoir interfaces portrait smartphones/tablettes",
+    "etat": "fait : CSS et E2E émulés de 320×568 à 768×1024 ; appareils réels encore requis",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-01-05",
+    "phase": "01 — Fondations du jeu",
+    "tache": "Navigation et composants UI réutilisables",
+    "etat": "fait : prototype JS",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-01-06",
+    "phase": "01 — Fondations du jeu",
+    "tache": "Sauvegarde profils/progression",
+    "etat": "fait : localStorage démo",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-01",
+    "phase": "02 — Écrans principaux",
+    "tache": "Chargement LifeQuest",
+    "etat": "fait",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-02",
+    "phase": "02 — Écrans principaux",
+    "tache": "Écran titre / Jouer",
+    "etat": "fait",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-03",
+    "phase": "02 — Écrans principaux",
+    "tache": "Connexion / sélection profils",
+    "etat": "partiel : profils de démonstration sans authentification",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-04",
+    "phase": "02 — Écrans principaux",
+    "tache": "Création/personnalisation personnage",
+    "etat": "partiel : 4 avatars symboliques",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-05",
+    "phase": "02 — Écrans principaux",
+    "tache": "Robot mascotte et introduction",
+    "etat": "partiel : Nova est un concept SVG",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-06",
+    "phase": "02 — Écrans principaux",
+    "tache": "Lobby fusionné avec cinq espaces",
+    "etat": "fait",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-07",
+    "phase": "02 — Écrans principaux",
+    "tache": "Navigation/missions/résultats/progression",
+    "etat": "partiel : 3 notions jouables",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-02-08",
+    "phase": "02 — Écrans principaux",
+    "tache": "Profil/pause/paramètres/aide",
+    "etat": "partiel : profil et paramètres, pause hors gameplay",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-03-01",
+    "phase": "03 — Référentiel scolaire 6e",
+    "tache": "Consulter programmes officiels 2026–2027",
+    "etat": "partiel : sources et calendriers vérifiés",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-03-02",
+    "phase": "03 — Référentiel scolaire 6e",
+    "tache": "Recenser matières/chapitres/notions",
+    "etat": "fait : reprise 115 notions matrice LifeQuest v1, exhaustivité non certifiée",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-03-03",
+    "phase": "03 — Référentiel scolaire 6e",
+    "tache": "Structurer ID/objectifs/prérequis",
+    "etat": "partiel : ID et domaines, champs pédagogiques à enrichir",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-03-04",
+    "phase": "03 — Référentiel scolaire 6e",
+    "tache": "Navigation matière → chapitre → notion",
+    "etat": "fait",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-03-05",
+    "phase": "03 — Référentiel scolaire 6e",
+    "tache": "Statuts éditoriaux de disponibilité",
+    "etat": "fait",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-01",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Créer fiche standard notion",
+    "etat": "fait",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-02",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Lecteur vidéo 1–2 minutes",
+    "etat": "fait : 3 démos muettes 70s",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-03",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Support de cours écrit",
+    "etat": "fait : 3 démos",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-04",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Déblocage activités après lecture",
+    "etat": "fait : lecture séquentielle jusqu’à ended, avance directe refusée",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-05",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Quiz avec correction",
+    "etat": "fait : 3 × 3 questions",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-06",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Modèles mini-jeux réutilisables",
+    "etat": "partiel : 3 mécaniques de démo",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-07",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Résultats/récompenses/maîtrise",
+    "etat": "partiel : notion validée après quiz≥2/3 et mini-jeu",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-04-08",
+    "phase": "04 — Moteur pédagogique École",
+    "tache": "Premier lot de notions jouables",
+    "etat": "partiel : 3 démos, cible 5–8 validées par enseignant",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-05-01",
+    "phase": "05 — Concentration",
+    "tache": "Définir les mécaniques et parcours",
+    "etat": "à confirmer : la minuterie est hypothèse",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-05-02",
+    "phase": "05 — Concentration",
+    "tache": "Créer son interface",
+    "etat": "fait : interface démo",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-05-03",
+    "phase": "05 — Concentration",
+    "tache": "Session fonctionnelle et fin de session",
+    "etat": "fait : minuterie, pause, reprise persistante et historique local",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-06-01",
+    "phase": "06 — Cadeaux",
+    "tache": "Définir les règles d’attribution",
+    "etat": "partiel : points attribués une fois par notion",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-06-02",
+    "phase": "06 — Cadeaux",
+    "tache": "Catalogue virtuel / réel",
+    "etat": "partiel : virtuel actif, réel désactivé",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-06-03",
+    "phase": "06 — Cadeaux",
+    "tache": "Parcours demande cadeau",
+    "etat": "reporté : pas de demande réelle sans vérification parentale",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-06-04",
+    "phase": "06 — Cadeaux",
+    "tache": "Validation parentale sécurisée minimale",
+    "etat": "reporté et bloquant : aucune validation cadeau réel",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-07-01",
+    "phase": "07 — Tests et livraison",
+    "tache": "Tests Android/iOS portrait, installation PWA",
+    "etat": "à exécuter sur appareils réels",
+    "priorite": "P0"
+  },
+  {
+    "id": "LQ-07-02",
+    "phase": "07 — Tests et livraison",
+    "tache": "Corriger bugs et valider MVP local",
+    "etat": "fait pour le périmètre local : 6 tests Node et 8 E2E Chrome ; appareils réels suivis par LQ-07-01",
+    "priorite": "P0"
+  }
+]

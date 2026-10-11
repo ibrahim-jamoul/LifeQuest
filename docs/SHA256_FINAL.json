@@ -1,0 +1,246 @@
+{
+  "generatedAt": "2026-10-11T14:47:53.736Z",
+  "scope": "Copie locale finale, hors dépendances npm, rapports Playwright temporaires et métadonnées Git.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 103,
+      "sha256": "c452497cc94e372acf80084087bdf14b13c57effb42cea67667b90e783dd7455"
+    },
+    {
+      "path": "APERCU_LOCAL.html",
+      "bytes": 81952,
+      "sha256": "7b7c5f3c1fb5397827d7450ea2c9a88ac76d9ef29019449c2ba944d3b7d47dfb"
+    },
+    {
+      "path": "DEMARRER_MAC_LINUX.sh",
+      "bytes": 125,
+      "sha256": "ae71d231933f1c46c157d07982741a047ed4fa7c68790687171d64d04a9ca769"
+    },
+    {
+      "path": "DEMARRER_WINDOWS.bat",
+      "bytes": 467,
+      "sha256": "398ff882c608bceec1ca6ae91b87f59e3745d086a57dd7ad35874874d80eb8da"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6565,
+      "sha256": "80a2abe9b9090cacbc0ab95e35339c6383f65794a1946770bb853f1dc00264f8"
+    },
+    {
+      "path": "app.css",
+      "bytes": 17598,
+      "sha256": "c104b76b43bf109d6803e990fa6cf19820eca93100574736ec916477fb603512"
+    },
+    {
+      "path": "app.js",
+      "bytes": 45946,
+      "sha256": "9a69382393d1ffd3fb08b52ae93bec0213d6a28d9e5a3c67eaf92d1d8bd36612"
+    },
+    {
+      "path": "assets/icon-192.png",
+      "bytes": 2809,
+      "sha256": "d2c38be4f508b06e7089a4c2738fb7e272232be2520504fb8157d758606ecb02"
+    },
+    {
+      "path": "assets/icon-512.png",
+      "bytes": 8317,
+      "sha256": "91b6c5f6e6d95640c5c50255369722114f64e9b3ad150079ae20bfe708c4880f"
+    },
+    {
+      "path": "assets/robot.svg",
+      "bytes": 1303,
+      "sha256": "ecce237b428611defd3551932330c1f6a25f9840b79043a729b25b60dd9e54fa"
+    },
+    {
+      "path": "core/model.js",
+      "bytes": 4819,
+      "sha256": "ba26f0a4fe9d545bbc2d2b13d2090bcdccd3ed4ba10c2950bd959dc8fcd5f4b7"
+    },
+    {
+      "path": "data/CATALOGUE_115_NOTIONS.csv",
+      "bytes": 18150,
+      "sha256": "7d018ef583fcc03964cda23b9fec837284a46125197073d0ae93cf4cd3635a8e"
+    },
+    {
+      "path": "data/activities.js",
+      "bytes": 6077,
+      "sha256": "e1d413e961515ec0d55515673ecb7fc5cfddf7f9fb0e171f70a8ed4f490aed1c"
+    },
+    {
+      "path": "data/catalogue.js",
+      "bytes": 7101,
+      "sha256": "a2defb40b3456ae109cc3470088cee290027705cbdcdc669ee0de3bed5b32145"
+    },
+    {
+      "path": "docs/BACKLOG_MVP.json",
+      "bytes": 7226,
+      "sha256": "c0b17a305801ed204ce33578b2c7817c5aa474649da6e2540c9f9ad6cd558674"
+    },
+    {
+      "path": "docs/BACKLOG_MVP.md",
+      "bytes": 4126,
+      "sha256": "a415ed40ecd86fc679d9440f529aabbe5beb9f92db80d21ebb65c544f4a0438c"
+    },
+    {
+      "path": "docs/CODEX_INSTRUCTIONS.md",
+      "bytes": 5415,
+      "sha256": "21e342e1e85dda234cb2bb75c83048321064ae73ba32c692821bb832a5cb6722"
+    },
+    {
+      "path": "docs/DECISIONS_VALIDÉES.md",
+      "bytes": 2166,
+      "sha256": "44ecc6c369120c4a2f9326d07c7a0600117fd0e1f338220f46a50ae700524e14"
+    },
+    {
+      "path": "docs/PLAN_DE_TESTS.md",
+      "bytes": 1996,
+      "sha256": "8bd4f7fb3ee6f8a6635569afe146f98e5791b51f2c5e20726e3cb550c987cae6"
+    },
+    {
+      "path": "docs/RAPPORT_VALIDATION_2026-10-11.md",
+      "bytes": 9599,
+      "sha256": "ecf7658c3715964e41f05035d7106f14d614e39ddb9e6558fd55cc9e511a68ab"
+    },
+    {
+      "path": "docs/SECURITE_ET_PROTECTION_MINEURS.md",
+      "bytes": 1592,
+      "sha256": "d56c79bedf2ab11e510d77e48105ff79aabbc020f6c111001b67260c1b6cb5f5"
+    },
+    {
+      "path": "docs/SHA256_BASELINE_ZIP.json",
+      "bytes": 4440,
+      "sha256": "320727d170abc85cd43763996593959bf424b6d4f991d97b6a0f6524b1cbed11"
+    },
+    {
+      "path": "docs/SOURCES_ET_LIMITES.md",
+      "bytes": 1739,
+      "sha256": "69d864578fcd8c683aac559dcee33fefdae97c0a99209dc423bd8f16736dda31"
+    },
+    {
+      "path": "docs/captures/validation-2026-10-11/01-lobby-390x844.png",
+      "bytes": 204919,
+      "sha256": "1433394a0d22fe5c89b91dc9bc8ec5146ee1c84e56c28634f68783ce3b616164"
+    },
+    {
+      "path": "docs/captures/validation-2026-10-11/02-video-deverrouillee-390x844.png",
+      "bytes": 172329,
+      "sha256": "8b1ed9441b6b4b8a66be61bc9d1d135698c94ff364f028e72c7f94c588cc0f23"
+    },
+    {
+      "path": "docs/captures/validation-2026-10-11/03-notion-terminee-390x844.png",
+      "bytes": 131259,
+      "sha256": "429607e98b1a242d2b93a6b184d5248b40acb6cc67e1c88468e0e32fae41b072"
+    },
+    {
+      "path": "docs/captures/validation-2026-10-11/04-cadeaux-390x844.png",
+      "bytes": 165939,
+      "sha256": "cfc8ef300252f24da443d29d278461685448dc4d0ad1d3d144556135c7b587d1"
+    },
+    {
+      "path": "docs/captures/validation-2026-10-11/04b-cadeau-reel-desactive-390x844.png",
+      "bytes": 133943,
+      "sha256": "f0067d24686ecf3a6d919b0c0721346765b207257e1e9a39998d33c7d6696ffb"
+    },
+    {
+      "path": "docs/captures/validation-2026-10-11/05-concentration-historique-390x844.png",
+      "bytes": 195511,
+      "sha256": "770509fa6bf0237683f827a892fbf96e1867d51fc6ab77c92bfcb664e361a707"
+    },
+    {
+      "path": "docs/captures/validation-2026-10-11/06-rotation-1024x768.png",
+      "bytes": 12206,
+      "sha256": "65867362bf6646618b5f46198af726b1f168a564bb252c72367e49cf21398575"
+    },
+    {
+      "path": "index.html",
+      "bytes": 909,
+      "sha256": "4e5093aba9cc1995a21e18ae1066d26ac5a56e7bec67695d73dfd327c5cf3cfb"
+    },
+    {
+      "path": "manifest.webmanifest",
+      "bytes": 522,
+      "sha256": "42cab05fc2c41153c3538568924d5e26a9e5cb66b44f9f76328356a4f079e804"
+    },
+    {
+      "path": "media/MAT-09.mp4",
+      "bytes": 61289,
+      "sha256": "6271dab538be398e4a5d76a6bba42bc0658ed46e7adf91f32ac4684670f7de1a"
+    },
+    {
+      "path": "media/MAT-12.mp4",
+      "bytes": 62651,
+      "sha256": "6e207265e1afb4b7d539d84dac431c2d8212fa6f467da22aea279b5c7c9cfea8"
+    },
+    {
+      "path": "media/MAT-18.mp4",
+      "bytes": 52930,
+      "sha256": "8e4f1051bc5819110d14a29e7e6355922042ca5014742a05292be46d0c932fae"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 2258,
+      "sha256": "57d6543da14283fb8f950ee4bc404e05201d10026f1899ccbbb105b9fd56f6cd"
+    },
+    {
+      "path": "package.json",
+      "bytes": 820,
+      "sha256": "31ec343dd39c53dacded013d3dc04383f551b19233b7c5f2368b0b592c23d6f3"
+    },
+    {
+      "path": "playwright.config.mjs",
+      "bytes": 1356,
+      "sha256": "cef80b814cdcfcb6f9015fdaa27b7fa9a3793bf18b875b60acd902ed2b9fdb92"
+    },
+    {
+      "path": "service-worker.js",
+      "bytes": 1383,
+      "sha256": "eeec7a6f9c7089fefd0fe29891d71f7a30b7f2d27308d947a700ba3906bf3bc8"
+    },
+    {
+      "path": "tests/browser_smoke.py",
+      "bytes": 608,
+      "sha256": "345aea39b265f6694d7ed7d05aee566888542fade241f8e4390ad3cd4366d5b7"
+    },
+    {
+      "path": "tests/catalogue.test.mjs",
+      "bytes": 1246,
+      "sha256": "e1c1cd121c0eb5a084c9a6657e80aa7aed8d30fbb2b373539d279accfa90fac2"
+    },
+    {
+      "path": "tests/e2e/mobile-navigation.spec.mjs",
+      "bytes": 19145,
+      "sha256": "c86562426ed4c65472e968927963f63691eb391c17f71e2df7f4f6af4429d770"
+    },
+    {
+      "path": "tests/model.test.mjs",
+      "bytes": 2605,
+      "sha256": "87bdb404e73fc4a8b53a46c1fa690dd435cf9c02b065f9f8b66ec1508e549851"
+    },
+    {
+      "path": "tests/standalone_bundle.js",
+      "bytes": 63536,
+      "sha256": "fe2b0b8a8de7e0d5b39c1f49564e63c2ba082835cdb80f4a3aa9c797b63864ec"
+    },
+    {
+      "path": "tests/state_machine.test.mjs",
+      "bytes": 3275,
+      "sha256": "2f0abc641e25d70b86215793b784f8c7071ecd694b3b85a0080351546aa5ea35"
+    },
+    {
+      "path": "tools/build-standalone.mjs",
+      "bytes": 1587,
+      "sha256": "a5e78e011619c0417700c1498cbb2d277c3143e28cc7a631499f55ff022e0ce6"
+    },
+    {
+      "path": "tools/generate-manifest.mjs",
+      "bytes": 1522,
+      "sha256": "cfd90b2fc2386a701892d68f996640e8e2741e7c8a3d0ebf5214833d9c65f155"
+    },
+    {
+      "path": "tools/serve.mjs",
+      "bytes": 4063,
+      "sha256": "8dd7cad12d1e940d3689712e127fda4024cba92a4cd9a9edbab7572bd99a22aa"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 250" role="img" aria-labelledby="t"><title id="t">Nova, la petite mascotte robot LifeQuest</title>
+<ellipse cx="122" cy="228" rx="75" ry="12" fill="#000" opacity=".25"/>
+<path d="M110 24V12" stroke="#78dffc" stroke-width="9" stroke-linecap="round"/><circle cx="110" cy="11" r="10" fill="#ffe19b"/>
+<rect x="52" y="45" width="140" height="105" rx="36" fill="#edf9ff" stroke="#306695" stroke-width="9"/><rect x="64" y="61" width="116" height="72" rx="26" fill="#142c59"/>
+<rect x="83" y="90" width="17" height="22" rx="8" fill="#6bf6ed"/><rect x="145" y="90" width="17" height="22" rx="8" fill="#6bf6ed"/>
+<path d="M108 112Q122 123 136 112" stroke="#5cf3cf" stroke-width="5" fill="none" stroke-linecap="round"/>
+<rect x="71" y="149" width="102" height="67" rx="27" fill="#d2eafa" stroke="#306695" stroke-width="7"/><circle cx="122" cy="180" r="17" fill="#4ca0cc"/><path d="M115 179h14M122 172v14" stroke="#e8fff2" stroke-width="5" stroke-linecap="round"/>
+<path d="M72 161L44 185M172 161l28 24" stroke="#c8e7f4" stroke-width="15" stroke-linecap="round"/><circle cx="39" cy="188" r="11" fill="#6ddedb"/><circle cx="205" cy="188" r="11" fill="#6ddedb"/><path d="M96 216v15m54-15v15" stroke="#c2dff1" stroke-width="14" stroke-linecap="round"/>
+</svg>

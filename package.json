@@ -1,0 +1,21 @@
+{
+  "name": "lifequest-v3-mvp-portrait",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "MVP local LifeQuest V3, mobile-first et portrait",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "start:lan": "node tools/serve.mjs --host 0.0.0.0",
+    "build:standalone": "node tools/build-standalone.mjs",
+    "manifest": "node tools/generate-manifest.mjs",
+    "check": "node --check app.js && node --check core/model.js && node --check service-worker.js && node --check tests/standalone_bundle.js",
+    "test": "node --test tests/*.test.mjs",
+    "test:unit": "node --test tests/*.test.mjs",
+    "test:e2e": "playwright test",
+    "test:all": "npm run build:standalone && npm run check && npm test && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.60.0"
+  }
+}
