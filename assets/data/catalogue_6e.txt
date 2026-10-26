@@ -1,0 +1,116 @@
+# Catalogue éditorial repris du dépôt LifeQuest main, base de 115 notions, NON validé exhaustivement.
+MAT-01|MAT|Nombres|Valeur de position et grands nombres|P0
+MAT-02|MAT|Nombres|Nombres décimaux|P0
+MAT-03|MAT|Nombres|Comparer et ordonner des nombres|P0
+MAT-04|MAT|Calcul|Addition / soustraction|P0
+MAT-05|MAT|Calcul|Multiplication|P0
+MAT-06|MAT|Calcul|Division|P0
+MAT-07|MAT|Calcul|Calcul mental et stratégies|P1
+MAT-08|MAT|Résolution de problèmes|Problèmes à plusieurs étapes|P0
+MAT-09|MAT|Fractions|Fraction comme partage|P0
+MAT-10|MAT|Fractions|Fraction comme nombre|P0
+MAT-11|MAT|Fractions|Fractions équivalentes|P0
+MAT-12|MAT|Fractions|Comparer des fractions|P0
+MAT-13|MAT|Fractions|Fraction d'une quantité|P0
+MAT-14|MAT|Décimaux|Fractions décimales et écritures décimales|P0
+MAT-15|MAT|Pourcentages|Pourcentages usuels|P0
+MAT-16|MAT|Algèbre|Égalité et quantité inconnue|P0
+MAT-17|MAT|Algèbre|Suites et régularités|P1
+MAT-18|MAT|Grandeurs|Longueurs et périmètres|P0
+MAT-19|MAT|Grandeurs|Aires|P0
+MAT-20|MAT|Grandeurs|Volumes|P1
+MAT-21|MAT|Temps|Durées et chronologie|P1
+MAT-22|MAT|Géométrie|Angles et orientation|P0
+MAT-23|MAT|Géométrie|Figures planes et propriétés|P1
+MAT-24|MAT|Géométrie|Symétrie|P1
+MAT-25|MAT|Espace|Solides, vues et patrons|P1
+MAT-26|MAT|Données|Lire tableaux et graphiques|P0
+MAT-27|MAT|Données|Organiser et représenter des données|P1
+MAT-28|MAT|Probabilités|Hasard et chance simple|P1
+MAT-29|MAT|Proportionnalité|Relations proportionnelles|P0
+MAT-30|MAT|Algorithmique|Instructions et décomposition|P0
+FRA-01|FRA|Lecture|Fluidité|P0
+FRA-02|FRA|Lecture|Lecture à voix haute expressive|P1
+FRA-03|FRA|Compréhension|Comprendre textes, documents et images|P0
+FRA-04|FRA|Compréhension|Lire pour apprendre|P0
+FRA-05|FRA|Culture littéraire|Récits des origines|P1
+FRA-06|FRA|Culture littéraire|Poésie|P1
+FRA-07|FRA|Culture littéraire|Théâtre et ruse|P1
+FRA-08|FRA|Culture littéraire|Récit d'aventure|P0
+FRA-09|FRA|Culture littéraire|Monstres et altérité|P1
+FRA-10|FRA|Écriture|Écrire pour réfléchir et mémoriser|P0
+FRA-11|FRA|Écriture|Produire des écrits variés|P0
+FRA-12|FRA|Oral|Écouter pour comprendre|P0
+FRA-13|FRA|Oral|Expliquer clairement|P1
+FRA-14|FRA|Oral|Échanger et argumenter|P1
+FRA-15|FRA|Vocabulaire|Précision lexicale|P0
+FRA-16|FRA|Vocabulaire|Réseaux de mots|P1
+FRA-17|FRA|Orthographe|Orthographe lexicale|P1
+FRA-18|FRA|Grammaire|Phrase simple et fonctions|P0
+FRA-19|FRA|Grammaire|Phrase complexe et connecteurs|P1
+FRA-20|FRA|Orthographe grammaticale|Accords|P0
+HIS-01|HIS|Méthodes|Temps, frises et repères|P0
+HIS-02|HIS|Méthodes|Sources, histoire et fiction|P0
+HIS-03|HIS|Thème 1|Origines de l'humanité et migrations|P1
+HIS-04|HIS|Thème 1|Révolution néolithique|P0
+HIS-05|HIS|Thème 1|Premiers États et écritures|P0
+HIS-06|HIS|Thème 2|Cités grecques|P1
+HIS-07|HIS|Thème 2|Rome : mythe et histoire|P0
+HIS-08|HIS|Thème 2|Naissance du monothéisme juif|P1
+HIS-09|HIS|Thème 3|Empire romain et romanisation|P0
+HIS-10|HIS|Thème 3|Christianisme dans l'Empire|P1
+HIS-11|HIS|Thème 3|Relations entre mondes anciens|P1
+GEO-01|GEO|Méthodes|Se repérer et changer d'échelle|P0
+GEO-02|GEO|Thème 1|Habiter une métropole|P0
+GEO-03|GEO|Thème 1|Ville de demain|P1
+GEO-04|GEO|Thème 2|Espaces de faible densité|P1
+GEO-05|GEO|Thème 2|Espaces agricoles|P1
+GEO-06|GEO|Thème 3|Littoraux industrialo-portuaires|P1
+GEO-07|GEO|Thème 3|Littoraux touristiques|P1
+GEO-08|GEO|Thème 4|Répartition de la population mondiale|P0
+GEO-09|GEO|Thème 4|Diversité des façons d'habiter|P1
+SCI-01|SCI|Matière|États et propriétés|P0
+SCI-02|SCI|Matière|Mélanges, dissolution, séparation|P1
+SCI-03|SCI|Mouvement|Décrire un mouvement|P0
+SCI-04|SCI|Énergie|Sources et conversions|P0
+SCI-05|SCI|Information|Signaux et information|P0
+SCI-06|SCI|Vivant|Diversité et classification|P0
+SCI-07|SCI|Vivant|Parentés et histoire du vivant|P1
+SCI-08|SCI|Vivant|Nutrition et échanges|P0
+SCI-09|SCI|Vivant|Développement et reproduction|P1
+SCI-10|SCI|Vivant|Besoins des plantes|P0
+SCI-11|SCI|Technologie|Besoin et fonction d'un objet|P0
+SCI-12|SCI|Technologie|Matériaux et propriétés|P1
+SCI-13|SCI|Technologie|Fonctionnement d'un système|P0
+SCI-14|SCI|Technologie|Conception et prototype|P1
+SCI-15|SCI|Terre|Terre dans le système solaire|P0
+SCI-16|SCI|Terre|Météo et climat|P1
+SCI-17|SCI|Environnement|Écosystèmes et interactions|P0
+SCI-18|SCI|Environnement|Impacts humains et solutions|P1
+EMC-01|EMC|Démocratie|Représentation|P1
+EMC-02|EMC|Démocratie|Intérêt général|P0
+EMC-03|EMC|Règles|Finalité des règles|P0
+EMC-04|EMC|Laïcité|Cadre scolaire et liberté de conscience|P1
+EMC-05|EMC|Droits|Vie privée et données|P0
+EMC-06|EMC|Droits|Droits et responsabilités|P1
+LVE-01|LVE|Compréhension orale|Comprendre pour agir|P1
+LVE-02|LVE|Interaction|Dialoguer|P1
+LVE-03|LVE|Lecture|Comprendre textes courts|P1
+LVE-04|LVE|Écriture|Écrire un message simple|P2
+LVE-05|LVE|Culture|Vie quotidienne et société|P1
+LVE-06|LVE|Culture|Arts, récits, lieux et imaginaires|P2
+ART-01|ART|Arts plastiques|Créer avec contraintes|P2
+ART-02|ART|Arts plastiques|Observer et analyser|P2
+ART-03|ART|Éducation musicale|Écouter et comparer|P2
+ART-04|ART|Éducation musicale|Produire / interpréter|P2
+ART-05|ART|Histoire des arts|Situer et relier œuvres|P2
+EPS-01|EPS|Performance|Mesurer et progresser|P2
+EPS-02|EPS|Déplacements|S'adapter à l'environnement|P2
+EPS-03|EPS|Coopération/opposition|Stratégie et règles|P3
+EPS-04|EPS|Expression|Créer une prestation|P3
+EPS-05|EPS|Santé|Connaître son effort|P2
+NUM-01|NUM|Information|Chercher et vérifier|P0
+NUM-02|NUM|Données personnelles|Traces numériques|P0
+NUM-03|NUM|Réseaux|Voyage de l'information|P0
+NUM-04|NUM|Algorithmique|Instructions et debug|P0
+NUM-05|NUM|Cybersécurité|Secrets et authentification|P1
