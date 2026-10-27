@@ -30,9 +30,9 @@ class _FractionsPageState extends ConsumerState<FractionsPage> {
         const SectionHeading('1. Comprendre la leçon'),
         const Text('On partage une même quantité en parts égales. Le dénominateur indique le nombre de parts ; le numérateur indique combien de parts on prend.'),
         const SizedBox(height:10),const FeedbackPanel('Par exemple, 1/2 signifie une part parmi deux parts égales. 2/4 représente la même quantité.'),
-        LqCard(color:const Color(0xFFFFF1DD),child:Row(children:[
-          const Icon(Icons.videocam_off_outlined),const SizedBox(width:12),
-          const Expanded(child:Text('Vidéo pédagogique non disponible dans cette démonstration. Le cours écrit constitue l’alternative explicite.'))])),
+        const LqCard(color:Color(0xFFFFF1DD),child:Row(children:[
+          Icon(Icons.videocam_off_outlined),SizedBox(width:12),
+          Expanded(child:Text('Vidéo pédagogique non disponible dans cette démonstration. Le cours écrit constitue l’alternative explicite.'))])),
         const SizedBox(height:12),LqAction('J’ai compris le cours écrit',onPressed:advance),
       ] else if(stage==1)...[
         const SectionHeading('2. Manipule des fractions'),

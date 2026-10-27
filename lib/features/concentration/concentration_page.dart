@@ -40,9 +40,9 @@ class _ConcentrationPageState extends ConsumerState<ConcentrationPage> {
       if(phase==0)...[
         const SectionHeading('Choisir une difficulté'),
         RadioGroup<int>(groupValue:difficulty,onChanged:(v){if(v!=null)setState(()=>difficulty=v);},
-          child:Column(children:[
-            const RadioListTile<int>(value:3,title:Text('Explorateur — 3 symboles')),
-            const RadioListTile<int>(value:4,title:Text('Chercheur — 4 symboles'))])),
+          child:const Column(children:[
+            RadioListTile<int>(value:3,title:Text('Explorateur — 3 symboles')),
+            RadioListTile<int>(value:4,title:Text('Chercheur — 4 symboles'))])),
         const FeedbackPanel('Cette activité travaille la mémorisation d’une courte séquence. Elle ne prétend pas améliorer l’intelligence générale.'),
         LqAction('Commencer',onPressed:()=>setState((){phase=1;answers=[];good=null;})),
       ] else if(phase==1)...[

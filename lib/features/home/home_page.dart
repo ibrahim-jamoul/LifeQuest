@@ -10,12 +10,12 @@ class HomePage extends ConsumerWidget {
   @override Widget build(BuildContext context,WidgetRef ref) {
     final data=ref.watch(demoProvider);
     return PageBody(children:[
-      Row(children:[const Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+      const Row(children:[Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
         Text('BONJOUR, EXPLORATEUR',style:TextStyle(letterSpacing:1.3,fontSize:11,
           color:LqColors.purple,fontWeight:FontWeight.w900)),
         SizedBox(height:7),Text('Et si on découvrait quelque chose ?',style:TextStyle(
           fontSize:27,fontWeight:FontWeight.w900,color:LqColors.ink,height:1.13))])),
-        const SizedBox(width:8),const SizedBox(width:74,child:AssetArt('nova',height:74))]),
+        SizedBox(width:8),SizedBox(width:74,child:AssetArt('nova',height:74))]),
       const SizedBox(height:20),
       LqCard(color:LqColors.lavender,padding:const EdgeInsets.all(20),child:Column(
         crossAxisAlignment:CrossAxisAlignment.start,children:[
